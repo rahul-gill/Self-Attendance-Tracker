@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/edit_course_details"
+        android:title="Edit Course Details"
+        android:icon="@drawable/baseline_edit_24"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/delete_course_details"
+        android:title="Delete course"
+        android:icon="@drawable/baseline_delete_24"
+        app:showAsAction="always"/>
+</menu>

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
+    android:transitionName="@string/course_detail_page_transition">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar_layout"
+            style="?attr/collapsingToolbarLayoutMediumStyle"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/collapsingToolbarLayoutMediumSize"
+            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                android:elevation="0dp"
+                app:menu="@menu/view_course_screen_menu"
+                app:navigationIconTint="?attr/colorOnSurface"
+                app:navigationIcon="@drawable/baseline_arrow_back_24"
+                app:title="Mathematics" />
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Current Attendance Percentage"/>
+                <TextView
+                    android:id="@+id/current_attendance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/TextAppearance.Material3.TitleMedium"
+                    tools:text="50%"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Required Attendance Percentage"/>
+                <TextView
+                    android:id="@+id/required_attendance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/TextAppearance.Material3.TitleMedium"
+                    tools:text="50%"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Weekly Schedule"
+                style="@style/TextAppearance.Material3.TitleLarge"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/weekly_schedule_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="true"
+                android:paddingHorizontal="4dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                tools:itemCount="3"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/weekly_schedule_item">
+            </androidx.recyclerview.widget.RecyclerView>
+
+
+            <Button
+                android:id="@+id/add_extra_class_zero"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add extra class"
+                android:visibility="gone"
+                style="?attr/materialIconButtonFilledTonalStyle"
+                app:icon="@drawable/baseline_add_24"/>
+
+            <LinearLayout
+                android:id="@+id/extra_classes_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Extra classes"
+                    android:layout_gravity="center_vertical"
+                    style="@style/TextAppearance.Material3.TitleLarge"/>
+
+                <Button
+                    android:id="@+id/add_extra_class"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="Add extra class"
+                    style="?attr/materialIconButtonFilledTonalStyle"
+                    app:icon="@drawable/baseline_add_24"/>
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/extra_classes_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="true"
+                android:paddingHorizontal="4dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                tools:itemCount="3"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/extra_class_item">
+            </androidx.recyclerview.widget.RecyclerView>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Attendance Record"
+                android:layout_marginTop="8dp"
+                style="@style/TextAppearance.Material3.TitleLarge"/>
+
+            <CalendarView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:contentPadding="8dp"
+                android:layout_marginTop="8dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/presents_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="?attr/colorSuccess"
+                        android:text="Presents: 10" />
+                    <TextView
+                        android:id="@+id/absents_text"
+                        android:layout_width="wrap_content"
+                        android:textColor="?attr/colorError"
+                        android:layout_height="wrap_content"
+                        android:text="Absents: 10"/>
+                    <TextView
+                        android:id="@+id/cancels_text"
+                        android:layout_width="wrap_content"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:layout_height="wrap_content"
+                        android:text="Cancelled classes: 10"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

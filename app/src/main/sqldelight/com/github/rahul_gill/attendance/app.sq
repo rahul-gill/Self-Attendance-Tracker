@@ -1,0 +1,130 @@
+import com.github.rahul_gill.attendance.db.CourseClassStatus;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+CREATE TABLE Course (
+    courseId INTEGER PRIMARY KEY AUTOINCREMENT,
+    courseName TEXT NOT NULL,
+    requiredAttendance REAL NOT NULL
+);
+
+CREATE TABLE Schedule (
+    scheduleId INTEGER PRIMARY KEY AUTOINCREMENT,
+    courseId INTEGER NOT NULL,
+    weekday INTEGER AS DayOfWeek NOT NULL,
+    startTime TEXT AS LocalTime  NOT NULL,
+    endTime TEXT AS LocalTime  NOT NULL,
+    includedInSchedule INTEGER NOT NULL DEFAULT 0,
+    CONSTRAINT fk_course
+        FOREIGN KEY (courseId)
+        REFERENCES Course (courseId)
+);
+
+CREATE TABLE Attendance (
+    scheduleId INTEGER NOT NULL,
+    classStatus TEXT AS CourseClassStatus NOT NULL,
+    date TEXT AS LocalDate NOT NULL,
+    CONSTRAINT fk_schedule
+        FOREIGN KEY (scheduleId)
+        REFERENCES Schedule (scheduleId),
+    CONSTRAINT pk_attendance
+        PRIMARY KEY (scheduleId, date)
+);
+
+CREATE TABLE ExtraClasses (
+    extraClassId INTEGER PRIMARY KEY AUTOINCREMENT,
+    courseId INTEGER NOT NULL,
+    date TEXT AS LocalDate NOT NULL,
+    startTime TEXT AS LocalTime NOT NULL,
+    endTime TEXT AS LocalTime NOT NULL,
+    classStatus TEXT AS CourseClassStatus NOT NULL,
+    CONSTRAINT fk_course
+        FOREIGN KEY (courseId)
+        REFERENCES Course (courseId)
+);
+
+getCourseListForToday:
+SELECT Schedule.scheduleId, Course.courseName, Schedule.startTime, Schedule.endTime,
+       CASE WHEN Attendance.classStatus IS NULL THEN 'Unset'
+            ELSE Attendance.classStatus
+       END AS classStatus
+FROM Schedule
+JOIN Course ON Schedule.courseId = Course.courseId AND Schedule.weekday = strftime('%w', 'now')
+LEFT JOIN Attendance ON Schedule.scheduleId = Attendance.scheduleId AND Attendance.date = DATE('now', 'localtime')
+WHERE Schedule.includedInSchedule <> 0
+AND DATE('now', 'localtime') = Attendance.date
+OR (Attendance.scheduleId IS NULL AND DATE('now', 'localtime') = DATE('now', 'localtime'));
+
+getExtraClassesListForToday:
+SELECT Course.courseName, ExtraClasses.startTime, ExtraClasses.endTime, ExtraClasses.classStatus, ExtraClasses.extraClassId
+FROM Course
+JOIN ExtraClasses ON Course.courseId = ExtraClasses.courseId
+WHERE ExtraClasses.date = DATE('now', 'localtime');
+
+
+
+createCourse:
+INSERT INTO Course (courseName, requiredAttendance)
+VALUES ( ?, ?);
+
+getLastInsertRowID:
+SELECT last_insert_rowid();
+
+createScheduleItemForCourse:
+INSERT INTO Schedule (courseId, weekday, startTime, endTime, includedInSchedule)
+VALUES ( ?, ?, ?, ?, ?);
+
+
+getCourseDetails:
+SELECT
+    Course.courseId,
+    Course.courseName,
+    Course.requiredAttendance,
+    GROUP_CONCAT(Schedule.weekday || ' ' || Schedule.startTime || ' ' || Schedule.endTime) AS scheduleDetails,
+    COALESCE((SELECT COUNT(*) FROM Attendance WHERE Attendance.scheduleId IN (SELECT scheduleId FROM Schedule WHERE Schedule.courseId = Course.courseId) AND Attendance.classStatus = 'Present') / NULLIF((SELECT COUNT(*) FROM Attendance WHERE Attendance.scheduleId IN (SELECT scheduleId FROM Schedule WHERE Schedule.courseId = Course.courseId)), 0) * 100, 0) AS currentAttendancePercentage,
+    (SELECT COUNT(*) FROM Schedule WHERE Schedule.courseId = Course.courseId AND Schedule.weekday = strftime('%w', 'now')) AS hasClassesToday,
+    (SELECT GROUP_CONCAT(startTime || '-' || endTime) FROM Schedule WHERE Schedule.courseId = Course.courseId AND Schedule.weekday = strftime('%w', 'now')) AS classesToday
+FROM
+    Course
+JOIN
+    Schedule ON Course.courseId = Schedule.courseId
+WHERE
+    Schedule.includedInSchedule = 1 AND Course.courseId = ?
+GROUP BY
+    Course.courseName, Course.requiredAttendance;
+
+-- TODO: take into account unset items which have a date before today (or not or both with two queries)
+getCoursesDetailsList:
+SELECT
+    Course.courseId,
+    Course.courseName,
+    Course.requiredAttendance,
+    (SELECT COUNT(*) FROM Schedule WHERE Schedule.courseId = Course.courseId AND Schedule.weekday = strftime('%w', 'now')) AS numClassesToday,
+    (SELECT COUNT(*) AS presents FROM Attendance WHERE scheduleId IN (SELECT scheduleId FROM Schedule WHERE courseId = Course.courseId) AND classStatus = 'Present'
+        UNION ALL SELECT COUNT(*) AS presents FROM ExtraClasses WHERE courseId = Course.courseId AND classStatus = 'Present') AS nPresents,
+    (SELECT COUNT(*) AS presents FROM Attendance WHERE scheduleId IN (SELECT scheduleId FROM Schedule WHERE courseId = Course.courseId) AND classStatus = 'Absent'
+        UNION ALL SELECT COUNT(*) AS presents FROM ExtraClasses WHERE courseId = Course.courseId AND classStatus = 'Absent') AS nAbsents,
+    (SELECT COUNT(*) AS presents FROM Attendance WHERE scheduleId IN (SELECT scheduleId FROM Schedule WHERE courseId = Course.courseId) AND classStatus = 'Cancelled'
+        UNION ALL SELECT COUNT(*) AS presents FROM ExtraClasses WHERE courseId = Course.courseId AND classStatus = 'Cancelled') AS nCancels
+FROM
+    Course;
+
+getScheduleClassesForCourse:
+SELECT * FROM Schedule WHERE Schedule.courseId = ? AND Schedule.includedInSchedule <> 0 ORDER BY Schedule.weekday, Schedule.startTime;
+
+getExtraClasssesForCourse:
+SELECT * FROM ExtraClasses WHERE ExtraClasses.courseId = ? ORDER BY ExtraClasses.date DESC, ExtraClasses.startTime;
+
+createExtraClass:
+INSERT INTO ExtraClasses(courseId, date, startTime, endTime, classStatus)
+VALUES (?, ?, ?, ?, ?);
+
+updateExtraClassStatus:
+UPDATE ExtraClasses
+SET classStatus = :status
+WHERE extraClassId = :extraClassId;
+
+markAttendance:
+INSERT OR REPLACE INTO Attendance (scheduleId, date, classStatus)
+VALUES (?, ?, ?);

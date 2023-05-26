@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:contentPadding="8dp"
+    android:layout_marginVertical="4dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/course_name"
+            style="@style/TextAppearance.Material3.TitleMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Mathematics" />
+
+        <TextView
+            android:id="@+id/attendance_percentage"
+            style="@style/TextAppearance.Material3.TitleMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Current: 50% Goal: 75%" />
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/present_container"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="4dp"
+            app:cardBackgroundColor="?attr/colorSuccessContainer"
+            app:contentPadding="4dp"
+            app:layout_constraintEnd_toStartOf="@id/absents_container"
+            app:layout_constraintTop_toTopOf="@id/cancels_container">
+
+            <TextView
+                android:id="@+id/presents_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_gravity="start|center_vertical"
+                android:text="P"
+                android:textColor="?attr/colorOnSuccessContainer" />
+
+            <TextView
+                android:id="@+id/presents_count"
+                android:layout_width="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:textColor="?attr/colorOnSuccessContainer"
+                tools:text="5" />
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/absents_container"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="4dp"
+            app:cardBackgroundColor="?attr/colorErrorContainer"
+            app:contentPadding="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cancels_container"
+            app:layout_constraintTop_toTopOf="@id/cancels_container">
+
+            <TextView
+                android:id="@+id/absents_label"
+                android:layout_width="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:text="A"
+                android:textColor="?attr/colorOnErrorContainer" />
+
+            <TextView
+                android:id="@+id/absents_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+
+                android:layout_gravity="end|center_vertical"
+                android:textColor="?attr/colorOnErrorContainer"
+                tools:text="5" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cancels_container"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="4dp"
+            android:layout_marginTop="4dp"
+            app:cardBackgroundColor="?attr/colorSurfaceVariant"
+            app:contentPadding="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/attendance_percentage">
+
+            <TextView
+                android:id="@+id/cancelled_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_gravity="start|center_vertical"
+                android:text="C"
+                android:textColor="?attr/colorOnSurfaceVariant" />
+
+            <TextView
+                android:id="@+id/cancelled_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_gravity="end|center_vertical"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                tools:text="500" />
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

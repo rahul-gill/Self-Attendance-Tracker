@@ -1,0 +1,6 @@
+-keep class com.github.rahul_gill.attendance.db.CourseDetailsOverallItem
+-keep class java.time.DayOfWeek
+-keep class java.time.LocalTime
+-keep class com.github.rahul_gill.attendance.db.TodayCourseItem
+-keep class com.github.rahul_gill.attendance.ui.create.ClassDetail
+-keep class com.github.rahul_gill.attendance.db.ExtraClassDetails

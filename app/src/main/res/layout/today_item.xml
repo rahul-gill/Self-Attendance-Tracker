@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:contentPadding="8dp"
+    android:layout_marginVertical="4dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/start_time"
+            style="@style/TextAppearance.Material3.TitleMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="09:49 PM" />
+
+        <TextView
+            android:id="@+id/end_time"
+            style="@style/TextAppearance.Material3.TitleMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/start_time"
+            tools:text="10:49 PM" />
+
+        <TextView
+            android:id="@+id/course_name"
+            style="@style/TextAppearance.Material3.TitleMedium"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            app:layout_constraintStart_toEndOf="@id/start_time"
+            app:layout_constraintEnd_toStartOf="@id/attendance_status_container"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Mathematics" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/extra_class_indication"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/course_name"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="4dp"
+            style="@style/Widget.Material3.CardView.Filled"
+            app:layout_constraintStart_toEndOf="@id/start_time">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="extra class"
+                android:layout_marginBottom="1dp"
+                android:paddingHorizontal="6dp"
+                style="@style/TextAppearance.Material3.LabelMedium"/>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/attendance_status_container"
+            style="@style/Widget.Material3.CardView.Filled"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:elevation="0dp"
+            app:cardBackgroundColor="?attr/colorSuccessContainer"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/attendance_status_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="?attr/colorOnSuccessContainer"
+                tools:text="P" />
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

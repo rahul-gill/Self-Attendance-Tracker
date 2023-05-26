@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <attr name="colorSuccess" format="color" />
+    <attr name="colorOnSuccess" format="color" />
+    <attr name="colorSuccessContainer" format="color" />
+    <attr name="colorOnSuccessContainer" format="color" />
+    <attr name="harmonizeSuccess" format="boolean" />
+</resources>
