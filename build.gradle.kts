@@ -8,7 +8,7 @@ plugins {
     id("androidx.navigation.safeargs.kotlin") version "2.5.3" apply false
     id("app.cash.sqldelight") version "2.0.0-alpha05" apply false
     id("com.github.ben-manes.versions") version "0.46.0"
-    id("io.gitlab.arturbosch.detekt") version "1.22.0"
+    id("io.gitlab.arturbosch.detekt") version "1.23.0"
 }
 
 //Versions plugin
