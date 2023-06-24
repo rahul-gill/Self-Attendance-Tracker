@@ -91,7 +91,7 @@ dependencies {
     //sqldelight
     implementation("app.cash.sqldelight:android-driver:2.0.0-alpha05")
     implementation("app.cash.sqldelight:coroutines-extensions:2.0.0-alpha05")
-    implementation("app.cash.sqldelight:primitive-adapters:2.0.0-alpha05")
+    implementation("app.cash.sqldelight:primitive-adapters:2.0.0-rc01")
 
 //    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.11")
 
