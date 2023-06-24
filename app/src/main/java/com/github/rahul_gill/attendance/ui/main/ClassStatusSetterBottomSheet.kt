@@ -2,12 +2,14 @@ package com.github.rahul_gill.attendance.ui.main
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.github.rahul_gill.attendance.R
 import com.github.rahul_gill.attendance.databinding.ClassStatusSetterBottomSheetBinding
 import com.github.rahul_gill.attendance.db.CourseClassStatus
 import com.github.rahul_gill.attendance.db.DBOps
+import com.github.rahul_gill.attendance.util.dateFormatter
 import com.github.rahul_gill.attendance.util.timeFormatter
 import com.github.rahul_gill.attendance.util.viewBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -21,8 +23,11 @@ class ClassStatusSetterBottomSheet :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         binding.infoText.text = "Set Attendance Status for ${args.todayItem.courseName}\n" +
-                "from ${args.todayItem.startTime.format(timeFormatter)} to ${args.todayItem.endTime.format(timeFormatter)}"
+                "from ${args.todayItem.startTime.format(timeFormatter)} to ${args.todayItem.endTime.format(timeFormatter)}"+
+                if(args.todayItem.isExtraClass) "(Extra class)" else "" +
+                if(args.todayItem.date != null) " on " + args.todayItem.date!!.format(dateFormatter) else ""
         binding.cancelButton.setOnClickListener {
             findNavController().navigateUp()
         }

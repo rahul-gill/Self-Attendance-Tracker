@@ -18,6 +18,39 @@
     <string name="tuesday">Tuesday</string>
     <string name="done">Done</string>
     <string name="cancel">Cancel</string>
-    <string name="course_detail_card_transition">course_details_card_%1$d</string>
-    <string name="course_detail_page_transition">course_details_page</string>
+
+    <string name="course_detail_card_transition" translatable="false">course_details_card_%1$d</string>
+    <string name="course_detail_page_transition" translatable="false">course_details_page</string>
+
+    <string name="app_theme_key"  translatable="false">app_theme</string>
+    <string name="app_theme_title">App Theme</string>
+    <string name="pure_dark_key"  translatable="false">pure_dark</string>
+    <string name="pure_dark_title">Pure Dark in Dark Theme</string>
+    <string name="material_you_dynamic_color_key" translatable="false">material_you_dynamic_color</string>
+    <string name="material_you_dynamic_color_title">Material You Dynamic Color</string>
+    <string name="theming_category_title">Theming</string>
+    <string name="default_main_pager_tab_key"  translatable="false">default_main_pager_tab</string>
+    <string name="default_main_page_tab_title">Default Main Page Tab</string>
+
+
+    <string-array name="theme_entries"  translatable="false">
+        <item>system</item>
+        <item>light</item>
+        <item>dark</item>
+    </string-array>
+    <string-array name="theme_entries_values">
+        <item>Follow System theme</item>
+        <item>Light theme</item>
+        <item>Dark theme</item>
+    </string-array>
+
+
+    <string-array name="default_main_pager_tab_entries"  translatable="false">
+        <item>today</item>
+        <item>overall</item>
+    </string-array>
+    <string-array name="default_main_pager_tab_entries_values">
+        <item>Today</item>
+        <item>Overall</item>
+    </string-array>
 </resources>

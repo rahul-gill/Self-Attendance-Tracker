@@ -22,6 +22,11 @@ class TodayOverallPagerFragment : Fragment(R.layout.fragment_today_overall_pager
         view.doOnPreDraw { startPostponedEnterTransition() }
 
         binding.apply {
+            toolbar.setOnMenuItemClickListener {
+                findNavController().navigate(TodayOverallPagerFragmentDirections.toSettingsFragment())
+                true
+            }
+
             pager.adapter = FragmentPagerAdapter(
                 fragmentList = listOf(
                     TodayItemsFragment(),

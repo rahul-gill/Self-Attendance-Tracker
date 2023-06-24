@@ -81,6 +81,7 @@ dependencies {
     implementation("androidx.viewpager2:viewpager2:1.0.0")
 
     implementation("com.jakewharton.timber:timber:5.0.1")
+    implementation("androidx.preference:preference-ktx:1.2.0")
 
     //navigation
     val nav_version = "2.5.3"

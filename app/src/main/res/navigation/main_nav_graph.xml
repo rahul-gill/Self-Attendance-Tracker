@@ -18,6 +18,9 @@
         <action
             android:id="@+id/toViewCourseFragment"
             app:destination="@id/viewCourseFragment" />
+        <action
+            android:id="@+id/toSettingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/createCourseFragment"
@@ -77,6 +80,9 @@
         <action
             android:id="@+id/toAddExtraClassBottomSheet"
             app:destination="@id/addExtraClassBottomSheet" />
+        <action
+            android:id="@+id/toClassStatusSetterBottomSheetFromViewCourse"
+            app:destination="@id/classStatusSetterBottomSheet" />
     </fragment>
     <fragment
         android:id="@+id/editCourseFragment"
@@ -99,4 +105,8 @@
         android:id="@+id/addExtraClassBottomSheet"
         android:name="com.github.rahul_gill.attendance.ui.details.AddExtraClassBottomSheet"
         android:label="AddExtraClassBottomSheet" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.github.rahul_gill.attendance.ui.settings.SettingsFragment"
+        android:label="SettingsFragment" />
 </navigation>

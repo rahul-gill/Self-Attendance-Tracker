@@ -13,9 +13,19 @@ import com.github.rahul_gill.attendance.util.dateFormatter
 import com.github.rahul_gill.attendance.util.getThemeColor
 import com.github.rahul_gill.attendance.util.timeFormatter
 
-class ExtraClassesAdapter : ListAdapter<ExtraClassDetails, ExtraClassesAdapter.VH>(DiffCallback) {
+class ExtraClassesAdapter(
+    val onClick: (ExtraClassDetails) -> Unit
+) : ListAdapter<ExtraClassDetails, ExtraClassesAdapter.VH>(DiffCallback) {
 
-    class VH(val binding: ExtraClassItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class VH(
+        val binding: ExtraClassItemBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
+
+        fun getItem(): ExtraClassDetails = getItem(adapterPosition)
+        init {
+            binding.root.setOnClickListener { onClick(getItem(adapterPosition)) }
+        }
+
         fun bind(item: ExtraClassDetails) {
             binding.apply {
                 date.text = item.date.format(dateFormatter)
@@ -40,6 +50,12 @@ class ExtraClassesAdapter : ListAdapter<ExtraClassDetails, ExtraClassesAdapter.V
                         }
                     )
                 )
+                statusText.text = when (item.classStatus) {
+                    CourseClassStatus.Present -> "P"
+                    CourseClassStatus.Absent -> "A"
+                    CourseClassStatus.Cancelled -> "C"
+                    CourseClassStatus.Unset -> "~"
+                }
             }
         }
     }

@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:paddingHorizontal="16dp"
     android:paddingBottom="16dp">
@@ -55,8 +56,22 @@
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end">
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/delete_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete Item"
+            tools:visibility="visible"
+            android:textColor="?attr/colorError"
+            style="?android:attr/buttonBarButtonStyle"
+            android:visibility="gone"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="0dp"/>
 
         <Button
             android:id="@+id/cancel_button"
@@ -65,7 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:text="@string/cancel"
-            android:textColor="?attr/colorError" />ma
+            android:textColor="?attr/colorError" />
 
         <Button
             android:id="@+id/done_button"

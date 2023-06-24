@@ -3,13 +3,10 @@ package com.github.rahul_gill.attendance.ui.details
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
-import android.widget.LinearLayout
-import androidx.core.view.updateLayoutParams
 import androidx.navigation.fragment.findNavController
 import com.github.rahul_gill.attendance.R
 import com.github.rahul_gill.attendance.databinding.AddExtraClassBottomSheetBinding
 import com.github.rahul_gill.attendance.ui.main.ZoomOutPageTransformer
-import com.github.rahul_gill.attendance.util.dpToPx
 import com.github.rahul_gill.attendance.util.viewBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.tabs.TabLayoutMediator

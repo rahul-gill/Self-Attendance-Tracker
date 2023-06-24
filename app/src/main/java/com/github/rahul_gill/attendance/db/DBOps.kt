@@ -4,6 +4,7 @@ import android.content.Context
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.github.rahul_gill.attendance.Database
@@ -120,6 +121,7 @@ class DBOps private constructor(
         }
     }
 
+
     fun getCoursesDetailsList(): Flow<List<CourseDetailsOverallItem>> {
         return queries.getCoursesDetailsList(
             mapper = { courseId, courseName, requiredAttendance, _, presents, absents, cancels ->
@@ -136,8 +138,13 @@ class DBOps private constructor(
         ).asFlow().mapToList(Dispatchers.IO)
     }
 
-    fun getCourseDetailsMore(courseId: Long) {
-        //TODO
+    fun getCourseAttendancePercentage(courseId: Long): Flow<AttendanceCounts> {
+        return queries.getCourseDetailsSingle(courseId, mapper = { presents, absents, cancels ->
+            AttendanceCounts(
+                if (absents + presents == 0L) 100.0 else 100.0 * presents / (presents + absents),
+                presents, absents, cancels
+            )
+        }).asFlow().mapToOne(Dispatchers.IO)
     }
 
     fun markAttendanceForScheduleClass(
@@ -178,6 +185,14 @@ class DBOps private constructor(
         CourseClassStatus.Unset
     )
 
+    fun deleteCourse(courseId: Long) = queries.deleteCourse(courseId)
+
+    fun deleteExtraClass(extraClassId: Long) = queries.deleteExtraClass(extraClassId)
+
+    fun getMarkedAttendancesForCourse(courseId: Long){
+        queries.markedAttendancesForCourse(courseId).asFlow().mapToList(Dispatchers.IO)
+    }
+
     companion object {
         @Volatile
         private var instance: DBOps? = null
@@ -196,3 +211,10 @@ class DBOps private constructor(
 
 
 }
+
+data class AttendanceCounts(
+    val percent: Double,
+    val present: Long,
+    val absents: Long,
+    val cancels: Long
+)

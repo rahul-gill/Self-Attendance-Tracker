@@ -1,16 +1,24 @@
 package com.github.rahul_gill.attendance.util
 
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
+import android.app.Activity
 import android.content.Context
+import android.os.Build
 import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowInsets
 import android.view.inputmethod.InputMethodManager
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
@@ -23,6 +31,12 @@ import kotlin.math.roundToInt
 fun Context.dpToPx(dp: Int): Int {
     val displayMetrics = resources.displayMetrics
     return (dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT)).roundToInt()
+}
+
+
+fun Context.spToPx(sp: Float): Float {
+    val displayMetrics = resources.displayMetrics
+    return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, displayMetrics)
 }
 
 @ColorInt
@@ -133,4 +147,59 @@ fun Fragment.enableSharedZAxisTransition() {
     returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
         duration = 300L
     }
+}
+
+fun TextView.textChangeWithBetterIndication(){
+    val initialTextSize = textSize
+    val animator = ValueAnimator.ofFloat(initialTextSize, initialTextSize * 1.5f, initialTextSize)
+    animator.duration = 400
+    animator.addUpdateListener {
+        setTextSize(TypedValue.COMPLEX_UNIT_PX, it.animatedValue as Float)
+    }
+    animator.start()
+}
+
+fun View.animateDropdown(activity: Activity, show: Boolean) {
+    if(show){
+        val screenWidth = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+            val windowMetrics = activity.windowManager.currentWindowMetrics
+            windowMetrics.bounds.width()
+        } else {
+            val metrics = DisplayMetrics()
+            activity.windowManager.defaultDisplay.getMetrics(metrics)
+            metrics.widthPixels
+        }
+        val heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        val widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(screenWidth, View.MeasureSpec.EXACTLY)
+        measure(widthMeasureSpec, heightMeasureSpec)
+        val heightAnimator = ValueAnimator.ofInt(0, measuredHeight)
+        isVisible = true
+        heightAnimator.duration = 300
+        heightAnimator.addUpdateListener { animator ->
+            val animatedValue = animator.animatedValue as Int
+            updateLayoutParams<LinearLayout.LayoutParams> {
+                height = animatedValue
+            }
+        }
+        heightAnimator.start()
+    } else {
+        val heightAnimator = ValueAnimator.ofInt(height, 0)
+        heightAnimator.duration = 300
+        heightAnimator.addUpdateListener { animator ->
+            val animatedValue = animator.animatedValue as Int
+            updateLayoutParams<LinearLayout.LayoutParams> {
+                height = animatedValue
+            }
+            if(animatedValue == 0)
+                isVisible = false
+        }
+        heightAnimator.start()
+    }
+}
+
+fun View.animateRotation(toDegree: Float) {
+    animate()
+        .rotation(toDegree)
+        .setDuration(300)
+        .setListener(null)
 }

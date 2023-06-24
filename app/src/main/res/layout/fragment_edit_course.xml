@@ -59,7 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:hint="New course name"
+                android:hint="New name for course"
                 android:id="@+id/course_name_text_input_layout"
                 app:endIconMode="clear_text">
 

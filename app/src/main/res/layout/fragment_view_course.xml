@@ -81,11 +81,28 @@
                     tools:text="50%"/>
             </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Weekly Schedule"
-                style="@style/TextAppearance.Material3.TitleLarge"/>
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="Weekly Schedule"
+                    style="@style/TextAppearance.Material3.TitleLarge"/>
+
+                <Button
+                    android:id="@+id/weekly_schedule_dropdown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="Add extra class"
+                    style="?attr/materialIconButtonStyle"
+                    app:icon="@drawable/baseline_keyboard_arrow_right_24"/>
+            </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/weekly_schedule_list"
@@ -93,12 +110,15 @@
                 android:layout_height="match_parent"
                 android:clipToPadding="true"
                 android:paddingHorizontal="4dp"
+                android:visibility="gone"
+                tools:visibility="visible"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 tools:itemCount="3"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/weekly_schedule_item">
             </androidx.recyclerview.widget.RecyclerView>
+
 
 
             <Button
@@ -111,58 +131,72 @@
                 app:icon="@drawable/baseline_add_24"/>
 
             <LinearLayout
-                android:id="@+id/extra_classes_header"
+                android:id="@+id/extra_classes_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:layout_marginTop="8dp">
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:text="Extra classes"
-                    android:layout_gravity="center_vertical"
-                    style="@style/TextAppearance.Material3.TitleLarge"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                <Button
-                    android:id="@+id/add_extra_class"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="Add extra class"
-                    style="?attr/materialIconButtonFilledTonalStyle"
-                    app:icon="@drawable/baseline_add_24"/>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="Extra classes"
+                        android:layout_gravity="center_vertical"
+                        style="@style/TextAppearance.Material3.TitleLarge"/>
+
+                    <Button
+                        android:id="@+id/add_extra_class"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="Add extra class"
+                        style="?attr/materialIconButtonFilledTonalStyle"
+                        app:icon="@drawable/baseline_add_24"/>
+
+
+                    <Button
+                        android:id="@+id/extra_class_dropdown"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="Add extra class"
+                        style="?attr/materialIconButtonStyle"
+                        app:icon="@drawable/baseline_keyboard_arrow_right_24"/>
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:id="@+id/extra_classes_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="true"
+                    android:paddingHorizontal="4dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    tools:itemCount="3"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/extra_class_item">
+                </androidx.recyclerview.widget.RecyclerView>
             </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/extra_classes_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="true"
-                android:paddingHorizontal="4dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                tools:itemCount="3"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/extra_class_item">
-            </androidx.recyclerview.widget.RecyclerView>
 
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="?attr/minTouchTargetSize"
                 android:text="Attendance Record"
                 android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
                 style="@style/TextAppearance.Material3.TitleLarge"/>
 
-            <CalendarView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:contentPadding="8dp"
-                android:layout_marginTop="8dp">
+                app:contentPadding="8dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -187,6 +221,14 @@
                         android:text="Cancelled classes: 10"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
+
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/calendar_view_pager"
+                android:layout_width="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_height="wrap_content"/>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
