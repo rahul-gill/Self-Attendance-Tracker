@@ -89,7 +89,7 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
 
     //sqldelight
-    implementation("app.cash.sqldelight:android-driver:2.0.0-alpha05")
+    implementation("app.cash.sqldelight:android-driver:2.0.0-rc02")
     implementation("app.cash.sqldelight:coroutines-extensions:2.0.0-alpha05")
     implementation("app.cash.sqldelight:primitive-adapters:2.0.0-alpha05")
 
