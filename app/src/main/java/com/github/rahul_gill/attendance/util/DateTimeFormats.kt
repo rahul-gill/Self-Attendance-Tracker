@@ -1,11 +1,14 @@
 package com.github.rahul_gill.attendance.util
 
+import com.github.rahul_gill.attendance.prefs.PreferenceManager
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm a")
+val timeFormatter: DateTimeFormatter
+    get() = DateTimeFormatter.ofPattern(PreferenceManager.defaultTimeFormatPref.value)
 
-val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMM, yyyy")
+val dateFormatter: DateTimeFormatter
+    get() = DateTimeFormatter.ofPattern(PreferenceManager.defaultDateFormatPref.value)
 
 fun formatWeek(startDate: LocalDate): String {
     val endDate = startDate.plusWeeks(1)

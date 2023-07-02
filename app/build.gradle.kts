@@ -20,12 +20,12 @@ sqldelight {
 
 android {
     namespace = "com.github.rahul_gill.attendance"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.github.rahul_gill.attendance"
         minSdk = 21
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0.0"
         vectorDrawables.useSupportLibrary = true
@@ -93,7 +93,12 @@ dependencies {
     implementation("app.cash.sqldelight:coroutines-extensions:2.0.0-alpha05")
     implementation("app.cash.sqldelight:primitive-adapters:2.0.0-alpha05")
 
-//    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.11")
+
+    implementation("com.russhwolf:multiplatform-settings-no-arg:1.0.0")
+    implementation("com.russhwolf:multiplatform-settings-coroutines:1.0.0")
+
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.0.3")
+
+    implementation(project(":appthemehelper"))
 }

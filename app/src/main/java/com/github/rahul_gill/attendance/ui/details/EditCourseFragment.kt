@@ -2,8 +2,10 @@ package com.github.rahul_gill.attendance.ui.details
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.core.view.size
 import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.github.rahul_gill.attendance.R
@@ -22,6 +24,8 @@ import com.github.rahul_gill.attendance.util.softKeyboardVisible
 import com.github.rahul_gill.attendance.util.timeFormatter
 import com.github.rahul_gill.attendance.util.viewBinding
 import com.google.android.material.chip.Chip
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class EditCourseFragment : BaseFragment(R.layout.fragment_edit_course) {
     private val binding by viewBinding(FragmentEditCourseBinding::bind)
@@ -30,8 +34,9 @@ class EditCourseFragment : BaseFragment(R.layout.fragment_edit_course) {
     private var courseName = savedStateOf("course_name", "")
     private var requiredAttendancePercentage = savedStateOf("required_attendance", 75)
     private var classesForTheCourse = savedStateOf("class_details", listOf<ClassDetail>())
-    private var extraClassesForTheCourse = savedStateOf("extra_class_details", listOf<ExtraClassDetails>())
     private var doneButtonBottom = 0
+
+    private var defaultListSchedule = listOf<ClassDetail>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,14 +46,27 @@ class EditCourseFragment : BaseFragment(R.layout.fragment_edit_course) {
             courseName.value = it.courseName
             requiredAttendancePercentage.value = it.requiredAttendance.toInt()
         }
-        classesForTheCourse.value = args.scheduleClasses.toList()
-        extraClassesForTheCourse.value = args.extraClasses.toList()
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.apply {
+            appbarLayout.isVisible = false
+            mainContent.isVisible = false
+            progressCircular.isVisible = true
+            doneButton.isVisible = false
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            defaultListSchedule = dbOps.getScheduleClassesForCourse(args.courseItem.courseId).first()
+            classesForTheCourse.value = defaultListSchedule
+            binding.apply {
+                appbarLayout.isVisible = true
+                mainContent.isVisible = true
+                progressCircular.isVisible = false
+                doneButton.isVisible = true
+            }
+        }
         //setup initial values
         binding.toolbar.title = "Edit details for ${courseName.value}"
         binding.courseName.setText(courseName.value)
@@ -110,7 +128,7 @@ class EditCourseFragment : BaseFragment(R.layout.fragment_edit_course) {
             }
         }
         binding.resetScheduleButton.setOnClickListener {
-            classesForTheCourse.value = args.scheduleClasses.toList()
+            classesForTheCourse.value = defaultListSchedule
         }
         binding.addClassButton.setOnClickListener {
             //Hacks

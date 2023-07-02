@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Attendance Tracker"
 include(":app")
+include(":appthemehelper")

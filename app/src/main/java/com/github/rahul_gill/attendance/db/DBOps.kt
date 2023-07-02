@@ -12,6 +12,7 @@ import com.github.rahul_gill.attendance.ui.create.ClassDetail
 import com.github.rahul_gill.attendance.ui.details.ExtraClassTimings
 import com.github.rahulgill.attendance.Attendance
 import com.github.rahulgill.attendance.ExtraClasses
+import com.github.rahulgill.attendance.MarkedAttendancesForCourse
 import com.github.rahulgill.attendance.Schedule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -21,24 +22,27 @@ import java.time.LocalDate
 fun getAndroidSqliteDriver(context: Context) =
     AndroidSqliteDriver(Database.Schema, context, "app.db")
 
-fun getSqliteDB(driver: SqlDriver) = Database(
-    driver = driver,
-    AttendanceAdapter = Attendance.Adapter(
-        classStatusAdapter = EnumColumnAdapter(),
-        dateAdapter = LocalDateAdapter
-    ),
-    ScheduleAdapter = Schedule.Adapter(
-        weekdayAdapter = DayOfWeekAdapter,
-        startTimeAdapter = LocalTimeAdapter,
-        endTimeAdapter = LocalTimeAdapter
-    ),
-    ExtraClassesAdapter = ExtraClasses.Adapter(
-        dateAdapter = LocalDateAdapter,
-        startTimeAdapter = LocalTimeAdapter,
-        endTimeAdapter = LocalTimeAdapter,
-        classStatusAdapter = EnumColumnAdapter()
+fun getSqliteDB(driver: SqlDriver): Database {
+    val enumAdapter = EnumColumnAdapter<CourseClassStatus>()
+    return Database(
+        driver = driver,
+        AttendanceAdapter = Attendance.Adapter(
+            classStatusAdapter = enumAdapter,
+            dateAdapter = LocalDateAdapter
+        ),
+        ScheduleAdapter = Schedule.Adapter(
+            weekdayAdapter = DayOfWeekAdapter,
+            startTimeAdapter = LocalTimeAdapter,
+            endTimeAdapter = LocalTimeAdapter
+        ),
+        ExtraClassesAdapter = ExtraClasses.Adapter(
+            dateAdapter = LocalDateAdapter,
+            startTimeAdapter = LocalTimeAdapter,
+            endTimeAdapter = LocalTimeAdapter,
+            classStatusAdapter = enumAdapter
+        )
     )
-)
+}
 
 class DBOps private constructor(
     driver: SqlDriver
@@ -139,10 +143,10 @@ class DBOps private constructor(
     }
 
     fun getCourseAttendancePercentage(courseId: Long): Flow<AttendanceCounts> {
-        return queries.getCourseDetailsSingle(courseId, mapper = { presents, absents, cancels ->
+        return queries.getCourseDetailsSingle(courseId, mapper = { presents, absents, cancels, requiredPercentage ->
             AttendanceCounts(
                 if (absents + presents == 0L) 100.0 else 100.0 * presents / (presents + absents),
-                presents, absents, cancels
+                presents, absents, cancels, requiredPercentage
             )
         }).asFlow().mapToOne(Dispatchers.IO)
     }
@@ -189,8 +193,8 @@ class DBOps private constructor(
 
     fun deleteExtraClass(extraClassId: Long) = queries.deleteExtraClass(extraClassId)
 
-    fun getMarkedAttendancesForCourse(courseId: Long){
-        queries.markedAttendancesForCourse(courseId).asFlow().mapToList(Dispatchers.IO)
+    fun getMarkedAttendancesForCourse(courseId: Long): Flow<List<MarkedAttendancesForCourse>> {
+        return queries.markedAttendancesForCourse(courseId).asFlow().mapToList(Dispatchers.IO)
     }
 
     companion object {
@@ -216,5 +220,6 @@ data class AttendanceCounts(
     val percent: Double,
     val present: Long,
     val absents: Long,
-    val cancels: Long
+    val cancels: Long,
+    val requiredPercentage: Double
 )

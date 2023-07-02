@@ -31,6 +31,7 @@
     <string name="theming_category_title">Theming</string>
     <string name="default_main_pager_tab_key"  translatable="false">default_main_pager_tab</string>
     <string name="default_main_page_tab_title">Default Main Page Tab</string>
+    <string name="settings">Settings</string>
 
 
     <string-array name="theme_entries"  translatable="false">

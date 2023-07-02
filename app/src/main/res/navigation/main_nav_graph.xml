@@ -83,6 +83,9 @@
         <action
             android:id="@+id/toClassStatusSetterBottomSheetFromViewCourse"
             app:destination="@id/classStatusSetterBottomSheet" />
+        <action
+            android:id="@+id/to_classStatusSetterBottomSheet"
+            app:destination="@id/classStatusSetterBottomSheet" />
     </fragment>
     <fragment
         android:id="@+id/editCourseFragment"
@@ -94,12 +97,6 @@
         <action
             android:id="@+id/toAddCourseClassBottomSheet"
             app:destination="@id/addCourseClassBottomSheet" />
-        <argument
-            android:name="scheduleClasses"
-            app:argType="com.github.rahul_gill.attendance.ui.create.ClassDetail[]" />
-        <argument
-            android:name="extraClasses"
-            app:argType="com.github.rahul_gill.attendance.db.ExtraClassDetails[]" />
     </fragment>
     <dialog
         android:id="@+id/addExtraClassBottomSheet"

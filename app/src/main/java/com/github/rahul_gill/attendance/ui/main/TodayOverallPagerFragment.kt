@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.github.rahul_gill.attendance.R
 import com.github.rahul_gill.attendance.databinding.FragmentTodayOverallPagerBinding
+import com.github.rahul_gill.attendance.prefs.PreferenceManager
 import com.github.rahul_gill.attendance.util.enableSystemBarsInsetsCallback
 import com.github.rahul_gill.attendance.util.enableSharedZAxisTransition
 import com.github.rahul_gill.attendance.util.viewBinding
@@ -38,6 +39,8 @@ class TodayOverallPagerFragment : Fragment(R.layout.fragment_today_overall_pager
             TabLayoutMediator(tabLayout, pager) { tab, position ->
                 tab.text = if (position == 0) "Today" else "Overall"
             }.attach()
+
+            tabLayout.selectTab(tabLayout.getTabAt(PreferenceManager.defaultHomeTabPref.value.toInt()))
 
             createCourseButton.enableSystemBarsInsetsCallback(originalRightMarginDp = 16, originalBottomMarginDp = 16)
             createCourseButton.setOnClickListener {
