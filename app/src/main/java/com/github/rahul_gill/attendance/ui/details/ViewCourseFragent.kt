@@ -37,7 +37,7 @@ class ViewCourseFragment : Fragment(R.layout.fragment_view_course_paged) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
-
+        binding.toolbar.title = args.courseItem.courseName
         binding.toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.edit_course_details -> {
