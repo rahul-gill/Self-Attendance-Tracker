@@ -19,10 +19,13 @@ jobs:
         run: chmod +x ./gradlew
       - name: Build Debug and Release APK
         run: ./gradlew assembleDebug assembleRelease
-      - name: Ouput debug and release apks
+      - name: Output debug apk
         uses: actions/upload-artifact@v3
         with:
           name: debug-apk
           path: app/build/outputs/apk/debug/*.apk
+      - name: Output release apks
+        uses: actions/upload-artifact@v3
+        with:
           name: release-apk
           path: app/build/outputs/apk/release/*.apk
