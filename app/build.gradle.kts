@@ -53,8 +53,8 @@ android {
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        targetCompatibility = JavaVersion.VERSION_17
-        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
