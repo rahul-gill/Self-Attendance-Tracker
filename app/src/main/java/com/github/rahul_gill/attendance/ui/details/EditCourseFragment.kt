@@ -57,7 +57,8 @@ class EditCourseFragment : BaseFragment(R.layout.fragment_edit_course) {
             doneButton.isVisible = false
         }
         viewLifecycleOwner.lifecycleScope.launch {
-            defaultListSchedule = dbOps.getScheduleClassesForCourse(args.courseItem.courseId).first()
+            defaultListSchedule =
+                dbOps.getScheduleClassesForCourse(args.courseItem.courseId).first()
             classesForTheCourse.value = defaultListSchedule
             binding.apply {
                 appbarLayout.isVisible = true
@@ -67,9 +68,12 @@ class EditCourseFragment : BaseFragment(R.layout.fragment_edit_course) {
             }
         }
         //setup initial values
-        binding.toolbar.title = "Edit details for ${courseName.value}"
+        binding.toolbar.title = getString(R.string.edit_course_screen_title, courseName.value)
         binding.courseName.setText(courseName.value)
-        binding.courseNameTextInputLayout.helperText = "Previous name: ${args.courseItem.courseName}"
+        binding.courseNameTextInputLayout.helperText = getString(
+            R.string.previous_course_name,
+            args.courseItem.courseName
+        )
         binding.requiredPercentageSlider.value = requiredAttendancePercentage.value.toFloat()
 
 
@@ -83,13 +87,16 @@ class EditCourseFragment : BaseFragment(R.layout.fragment_edit_course) {
         binding.requiredPercentageSlider.addOnChangeListener { _, value, _ ->
             requiredAttendancePercentage.value = value.toInt()
         }
-        binding.requiredAttendanceOriginalText.text = "Previous value:: %d%%".format(args.courseItem.requiredAttendance.toInt())
+        binding.requiredAttendanceOriginalText.text = getString(
+            R.string.previous_value_int_percentage,
+            args.courseItem.requiredAttendance.toInt()
+        )
 
         binding.doneButton.enableSystemBarsInsetsCallback(
             originalRightMarginDp = 16,
             originalBottomMarginDp = 16
         )
-        enableViewAboveKeyboardWithAnimationCallback(binding.doneButton){ doneButtonBottom = it }
+        enableViewAboveKeyboardWithAnimationCallback(binding.doneButton) { doneButtonBottom = it }
         binding.doneButton.setOnClickListener {
             if (courseName.value.isBlank()) {
                 showSnackBarWithDismissButton(
@@ -108,16 +115,22 @@ class EditCourseFragment : BaseFragment(R.layout.fragment_edit_course) {
             saveCreatedCourseToDB()
             findNavController().navigateUp()
         }
-        requiredAttendancePercentage.observe(viewLifecycleOwner) {newValue ->
-            binding.requiredAttendanceText.text = "Required Attendance updated: %d%%".format(newValue)
+        requiredAttendancePercentage.observe(viewLifecycleOwner) { newValue ->
+            binding.requiredAttendanceText.text = getString(
+                R.string.required_attendance_updated_int_percentage,
+                newValue
+            )
         }
 
         classesForTheCourse.observe(viewLifecycleOwner) { list ->
             binding.scheduleItemsGroup.removeAllViews()
             list.forEachIndexed { index, it ->
-                val title = "${it.dayOfWeek.name}; ${it.startTime.format(timeFormatter)} to ${
+                val title = getString(
+                    R.string.schedule_class_weekday_and_start_end_time,
+                    it.dayOfWeek.name,
+                    it.startTime.format(timeFormatter),
                     it.endTime.format(timeFormatter)
-                }"
+                )
                 addChipToGroup(
                     title = title,
                     onCloseIconClick = {
@@ -131,7 +144,7 @@ class EditCourseFragment : BaseFragment(R.layout.fragment_edit_course) {
         }
         binding.addClassButton.setOnClickListener {
             //Hacks
-            if(softKeyboardVisible(it)){
+            if (softKeyboardVisible(it)) {
                 binding.doneButton.bottom = doneButtonBottom
             }
             findNavController().navigate(EditCourseFragmentDirections.toAddCourseClassBottomSheet())
@@ -156,7 +169,7 @@ class EditCourseFragment : BaseFragment(R.layout.fragment_edit_course) {
     }
 
 
-    private fun saveCreatedCourseToDB(){
+    private fun saveCreatedCourseToDB() {
         dbOps.createCourse(
             name = courseName.value,
             requiredAttendancePercentage = requiredAttendancePercentage.value.toDouble(),

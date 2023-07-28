@@ -105,4 +105,9 @@
     <string name="presents_count">Presents: %1$d</string>
     <string name="absents_count">Absents: %1$d</string>
     <string name="cancelled_classes_count">Cancelled classes: %1$d</string>
+
+    <string name="edit_course_screen_title">Edit details for %1$s</string>
+    <string name="previous_course_name">Previous name: %1$s</string>
+    <string name="previous_value_int_percentage">Previous value:: %d%%</string>
+    <string name="required_attendance_updated_int_percentage">Required Attendance updated: %d%%</string>
 </resources>
