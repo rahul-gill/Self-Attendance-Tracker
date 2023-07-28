@@ -46,11 +46,8 @@ class AddCourseClassBottomSheet : BottomSheetDialogFragment(R.layout.add_class_b
             )
             pager.setPageTransformer(ZoomOutPageTransformer())
             TabLayoutMediator(tabLayout, pager) { tab, position ->
-                tab.text = when (position) {
-                    0 -> "Weekday"
-                    1 -> "Start Time"
-                    else -> "End Time"
-                }
+                tab.text =
+                    resources.getStringArray(R.array.add_schedule_class_bottom_sheet_tabs)[position]
             }.attach()
             cancelButton.setOnClickListener {
                 findNavController().navigateUp()
@@ -59,11 +56,16 @@ class AddCourseClassBottomSheet : BottomSheetDialogFragment(R.layout.add_class_b
                 findNavController()
                     .previousBackStackEntry
                     ?.savedStateHandle
-                    ?.set("course_key",AddCourseBottomSheetResult(result, itemToUpdateIndex))
+                    ?.set(COURSE_KEY, AddCourseBottomSheetResult(result, itemToUpdateIndex))
                 findNavController().navigateUp()
             }
         }
     }
+
+    companion object {
+        const val COURSE_KEY = "course_key"
+    }
+
 }
 
 @Parcelize

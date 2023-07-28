@@ -1,6 +1,5 @@
 package com.github.rahul_gill.attendance.util
 
-import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.app.Activity
 import android.content.Context
@@ -9,7 +8,6 @@ import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowInsets
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -149,7 +147,7 @@ fun Fragment.enableSharedZAxisTransition() {
     }
 }
 
-fun TextView.textChangeWithBetterIndication(){
+fun TextView.textChangeWithBetterIndication() {
     val initialTextSize = textSize
     val animator = ValueAnimator.ofFloat(initialTextSize, initialTextSize * 1.5f, initialTextSize)
     animator.duration = 400
@@ -160,8 +158,8 @@ fun TextView.textChangeWithBetterIndication(){
 }
 
 fun View.animateDropdown(activity: Activity, show: Boolean) {
-    if(show){
-        val screenWidth = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+    if (show) {
+        val screenWidth = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val windowMetrics = activity.windowManager.currentWindowMetrics
             windowMetrics.bounds.width()
         } else {
@@ -170,7 +168,8 @@ fun View.animateDropdown(activity: Activity, show: Boolean) {
             metrics.widthPixels
         }
         val heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-        val widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(screenWidth, View.MeasureSpec.EXACTLY)
+        val widthMeasureSpec =
+            View.MeasureSpec.makeMeasureSpec(screenWidth, View.MeasureSpec.EXACTLY)
         measure(widthMeasureSpec, heightMeasureSpec)
         val heightAnimator = ValueAnimator.ofInt(0, measuredHeight)
         isVisible = true
@@ -190,7 +189,7 @@ fun View.animateDropdown(activity: Activity, show: Boolean) {
             updateLayoutParams<LinearLayout.LayoutParams> {
                 height = animatedValue
             }
-            if(animatedValue == 0)
+            if (animatedValue == 0)
                 isVisible = false
         }
         heightAnimator.start()

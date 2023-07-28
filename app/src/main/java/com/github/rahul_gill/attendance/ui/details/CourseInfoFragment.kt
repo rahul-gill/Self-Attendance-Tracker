@@ -39,11 +39,11 @@ class CourseInfoFragment : Fragment(R.layout.fragment_course_info) {
             dbOps.getCourseAttendancePercentage(courseId)
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
                 .collect { (percent, presents, absents, cancels, requiredPercentage) ->
-                    binding.currentAttendance.text = "%.2f%%".format(percent)
-                    binding.requiredAttendance.text = "%.2f%%".format(requiredPercentage)
-                    binding.presentsText.text = "Presents: $presents"
-                    binding.absentsText.text = "Absents: $absents"
-                    binding.cancelsText.text = "Cancelled classes: $cancels"
+                    binding.currentAttendance.text = getString(R.string.double_repr, percent)
+                    binding.requiredAttendance.text = getString(R.string.double_repr, requiredPercentage)
+                    binding.presentsText.text = getString(R.string.presents_count, presents)
+                    binding.absentsText.text = getString(R.string.absents_count, absents)
+                    binding.cancelsText.text = getString(R.string.cancelled_classes_count, cancels)
                     binding.currentAttendance.setTextColor(
                         requireContext().getThemeColor(
                             if (requiredPercentage <= percent)

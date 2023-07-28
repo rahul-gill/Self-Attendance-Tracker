@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.github.rahul_gill.attendance.R
 import com.github.rahul_gill.attendance.databinding.WeeklyScheduleItemBinding
 import com.github.rahul_gill.attendance.ui.create.ClassDetail
 import com.github.rahul_gill.attendance.util.timeFormatter
@@ -15,7 +16,11 @@ class ScheduleClassesAdapter : ListAdapter<ClassDetail, ScheduleClassesAdapter.V
         fun bind(item: ClassDetail) {
             binding.apply {
                 weekday.text = item.dayOfWeek.name
-                timings.text = "${item.startTime.format(timeFormatter)} to ${item.endTime.format(timeFormatter)}"
+                timings.text = root.context.getString(
+                    R.string.time_range,
+                    item.startTime.format(timeFormatter),
+                    item.endTime.format(timeFormatter)
+                )
             }
         }
     }

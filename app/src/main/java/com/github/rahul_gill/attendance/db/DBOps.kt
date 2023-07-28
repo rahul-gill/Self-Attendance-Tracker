@@ -71,32 +71,6 @@ class DBOps private constructor(
         }
     }
 
-    /**
-     * null means not to update
-     */
-    fun updateCourse(
-        courseId: Long,
-        name: String? = null,
-        requiredAttendancePercentage: Double? = null,
-        schedule: List<ClassDetail>? = null,
-    ) {
-        db.transactionWithResult {
-            //TODO
-        }
-    }
-
-    fun getCourseListForToday() = queries.getCourseListForToday(
-        mapper = { scheduleId, courseName, startTime, endTime, classStatus ->
-            TodayCourseItem(
-                scheduleId,
-                courseName,
-                startTime,
-                endTime,
-                CourseClassStatus.fromString(classStatus)
-            )
-        }
-    ).asFlow().mapToList(Dispatchers.IO)
-
     fun getScheduleAndExtraClassesForToday(): Flow<List<TodayCourseItem>> {
         val scheduleClassesFlow = queries.getCourseListForToday(
             mapper = { scheduleId, courseName, startTime, endTime, classStatus ->
@@ -143,12 +117,14 @@ class DBOps private constructor(
     }
 
     fun getCourseAttendancePercentage(courseId: Long): Flow<AttendanceCounts> {
-        return queries.getCourseDetailsSingle(courseId, mapper = { presents, absents, cancels, requiredPercentage ->
-            AttendanceCounts(
-                if (absents + presents == 0L) 100.0 else 100.0 * presents / (presents + absents),
-                presents, absents, cancels, requiredPercentage
-            )
-        }).asFlow().mapToOne(Dispatchers.IO)
+        return queries.getCourseDetailsSingle(
+            courseId,
+            mapper = { presents, absents, cancels, requiredPercentage ->
+                AttendanceCounts(
+                    if (absents + presents == 0L) 100.0 else 100.0 * presents / (presents + absents),
+                    presents, absents, cancels, requiredPercentage
+                )
+            }).asFlow().mapToOne(Dispatchers.IO)
     }
 
     fun markAttendanceForScheduleClass(

@@ -2,7 +2,6 @@ package com.github.rahul_gill.attendance.ui.main
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.github.rahul_gill.attendance.R
@@ -23,11 +22,19 @@ class ClassStatusSetterBottomSheet :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.infoText.text = "Set Attendance Status for ${args.todayItem.courseName}\n" +
-                "from ${args.todayItem.startTime.format(timeFormatter)} to ${args.todayItem.endTime.format(timeFormatter)}"+
-                if(args.todayItem.isExtraClass) "(Extra class)" else "" +
-                if(args.todayItem.date != null) " on " + args.todayItem.date!!.format(dateFormatter) else ""
+        binding.infoText.text = getString(
+            R.string.attendance_status_setter_info,
+            args.todayItem.courseName,
+            args.todayItem.startTime.format(timeFormatter),
+            args.todayItem.endTime.format(timeFormatter),
+            if (args.todayItem.isExtraClass)
+                getString(R.string.attendance_status_setter_info_extra_class)
+            else "",
+            if (args.todayItem.date != null)
+                getString(R.string.attendance_status_setter_info_on_date,
+                    args.todayItem.date!!.format(dateFormatter))
+            else ""
+        )
         binding.cancelButton.setOnClickListener {
             findNavController().navigateUp()
         }
@@ -43,13 +50,13 @@ class ClassStatusSetterBottomSheet :
             findNavController().navigateUp()
         }
         binding.doneButton.setOnClickListener {
-            val classStatus  = when (binding.radioGroup.checkedRadioButtonId) {
+            val classStatus = when (binding.radioGroup.checkedRadioButtonId) {
                 R.id.present -> CourseClassStatus.Present
                 R.id.absent -> CourseClassStatus.Absent
                 R.id.cancelled -> CourseClassStatus.Cancelled
                 else -> CourseClassStatus.Unset
             }
-            if(args.todayItem.isExtraClass)
+            if (args.todayItem.isExtraClass)
                 dbOps.markAttendanceForExtraClass(
                     args.todayItem.scheduleIdOrExtraClassId,
                     classStatus

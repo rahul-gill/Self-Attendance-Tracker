@@ -7,15 +7,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.github.rahul_gill.attendance.R
 import com.github.rahul_gill.attendance.databinding.FragmentAttendanceRecordBinding
 import com.github.rahul_gill.attendance.db.DBOps
 import com.github.rahul_gill.attendance.db.TodayCourseItem
 import com.github.rahul_gill.attendance.ui.details.sticky.AttendanceRecordRecyclerViewAdapter
 import com.github.rahul_gill.attendance.ui.details.sticky.StickyHeaderItemDecoration
-import com.github.rahul_gill.attendance.ui.main.TodayOverallPagerFragmentDirections
-import com.github.rahul_gill.attendance.util.dateFormatter
 import com.github.rahul_gill.attendance.util.viewBinding
 import kotlinx.coroutines.launch
 

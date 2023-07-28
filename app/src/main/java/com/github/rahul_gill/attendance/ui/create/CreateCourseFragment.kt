@@ -50,7 +50,7 @@ class CreateCourseFragment : BaseFragment(R.layout.fragment_create_course) {
             originalRightMarginDp = 16,
             originalBottomMarginDp = 16
         )
-        enableViewAboveKeyboardWithAnimationCallback(binding.doneButton){ doneButtonBottom = it }
+        enableViewAboveKeyboardWithAnimationCallback(binding.doneButton) { doneButtonBottom = it }
         binding.doneButton.setOnClickListener {
             if (courseName.value.isBlank()) {
                 showSnackBarWithDismissButton(
@@ -70,16 +70,19 @@ class CreateCourseFragment : BaseFragment(R.layout.fragment_create_course) {
             findNavController().navigateUp()
         }
         requiredAttendancePercentage.observe(viewLifecycleOwner) {
-            binding.requiredAttendanceText.text = "Required Attendance: $it"
+            binding.requiredAttendanceText.text =
+                getString(R.string.required_percentage_detail, it)
         }
         classesForTheCourse.observe(viewLifecycleOwner) { list ->
             binding.scheduleItemsGroup.removeAllViews()
             list.forEachIndexed { index, it ->
-                val title = "${it.dayOfWeek.name}; ${it.startTime.format(timeFormatter)} to ${
-                    it.endTime.format(timeFormatter)
-                }"
                 addChipToGroup(
-                    title = title,
+                    title = getString(
+                        R.string.schedule_class_weekday_and_start_end_time,
+                        it.dayOfWeek.name,
+                        it.startTime.format(timeFormatter),
+                        it.endTime.format(timeFormatter)
+                    ),
                     onCloseIconClick = {
                         classesForTheCourse.value = list.toMutableList().apply { removeAt(index) }
                     },
@@ -98,7 +101,7 @@ class CreateCourseFragment : BaseFragment(R.layout.fragment_create_course) {
         }
         binding.addClassButton.setOnClickListener {
             //Hacks
-            if(softKeyboardVisible(it)){
+            if (softKeyboardVisible(it)) {
                 binding.doneButton.bottom = doneButtonBottom
             }
             findNavController().navigate(CreateCourseFragmentDirections.toAddCourseClassBottomSheet())
@@ -107,7 +110,7 @@ class CreateCourseFragment : BaseFragment(R.layout.fragment_create_course) {
         findNavController()
             .currentBackStackEntry
             ?.savedStateHandle
-            ?.getLiveData<AddCourseBottomSheetResult>("course_key")
+            ?.getLiveData<AddCourseBottomSheetResult>(AddCourseClassBottomSheet.COURSE_KEY)
             ?.observe(viewLifecycleOwner) { (result, itemToUpdateIndex) ->
                 if (itemToUpdateIndex != -1) {
                     classesForTheCourse.value = classesForTheCourse.value
@@ -123,7 +126,7 @@ class CreateCourseFragment : BaseFragment(R.layout.fragment_create_course) {
     }
 
 
-    private fun saveCreatedCourseToDB(){
+    private fun saveCreatedCourseToDB() {
         dbOps.createCourse(
             name = courseName.value,
             requiredAttendancePercentage = requiredAttendancePercentage.value.toDouble(),

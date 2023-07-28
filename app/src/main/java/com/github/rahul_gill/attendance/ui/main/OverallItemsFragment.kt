@@ -2,7 +2,6 @@ package com.github.rahul_gill.attendance.ui.main
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -36,12 +35,11 @@ class OverallItemsFragment : Fragment(R.layout.fragment_overall_items) {
         viewLifecycleOwner.lifecycleScope.launch {
             dbOps.getCoursesDetailsList()
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-                .collect { items  ->
-                    if(items.isEmpty()){
+                .collect { items ->
+                    if (items.isEmpty()) {
                         binding.recyclerView.isVisible = false
                         binding.noItemMessage.isVisible = true
-                    }
-                    else{
+                    } else {
                         binding.recyclerView.isVisible = true
                         binding.noItemMessage.isVisible = false
                     }

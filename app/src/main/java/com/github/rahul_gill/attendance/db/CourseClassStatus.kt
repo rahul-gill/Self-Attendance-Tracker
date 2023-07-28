@@ -20,7 +20,7 @@ enum class CourseClassStatus {
             "Absent" -> Absent
             "Cancelled" -> Cancelled
             "Unset" -> Unset
-            else -> throw IllegalArgumentException("Status can only be either one of these: Present, Absent, Cancelled")
+            else -> throw IllegalArgumentException("Status can only be either one of these: Present, Absent, Cancelled, Unset")
         }
     }
 }

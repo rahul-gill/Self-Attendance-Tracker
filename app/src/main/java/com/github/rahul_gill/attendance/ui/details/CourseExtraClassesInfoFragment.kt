@@ -78,7 +78,7 @@ class CourseExtraClassesInfoFragment: Fragment(R.layout.fragment_course_extra_cl
         findNavController()
             .currentBackStackEntry
             ?.savedStateHandle
-            ?.getLiveData<ExtraClassTimings>("extra_class_key")
+            ?.getLiveData<ExtraClassTimings>(AddExtraClassBottomSheet.EXTRA_CLASS_KEY)
             ?.observe(viewLifecycleOwner) { extraClassesDetails ->
                 dbOps.createExtraClasses(courseId, extraClassesDetails)
             }
@@ -94,17 +94,13 @@ class CourseExtraClassesInfoFragment: Fragment(R.layout.fragment_course_extra_cl
                 requireContext(),
                 R.style.ThemeOverlay_App_MaterialAlertDialogError
             )
-                .setTitle("Delete extra class?")
+                .setTitle(getString(R.string.delete_extra_class_dialog_title))
                 .setMessage(
-                    "Do you really want to delete the extra class on ${
-                        toDelete.date.format(
-                            dateFormatter
-                        )
-                    } from ${toDelete.startTime.format(timeFormatter)} to ${
-                        toDelete.endTime.format(
-                            timeFormatter
-                        )
-                    }"
+                    getString(R.string.delete_extra_class_dialog_description,
+                        toDelete.date.format(dateFormatter),
+                        toDelete.startTime.format(timeFormatter),
+                        toDelete.endTime.format(timeFormatter)
+                    )
                 )
                 .setIcon(R.drawable.baseline_warning_24)
                 .setNegativeButton(R.string.cancel) { dialog, _ ->

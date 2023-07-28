@@ -29,7 +29,7 @@ class ExtraClassesAdapter(
         fun bind(item: ExtraClassDetails) {
             binding.apply {
                 date.text = item.date.format(dateFormatter)
-                timings.text = "${item.startTime.format(timeFormatter)} to ${item.endTime.format(timeFormatter)}"
+                timings.text = root.context.getString(R.string.time_range, item.startTime.format(timeFormatter), item.endTime.format(timeFormatter))
                 statusCard.setCardBackgroundColor(
                     binding.root.context.getThemeColor(
                         when (item.classStatus) {

@@ -2,7 +2,6 @@ package com.github.rahul_gill.attendance
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.navigation.fragment.NavHostFragment
 

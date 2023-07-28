@@ -56,5 +56,6 @@ open class BaseFragment(@LayoutRes contentLayoutId: Int) : Fragment(contentLayou
     }
 
 
-    protected fun <T> savedStateOf(key: String, defaultValue: T) = SavableMutableLiveData(savable, key, defaultValue)
+    protected fun <T> savedStateOf(key: String, defaultValue: T) =
+        SavableMutableLiveData(savable, key, defaultValue)
 }

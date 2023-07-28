@@ -12,11 +12,10 @@ class WeekDayPickerVH(
     onSetWeekDay: (DayOfWeek) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
     init {
-        binding.root.layoutParams =
-            FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
-            )
+        binding.root.layoutParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        )
         binding.radioGroup.check(
             when (initialWeekday) {
                 DayOfWeek.MONDAY -> R.id.monday

@@ -22,8 +22,10 @@ class TodayItemsFragment : Fragment(R.layout.fragment_today_items) {
         super.onViewCreated(view, savedInstanceState)
 
         val adapter = TodayItemsRecyclerViewAdapter(
-            onClick = { todayItem  ->
-                findNavController().navigate(TodayOverallPagerFragmentDirections.toClassStatusSetterBottomSheet(todayItem))
+            onClick = { todayItem ->
+                findNavController().navigate(
+                    TodayOverallPagerFragmentDirections.toClassStatusSetterBottomSheet(todayItem)
+                )
             }
         )
         binding.recyclerView.adapter = adapter
@@ -31,12 +33,11 @@ class TodayItemsFragment : Fragment(R.layout.fragment_today_items) {
         viewLifecycleOwner.lifecycleScope.launch {
             dbOps.getScheduleAndExtraClassesForToday()
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-                .collect { items  ->
-                    if(items.isEmpty()){
+                .collect { items ->
+                    if (items.isEmpty()) {
                         binding.recyclerView.isVisible = false
                         binding.noItemMessage.isVisible = true
-                    }
-                    else{
+                    } else {
                         binding.recyclerView.isVisible = true
                         binding.noItemMessage.isVisible = false
                     }

@@ -37,7 +37,7 @@ class TodayOverallPagerFragment : Fragment(R.layout.fragment_today_overall_pager
                 lifecycle = lifecycle
             )
             TabLayoutMediator(tabLayout, pager) { tab, position ->
-                tab.text = if (position == 0) "Today" else "Overall"
+                tab.text = resources.getStringArray(R.array.default_main_pager_tab_entries_values)[position]
             }.attach()
 
             tabLayout.selectTab(tabLayout.getTabAt(PreferenceManager.defaultHomeTabPref.value.toInt()))

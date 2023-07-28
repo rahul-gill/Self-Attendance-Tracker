@@ -1,5 +1,6 @@
 package com.github.rahul_gill.attendance.ui.details.sticky
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -31,7 +32,10 @@ class AttendanceRecordRecyclerViewAdapter(
             root.setOnClickListener {
                 onItemClick(details)
             }
-            classType.text = if(details.isExtraCLass == 0L) "Scheduled Class" else "Extra Class"
+            classType.text = root.context.getString(
+                if(details.isExtraCLass == 0L) R.string.scheduled_class
+                else R.string.extra_class
+            )
 
             startTime.text = details.startTime.format(timeFormatter)
             endTime.text = details.endTime.format(timeFormatter)
@@ -90,6 +94,7 @@ class AttendanceRecordRecyclerViewAdapter(
         else 0
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun submitList(
         items: List<MarkedAttendancesForCourse>
     ){

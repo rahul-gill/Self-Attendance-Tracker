@@ -2,10 +2,8 @@ package com.github.rahul_gill.attendance.ui.create
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.FrameLayout.LayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.github.rahul_gill.attendance.R
 import com.github.rahul_gill.attendance.databinding.TimeChooserBinding
 import com.github.rahul_gill.attendance.databinding.WeekdayChooserBinding
 import com.github.rahul_gill.attendance.ui.common.TimePickerVH

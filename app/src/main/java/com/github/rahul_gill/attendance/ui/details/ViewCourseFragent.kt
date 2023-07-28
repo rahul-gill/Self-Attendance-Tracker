@@ -10,7 +10,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.github.rahul_gill.attendance.R
 import com.github.rahul_gill.attendance.databinding.FragmentViewCoursePagedBinding
 import com.github.rahul_gill.attendance.db.DBOps
-import com.github.rahul_gill.attendance.db.TodayCourseItem
 import com.github.rahul_gill.attendance.util.enableSharedZAxisTransition
 import com.github.rahul_gill.attendance.util.getThemeColor
 import com.github.rahul_gill.attendance.util.viewBinding
@@ -52,8 +51,13 @@ class ViewCourseFragment : Fragment(R.layout.fragment_view_course_paged) {
                         requireContext(),
                         R.style.ThemeOverlay_App_MaterialAlertDialogError
                     )
-                        .setTitle("Delete course: ${args.courseItem.courseName}?")
-                        .setMessage("Do you really want to delete this course item? You'll lose all the data associated with this course.")
+                        .setTitle(
+                            getString(
+                                R.string.delete_course_dialog_title,
+                                args.courseItem.courseName
+                            )
+                        )
+                        .setMessage(getString(R.string.delete_course_dialog_description))
                         .setIcon(R.drawable.baseline_warning_24)
                         .setNegativeButton(R.string.cancel) { dialog, _ ->
                             dialog.dismiss()
@@ -71,24 +75,28 @@ class ViewCourseFragment : Fragment(R.layout.fragment_view_course_paged) {
         }
         binding.viewPager.adapter = object : FragmentStateAdapter(requireActivity()) {
 
-            override fun getItemCount(): Int  = 3
+            override fun getItemCount(): Int = 3
 
             override fun createFragment(position: Int): Fragment {
                 return when (position) {
                     0 -> CourseInfoFragment.create(args.courseItem.courseId)
 
                     1 -> CourseExtraClassesInfoFragment.create(
-                            args.courseItem.courseId,
-                            args.courseItem.courseName
-                        )
+                        args.courseItem.courseId,
+                        args.courseItem.courseName
+                    )
+
                     else -> {
                         val fragment = AttendanceRecordFragment.create(
                             args.courseItem.courseId,
-                            args.courseItem.courseName)
-                        (fragment as OnAttendanceRecordClickPropagator).doThis {todayCourseItem ->
-                            findNavController().navigate(ViewCourseFragmentDirections.toClassStatusSetterBottomSheetFromViewCourse(
-                              todayCourseItem
-                            ))
+                            args.courseItem.courseName
+                        )
+                        (fragment as OnAttendanceRecordClickPropagator).doThis { todayCourseItem ->
+                            findNavController().navigate(
+                                ViewCourseFragmentDirections.toClassStatusSetterBottomSheetFromViewCourse(
+                                    todayCourseItem
+                                )
+                            )
                         }
                         fragment
                     }
@@ -97,11 +105,7 @@ class ViewCourseFragment : Fragment(R.layout.fragment_view_course_paged) {
             }
         }
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            when(position){
-                0 -> tab.text = "Course Info"
-                1 -> tab.text = "Extra Classes"
-                2 -> tab.text = "Attendance Record"
-            }
+            tab.text = resources.getStringArray(R.array.view_course_tabs)[position]
         }.attach()
     }
 }

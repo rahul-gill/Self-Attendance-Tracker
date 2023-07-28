@@ -42,11 +42,8 @@ class AddExtraClassBottomSheet : BottomSheetDialogFragment(R.layout.add_extra_cl
             )
             pager.setPageTransformer(ZoomOutPageTransformer())
             TabLayoutMediator(tabLayout, pager) { tab, position ->
-                tab.text = when (position) {
-                    0 -> "Date"
-                    1 -> "Start Time"
-                    else -> "End Time"
-                }
+                tab.text =
+                    resources.getStringArray(R.array.add_extra_class_bottom_sheet_tabs)[position]
             }.attach()
             cancelButton.setOnClickListener {
                 findNavController().navigateUp()
@@ -55,12 +52,15 @@ class AddExtraClassBottomSheet : BottomSheetDialogFragment(R.layout.add_extra_cl
                 findNavController()
                     .previousBackStackEntry
                     ?.savedStateHandle
-                    ?.set("extra_class_key", extraClass)
+                    ?.set(EXTRA_CLASS_KEY, extraClass)
                 findNavController().navigateUp()
             }
         }
     }
 
+    companion object{
+        const val EXTRA_CLASS_KEY = "extra_class_key"
+    }
 }
 
 

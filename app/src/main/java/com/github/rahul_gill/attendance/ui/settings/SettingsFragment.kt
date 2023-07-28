@@ -12,9 +12,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.github.rahul_gill.attendance.R
 import com.github.rahul_gill.attendance.databinding.FragmentSettingsBinding
-import com.github.rahul_gill.attendance.prefs.DEFAULT_DATE_FORMAT
-import com.github.rahul_gill.attendance.prefs.DEFAULT_TIME_FORMAT
 import com.github.rahul_gill.attendance.prefs.PreferenceManager
+import com.github.rahul_gill.attendance.util.Constants
 import com.github.rahul_gill.attendance.util.enableSharedZAxisTransition
 import com.github.rahul_gill.attendance.util.viewBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -23,9 +22,16 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-class SettingsFragment: Fragment(R.layout.fragment_settings) {
+class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
     private val binding by viewBinding(FragmentSettingsBinding::bind)
+    private val dateFormatChoices: Array<String> by lazy {
+        resources.getStringArray(R.array.date_format_choices)
+    }
+    private val timeFormatChoices: Array<String> by lazy {
+        resources.getStringArray(R.array.time_format_choices)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableSharedZAxisTransition()
@@ -39,12 +45,12 @@ class SettingsFragment: Fragment(R.layout.fragment_settings) {
             }
             themeSettingCard.setOnClickListener {
                 showListPreferenceDialog(
-                    dialogTitle = "App Theme",
+                    dialogTitle = getString(R.string.app_theme_title),
                     selectedItemIndex = PreferenceManager.themePref.value.toInt(),
-                    choices = listOf("Follow System", "Light", "Dark")
-                ){ index ->
+                    choices = resources.getStringArray(R.array.theme_entries_values).toList()
+                ) { index ->
                     PreferenceManager.themePref.setValue(index.toLong())
-                    when(index){
+                    when (index) {
                         0 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
                         1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                         else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -53,67 +59,64 @@ class SettingsFragment: Fragment(R.layout.fragment_settings) {
             }
             defaultHomeTabSettingCard.setOnClickListener {
                 showListPreferenceDialog(
-                    dialogTitle = "Default Home Tab",
+                    dialogTitle = getString(R.string.default_main_page_tab_title),
                     selectedItemIndex = PreferenceManager.defaultHomeTabPref.value.toInt(),
-                    choices = listOf("Today's Classes", "Overall Classes")
-                ){ index ->
+                    choices = resources.getStringArray(R.array.default_main_pager_tab_entries_values)
+                        .toList()
+                ) { index ->
                     PreferenceManager.defaultHomeTabPref.setValue(index.toLong())
                 }
             }
             timeFormatSettingCard.setOnClickListener {
                 showListPreferenceDialog(
-                    dialogTitle = "Time Format",
+                    dialogTitle = getString(R.string.time_format),
                     selectedItemIndex = timeFormatChoices.indexOf(PreferenceManager.defaultTimeFormatPref.value),
                     choices = timeFormatChoices.map {
                         DateTimeFormatter.ofPattern(it).format(LocalTime.now())
                     }
-                ){ index ->
+                ) { index ->
                     PreferenceManager.defaultTimeFormatPref.setValue(timeFormatChoices[index])
                 }
             }
             dateFormatSettingCard.setOnClickListener {
                 showListPreferenceDialog(
-                    dialogTitle = "Date Format",
+                    dialogTitle = getString(R.string.date_format),
                     selectedItemIndex = timeFormatChoices.indexOf(PreferenceManager.defaultDateFormatPref.value),
                     choices = dateFormatChoices.map {
                         DateTimeFormatter.ofPattern(it).format(LocalDate.now())
                     }
-                ){ index ->
+                ) { index ->
                     PreferenceManager.defaultDateFormatPref.setValue(dateFormatChoices[index])
                 }
             }
             githubLinkCard.setOnClickListener {
                 val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = Uri.parse(GITHUB_LINK)
+                intent.data = Uri.parse(Constants.GITHUB_LINK)
                 requireContext().startActivity(intent)
             }
             viewLifecycleOwner.lifecycleScope.launch {
                 PreferenceManager.themePref.observableValue
                     .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-                    .collect{ themeType ->
-                        binding.themeSettingValue.text = when(themeType){
-                            0L -> "Follow System"
-                            1L -> "Light Theme"
-                            else -> "Dark Theme"
-                        }
+                    .collect { themeType ->
+                        val array = resources.getStringArray(R.array.theme_entries_values)
+                        binding.themeSettingValue.text = array[themeType.toInt()]
                     }
 
                 PreferenceManager.defaultHomeTabPref.observableValue
                     .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-                    .collect{ tabType ->
-                        binding.defaultHomeTabSettingValue.text = when(tabType){
-                            0L -> "Today's Classes"
-                            else -> "Overall Classes"
-                        }
+                    .collect { tabType ->
+                        val array =
+                            resources.getStringArray(R.array.default_main_pager_tab_entries_values)
+                        binding.defaultHomeTabSettingValue.text = array[tabType.toInt()]
                     }
                 PreferenceManager.defaultTimeFormatPref.observableValue
                     .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-                    .collect{
+                    .collect {
                         binding.defaultHomeTabSettingValue.text = it
                     }
                 PreferenceManager.defaultDateFormatPref.observableValue
                     .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-                    .collect{
+                    .collect {
                         binding.dateFormatSettingValue.text = it
                     }
             }
@@ -125,28 +128,15 @@ class SettingsFragment: Fragment(R.layout.fragment_settings) {
         selectedItemIndex: Int,
         choices: List<String>,
         onSelectIndex: (Int) -> Unit
-    ){
+    ) {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(dialogTitle)
-            .setSingleChoiceItems(choices.toTypedArray(), selectedItemIndex){ dialog, selectionIndex ->
+            .setSingleChoiceItems(
+                choices.toTypedArray(),
+                selectedItemIndex
+            ) { dialog, selectionIndex ->
                 onSelectIndex(selectionIndex)
                 dialog.dismiss()
             }.show()
     }
-
-    companion object{
-        val dateFormatChoices = listOf(
-            DEFAULT_DATE_FORMAT,
-            "EEEE, MMMM d, yyyy",
-            "MM/dd/yyy",
-            "MMM dd, yyyy",
-            "dd MMMM yyy"
-        )
-        val timeFormatChoices = listOf(
-            DEFAULT_TIME_FORMAT,
-            "HH:mm"
-        )
-        const val GITHUB_LINK = "https://github.com/rahul-gill/Self-Attendace-Tracker"
-    }
-
 }

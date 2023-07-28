@@ -11,12 +11,12 @@ class DatePickerVH (
     onSetDate: (LocalDate) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
     init {
-        binding.root.layoutParams =
-            FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
-            )
-        binding.datePicker.init(initialDate.year, initialDate.monthValue, initialDate.dayOfMonth){ _, year, month, day ->
+        binding.root.layoutParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        )
+        binding.datePicker.init(initialDate.year, initialDate.monthValue, initialDate.dayOfMonth){
+            _, year, month, day ->
             onSetDate(LocalDate.of(year, month, day))
         }
     }

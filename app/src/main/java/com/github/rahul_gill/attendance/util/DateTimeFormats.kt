@@ -12,11 +12,13 @@ val dateFormatter: DateTimeFormatter
 
 fun formatWeek(startDate: LocalDate): String {
     val endDate = startDate.plusWeeks(1)
-    return when{
+    return when {
         startDate.year == endDate.year && startDate.month == endDate.month ->
             startDate.dayOfMonth.toString() + " - " + endDate.format(DateTimeFormatter.ofPattern("d MMM, yyyy"))
+
         startDate.year == endDate.year ->
-            startDate.format(DateTimeFormatter.ofPattern("d MMM - ")) +endDate.format(dateFormatter)
+            startDate.format(DateTimeFormatter.ofPattern("d MMM - ")) + endDate.format(dateFormatter)
+
         else ->
             startDate.format(dateFormatter) + " - " + endDate.format(dateFormatter)
     }

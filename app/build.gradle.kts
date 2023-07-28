@@ -12,7 +12,6 @@ sqldelight {
     databases {
         create("Database") {
             packageName.set("com.github.rahul_gill.attendance")
-            //TODO: sceham from migration, not the default way
             verifyMigrations.set(true)
         }
     }
@@ -74,8 +73,8 @@ android {
 dependencies {
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.activity:activity-ktx:1.7.1")
-    implementation("androidx.fragment:fragment-ktx:1.5.7")
+    implementation("androidx.activity:activity-ktx:1.7.2")
+    implementation("androidx.fragment:fragment-ktx:1.6.1")
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.viewpager2:viewpager2:1.0.0")
@@ -99,6 +98,4 @@ dependencies {
 
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.0.3")
-
-    implementation(project(":appthemehelper"))
 }

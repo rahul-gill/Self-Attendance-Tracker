@@ -12,10 +12,11 @@ import com.github.rahul_gill.attendance.db.CourseDetailsOverallItem
 
 class OverallItemsRecyclerViewAdapter(
     val onClick: (View, CourseDetailsOverallItem) -> Unit
-): ListAdapter<CourseDetailsOverallItem, OverallItemsRecyclerViewAdapter.VH>(OverallItemDiffCallBack) {
+) : ListAdapter<CourseDetailsOverallItem, OverallItemsRecyclerViewAdapter.VH>(OverallItemDiffCallBack) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        val binding = OverallListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            OverallListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return VH(binding, onClick)
     }
 
@@ -26,15 +27,18 @@ class OverallItemsRecyclerViewAdapter(
     class VH(
         private val binding: OverallListItemBinding,
         val onClick: (View, CourseDetailsOverallItem) -> Unit
-    ): RecyclerView.ViewHolder(binding.root){
-        fun bind(details: CourseDetailsOverallItem){
+    ) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(details: CourseDetailsOverallItem) {
             binding.apply {
-                root.transitionName = binding.root.resources.getString(R.string.course_detail_card_transition, details.courseId)
+                root.transitionName = binding.root.resources.getString(
+                    R.string.course_detail_card_transition,
+                    details.courseId
+                )
                 root.setOnClickListener {
                     onClick(binding.root, details)
                 }
                 courseName.text = details.courseName
-                attendancePercentage.text = "%.2f%%".format(details.currentAttendancePercentage)
+                attendancePercentage.text = root.context.getString(R.string.double_repr, details.currentAttendancePercentage)
                 presentsCount.text = details.presents.toString()
                 absentsCount.text = details.absents.toString()
                 cancelledCount.text = details.cancels.toString()
@@ -42,7 +46,7 @@ class OverallItemsRecyclerViewAdapter(
         }
     }
 
-    object OverallItemDiffCallBack: DiffUtil.ItemCallback<CourseDetailsOverallItem>() {
+    object OverallItemDiffCallBack : DiffUtil.ItemCallback<CourseDetailsOverallItem>() {
         override fun areItemsTheSame(
             oldItem: CourseDetailsOverallItem,
             newItem: CourseDetailsOverallItem

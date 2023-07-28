@@ -11,10 +11,9 @@ import androidx.navigation.fragment.navArgs
 import com.github.rahul_gill.attendance.R
 import com.github.rahul_gill.attendance.databinding.FragmentEditCourseBinding
 import com.github.rahul_gill.attendance.db.DBOps
-import com.github.rahul_gill.attendance.db.ExtraClassDetails
 import com.github.rahul_gill.attendance.ui.create.AddCourseBottomSheetResult
+import com.github.rahul_gill.attendance.ui.create.AddCourseClassBottomSheet
 import com.github.rahul_gill.attendance.ui.create.ClassDetail
-import com.github.rahul_gill.attendance.ui.create.CreateCourseFragmentDirections
 import com.github.rahul_gill.attendance.util.BaseFragment
 import com.github.rahul_gill.attendance.util.enableSharedZAxisTransition
 import com.github.rahul_gill.attendance.util.enableSystemBarsInsetsCallback
@@ -141,7 +140,7 @@ class EditCourseFragment : BaseFragment(R.layout.fragment_edit_course) {
         findNavController()
             .currentBackStackEntry
             ?.savedStateHandle
-            ?.getLiveData<AddCourseBottomSheetResult>("course_key")
+            ?.getLiveData<AddCourseBottomSheetResult>(AddCourseClassBottomSheet.COURSE_KEY)
             ?.observe(viewLifecycleOwner) { (result, itemToUpdateIndex) ->
                 if (itemToUpdateIndex != -1) {
                     classesForTheCourse.value = classesForTheCourse.value
