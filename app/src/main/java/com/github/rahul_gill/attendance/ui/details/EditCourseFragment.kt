@@ -31,6 +31,7 @@ class EditCourseFragment : BaseFragment(R.layout.fragment_edit_course) {
     private val dbOps by lazy { DBOps.getInstance(requireContext()) }
     private val args by navArgs<EditCourseFragmentArgs>()
     private var courseName = savedStateOf("course_name", "")
+    private var courseId = savedStateOf("course_id", -1L)
     private var requiredAttendancePercentage = savedStateOf("required_attendance", 75)
     private var classesForTheCourse = savedStateOf("class_details", listOf<ClassDetail>())
     private var doneButtonBottom = 0
@@ -42,6 +43,7 @@ class EditCourseFragment : BaseFragment(R.layout.fragment_edit_course) {
         enableSharedZAxisTransition()
 
         args.courseItem.let {
+            courseId.value = it.courseId
             courseName.value = it.courseName
             requiredAttendancePercentage.value = it.requiredAttendance.toInt()
         }
@@ -170,7 +172,8 @@ class EditCourseFragment : BaseFragment(R.layout.fragment_edit_course) {
 
 
     private fun saveCreatedCourseToDB() {
-        dbOps.createCourse(
+        dbOps.updateCourseDetails(
+            id = courseId.value,
             name = courseName.value,
             requiredAttendancePercentage = requiredAttendancePercentage.value.toDouble(),
             schedule = classesForTheCourse.value

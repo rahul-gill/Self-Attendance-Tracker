@@ -71,6 +71,35 @@ class DBOps private constructor(
         }
     }
 
+    fun updateCourseDetails(
+        id: Long,
+        name: String,
+        requiredAttendancePercentage: Double,
+        schedule: List<ClassDetail>,
+    ){
+        db.transaction {
+            queries.udpateCourse(name, requiredAttendancePercentage,id)
+            schedule.forEach { (dayOfWeek, startTime, endTime, scheduleID) ->
+                if(scheduleID != null)
+                queries.updateScheduleItemForCourse(
+                    scheduleId = scheduleID,
+                    weekday = dayOfWeek,
+                    startTime = startTime,
+                    endTime = endTime,
+                    includedInSchedule = 1
+                ) else {
+                    queries.createScheduleItemForCourse(
+                        courseId = id,
+                        weekday = dayOfWeek,
+                        startTime = startTime,
+                        endTime = endTime,
+                        includedInSchedule = 1
+                    )
+                }
+            }
+        }
+    }
+
     fun getScheduleAndExtraClassesForToday(): Flow<List<TodayCourseItem>> {
         val scheduleClassesFlow = queries.getCourseListForToday(
             mapper = { scheduleId, courseName, startTime, endTime, classStatus ->

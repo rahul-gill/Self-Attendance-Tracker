@@ -71,6 +71,11 @@ createCourse:
 INSERT INTO Course (courseName, requiredAttendance)
 VALUES ( ?, ?);
 
+udpateCourse:
+UPDATE Course SET courseName = ?, requiredAttendance = ?
+WHERE courseId = ?;
+
+
 getLastInsertRowID:
 SELECT last_insert_rowid();
 
@@ -78,6 +83,13 @@ createScheduleItemForCourse:
 INSERT INTO Schedule (courseId, weekday, startTime, endTime, includedInSchedule)
 VALUES ( ?, ?, ?, ?, ?);
 
+updateScheduleItemForCourse:
+UPDATE  Schedule
+SET weekday = ?, startTime = ?, endTime = ?, includedInSchedule = ?
+WHERE scheduleId = ?;
+
+scheduleExists:
+SELECT COUNT(*) FROM Schedule WHERE scheduleId = ?;
 
 getCourseDetails:
 SELECT
