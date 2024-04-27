@@ -6,18 +6,15 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.github.rahul_gill.attendance.R
 import com.github.rahul_gill.attendance.databinding.FragmentSettingsBinding
 import com.github.rahul_gill.attendance.prefs.PreferenceManager
 import com.github.rahul_gill.attendance.util.Constants
 import com.github.rahul_gill.attendance.util.enableSharedZAxisTransition
+import com.github.rahul_gill.attendance.util.observerWithLifecycle
 import com.github.rahul_gill.attendance.util.viewBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -81,7 +78,11 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             dateFormatSettingCard.setOnClickListener {
                 showListPreferenceDialog(
                     dialogTitle = getString(R.string.date_format),
-                    selectedItemIndex = timeFormatChoices.indexOf(PreferenceManager.defaultDateFormatPref.value),
+                    selectedItemIndex = dateFormatChoices.indexOf(PreferenceManager.defaultDateFormatPref.value).also {
+                        println("dateFormatChoices: ${dateFormatChoices.toList()}")
+                        println("PreferenceManager.defaultDateFormatPref.value: ${PreferenceManager.defaultDateFormatPref.value}")
+                        println("index: $it")
+                    },
                     choices = dateFormatChoices.map {
                         DateTimeFormatter.ofPattern(it).format(LocalDate.now())
                     }
@@ -91,34 +92,23 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             }
             githubLinkCard.setOnClickListener {
                 val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = Uri.parse(Constants.GITHUB_LINK)
+                intent.data = Uri.parse(Constants.GITHUB_APP_LINK)
                 requireContext().startActivity(intent)
             }
-            viewLifecycleOwner.lifecycleScope.launch {
-                PreferenceManager.themePref.observableValue
-                    .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-                    .collect { themeType ->
-                        val array = resources.getStringArray(R.array.theme_entries_values)
-                        binding.themeSettingValue.text = array[themeType.toInt()]
-                    }
-
-                PreferenceManager.defaultHomeTabPref.observableValue
-                    .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-                    .collect { tabType ->
-                        val array =
-                            resources.getStringArray(R.array.default_main_pager_tab_entries_values)
-                        binding.defaultHomeTabSettingValue.text = array[tabType.toInt()]
-                    }
-                PreferenceManager.defaultTimeFormatPref.observableValue
-                    .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-                    .collect {
-                        binding.defaultHomeTabSettingValue.text = it
-                    }
-                PreferenceManager.defaultDateFormatPref.observableValue
-                    .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-                    .collect {
-                        binding.dateFormatSettingValue.text = it
-                    }
+            observerWithLifecycle(PreferenceManager.themePref){ themeType ->
+                val array = resources.getStringArray(R.array.theme_entries_values)
+                binding.themeSettingValue.text = array[themeType.toInt()]
+            }
+            observerWithLifecycle(PreferenceManager.defaultHomeTabPref){ tabType ->
+                val array =
+                    resources.getStringArray(R.array.default_main_pager_tab_entries_values)
+                binding.defaultHomeTabSettingValue.text = array[tabType.toInt()]
+            }
+            observerWithLifecycle(PreferenceManager.defaultTimeFormatPref){
+                binding.timeFormatSettingValue.text = it
+            }
+            observerWithLifecycle(PreferenceManager.defaultDateFormatPref){
+                binding.dateFormatSettingValue.text = it
             }
         }
     }
@@ -129,7 +119,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         choices: List<String>,
         onSelectIndex: (Int) -> Unit
     ) {
-        MaterialAlertDialogBuilder(requireContext())
+        val dialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle(dialogTitle)
             .setSingleChoiceItems(
                 choices.toTypedArray(),
@@ -137,6 +127,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             ) { dialog, selectionIndex ->
                 onSelectIndex(selectionIndex)
                 dialog.dismiss()
-            }.show()
+            }.create()
+        dialog.show()
     }
 }

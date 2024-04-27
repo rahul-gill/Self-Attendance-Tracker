@@ -82,6 +82,8 @@ dependencies {
     implementation("com.jakewharton.timber:timber:5.0.1")
     implementation("androidx.preference:preference-ktx:1.2.0")
 
+    implementation("androidx.datastore:datastore-preferences:1.1.0")
+    implementation("androidx.startup:startup-runtime:1.1.1")
     //navigation
     val nav_version = "2.5.3"
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
@@ -98,4 +100,6 @@ dependencies {
 
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.0.3")
+
+
 }

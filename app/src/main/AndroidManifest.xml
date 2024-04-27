@@ -24,6 +24,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="com.github.rahul_gill.attendance.util.ApplicationContextInitializer"
+                android:value="androidx.startup" />
+        </provider>
     </application>
 
 </manifest>
