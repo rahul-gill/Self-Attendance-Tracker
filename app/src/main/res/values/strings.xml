@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">Attendance Tracker</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="create_a_course">Create a course</string>
     <string name="course_name">Course name</string>
     <string name="save">Save</string>
@@ -110,4 +108,29 @@
     <string name="previous_course_name">Previous name: %1$s</string>
     <string name="previous_value_int_percentage">Previous value:: %d%%</string>
     <string name="required_attendance_updated_int_percentage">Required Attendance updated: %d%%</string>
+
+    <string name="app_theme">App Theme</string>
+    <string name="go_back_screen">Go to previous screen</string>
+    <string name="look_and_feel">Look and Feel</string>
+    <string name="custom_color_scheme_seed">Custom Color Scheme Seed</string>
+    <string name="follow_system_colors">Follow System Colors</string>
+    <string name="pure_black_background">Pure black background</string>
+    <string name="follow_system">Follow System</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="custom_color_scheme_seed_summary">Color to generate color scheme from</string>
+    <string name="date_time_formatting">Date Time Formatting</string>
+    <string name="default_home_tab">Default Home Tab</string>
+    <string name="today_classes">Today\'s Classes</string>
+    <string name="other_ui_options">Other UI Options</string>
+    <string name="about">About</string>
+    <string name="source_code">Source Code</string>
+    <string name="author_info">Author: Rahul Gill</string>
+    <string name="clear_text">Clear text</string>
+    <string name="required_attendance_text">"Required Attendance: %1$d%%"</string>
+    <string name="add_class">Add Class</string>
+    <string name="remove_class">Remove Class</string>
+    <string name="courses">Courses</string>
+    <string name="no_classes_today">No classes today</string>
+    <string name="no_courses_added_yet">No courses added yet</string>
 </resources>

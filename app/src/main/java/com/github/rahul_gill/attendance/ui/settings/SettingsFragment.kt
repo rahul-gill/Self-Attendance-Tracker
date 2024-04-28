@@ -61,7 +61,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                     choices = resources.getStringArray(R.array.default_main_pager_tab_entries_values)
                         .toList()
                 ) { index ->
-                    PreferenceManager.defaultHomeTabPref.setValue(index.toLong())
+                    PreferenceManager.defaultHomeTabPref.setValue(index)
                 }
             }
             timeFormatSettingCard.setOnClickListener {

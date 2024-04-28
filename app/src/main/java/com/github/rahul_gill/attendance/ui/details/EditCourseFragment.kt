@@ -202,4 +202,7 @@ class EditCourseFragment : BaseFragment(R.layout.fragment_edit_course) {
     //TODO: schedule item can't be changed, only removed or added
     //TODO: reset button for schedule classes and extra classes
     //TODO: show original values like: (Change course name: original name: This)
+    //TODO: take into account unset items which have a date before today (or not or both with two queries)
+    //TODO: how much can we bunk, how much to reach the goal
+
 }

@@ -14,7 +14,6 @@
     <declare-styleable name="AttendanceCalendarView">
         <attr name="acv_monthYearHeaderTextAppearance" format="reference"/>
 
-        <!--TODO-->
         <attr name="acv_weekDayLabels" format="reference"/>
         <attr name="acv_monthLabels" format="reference"/>
 

@@ -128,7 +128,7 @@
                             android:id="@+id/default_home_tab_setting_value"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Today's Classes"
+                            android:text="@string/today_classes"
                             android:textColor="?attr/colorOnSurfaceVariant"
                             android:textSize="15sp"/>
                     </LinearLayout>

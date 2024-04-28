@@ -49,6 +49,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 file("proguard-rules.pro")
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -62,7 +63,12 @@ android {
     buildFeatures{
         viewBinding = true
         buildConfig = true
+        compose = true
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.12"
+    }
+
     packaging {
         resources {
             excludes.add("/META-INF/{AL2.0,LGPL2.1}")
@@ -84,6 +90,8 @@ dependencies {
 
     implementation("androidx.datastore:datastore-preferences:1.1.0")
     implementation("androidx.startup:startup-runtime:1.1.1")
+    implementation("androidx.palette:palette-ktx:1.0.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
     //navigation
     val nav_version = "2.5.3"
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
@@ -100,6 +108,17 @@ dependencies {
 
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.0.3")
+
+
+
+
+    implementation (platform("androidx.compose:compose-bom:2024.04.01"))
+    implementation ("androidx.compose.material3:material3")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    implementation("androidx.activity:activity-compose:1.9.0")
+    implementation("com.materialkolor:material-kolor:1.3.0")
+    implementation("com.github.skydoves:colorpicker-compose:1.0.7")
 
 
 }

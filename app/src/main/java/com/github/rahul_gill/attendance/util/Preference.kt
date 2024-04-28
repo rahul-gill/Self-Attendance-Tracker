@@ -1,6 +1,7 @@
 package com.github.rahul_gill.attendance.util
 
 import android.content.Context
+import androidx.compose.runtime.Composable
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -9,6 +10,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -27,6 +29,8 @@ interface Preference<T> {
             observableValue.firstOrNull() ?: defaultValue
         }
 
+    @Composable
+    fun asState() = observableValue.collectAsStateWithLifecycle(initialValue = value)
 }
 
 /**

@@ -10,6 +10,7 @@ import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.github.rahul_gill.attendance.Database
 import com.github.rahul_gill.attendance.ui.create.ClassDetail
 import com.github.rahul_gill.attendance.ui.details.ExtraClassTimings
+import com.github.rahul_gill.attendance.util.applicationContextGlobal
 import com.github.rahulgill.attendance.Attendance
 import com.github.rahulgill.attendance.ExtraClasses
 import com.github.rahulgill.attendance.MarkedAttendancesForCourse
@@ -203,18 +204,12 @@ class DBOps private constructor(
     }
 
     companion object {
-        @Volatile
-        private var instance: DBOps? = null
+        val instance: DBOps by lazy {
+            DBOps(getAndroidSqliteDriver(applicationContextGlobal))
+        }
 
         fun getInstance(context: Context): DBOps {
-            if (instance == null) {
-                synchronized(this) {
-                    if (instance == null) {
-                        instance = DBOps(getAndroidSqliteDriver(context))
-                    }
-                }
-            }
-            return instance!!
+            return instance
         }
     }
 
