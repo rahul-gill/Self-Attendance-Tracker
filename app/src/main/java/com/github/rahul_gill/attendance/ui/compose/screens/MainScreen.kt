@@ -1,9 +1,6 @@
 package com.github.rahul_gill.attendance.ui.compose.screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -16,9 +13,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,28 +20,22 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.minimumInteractiveComponentSize
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -56,7 +44,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -80,7 +67,7 @@ import java.time.LocalTime
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun OverallCoursesScreen(
+fun MainScreen(
     onCreateCourse: () -> Unit,
     goToSettings: () -> Unit = {},
     goToCourseDetails: (courseId: Long) -> Unit
@@ -88,17 +75,13 @@ fun OverallCoursesScreen(
     val pagerState = rememberPagerState(
         initialPage = PreferenceManager.defaultHomeTabPref.value,
         pageCount = { 2 })
-    val todayClasses = remember {
-        mutableStateOf(lst1)
-    }
-//        DBOps.instance.getScheduleAndExtraClassesForToday().collectAsStateWithLifecycle(
-//            initialValue = listOf()
-//        )
+    val todayClasses =
+        DBOps.instance.getScheduleAndExtraClassesForToday().collectAsStateWithLifecycle(
+            initialValue = listOf()
+        )
     val scope = rememberCoroutineScope()
-    val courses = remember {
-        mutableStateOf(lst2)
-    }
-//        DBOps.instance.getCoursesDetailsList().collectAsStateWithLifecycle(initialValue = listOf())
+    val courses =
+        DBOps.instance.getCoursesDetailsList().collectAsStateWithLifecycle(initialValue = listOf())
     val scrollStateToday = rememberLazyListState()
     val scrollStateOverall = rememberLazyListState()
     val isScrolling = if (pagerState.currentPage == 0) {
@@ -244,29 +227,6 @@ fun OverallCoursesScreen(
     }
 }
 
-val lst1 = List(5) {
-    TodayCourseItem(
-        startTime = LocalTime.now().withMinute(0),
-        endTime = LocalTime.now().withMinute(0).plusHours(1),
-        courseName = "Maths",
-        scheduleIdOrExtraClassId = it.toLong(),
-        classStatus = CourseClassStatus.Present,
-        isExtraClass = true
-    )
-}
-
-val lst2 = List(100) {
-    CourseDetailsOverallItem(
-        courseId = it.toLong(),
-        courseName = "Maths",
-        requiredAttendance = 75.0,
-        currentAttendancePercentage = 86.0,
-        presents = 100,
-        absents = 20,
-        cancels = 5
-    )
-}
-
 @Composable
 @Preview
 fun OverallCourseItem(
@@ -282,7 +242,7 @@ fun OverallCourseItem(
     onClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    ElevatedCard(onClick = onClick, modifier = modifier) {
+    OutlinedCard(onClick = onClick, modifier = modifier) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -381,7 +341,7 @@ fun TodayClassItem(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
-    ElevatedCard(modifier = modifier, onClick = onClick) {
+    OutlinedCard(modifier = modifier, onClick = onClick) {
         Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
             Column {
                 Text(

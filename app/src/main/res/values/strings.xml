@@ -133,4 +133,5 @@
     <string name="courses">Courses</string>
     <string name="no_classes_today">No classes today</string>
     <string name="no_courses_added_yet">No courses added yet</string>
+    <string name="course_created">Course %1$s Created</string>
 </resources>
