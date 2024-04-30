@@ -1,5 +1,7 @@
 package com.github.rahul_gill.attendance.db
 
+import com.github.rahul_gill.attendance.R
+
 enum class CourseClassStatus {
     Present,
     Absent,

@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 class CourseInfoFragment : Fragment(R.layout.fragment_course_info) {
     private val binding by viewBinding(FragmentCourseInfoBinding::bind)
-    private val dbOps by lazy { DBOps.getInstance(requireContext()) }
+    private val dbOps by lazy { DBOps.instance }
     private val courseId by lazy {
         this.requireArguments().getLong("courseId")
     }

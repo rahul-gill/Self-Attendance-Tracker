@@ -21,7 +21,7 @@ import com.google.android.material.transition.MaterialContainerTransform
 class ViewCourseFragment : Fragment(R.layout.fragment_view_course_paged) {
     private val binding by viewBinding(FragmentViewCoursePagedBinding::bind)
     private val args by navArgs<ViewCourseFragmentArgs>()
-    private val dbOps by lazy { DBOps.getInstance(requireContext()) }
+    private val dbOps by lazy { DBOps.instance }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

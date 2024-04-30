@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 
 class EditCourseFragment : BaseFragment(R.layout.fragment_edit_course) {
     private val binding by viewBinding(FragmentEditCourseBinding::bind)
-    private val dbOps by lazy { DBOps.getInstance(requireContext()) }
+    private val dbOps by lazy { DBOps.instance }
     private val args by navArgs<EditCourseFragmentArgs>()
     private var courseName = savedStateOf("course_name", "")
     private var courseId = savedStateOf("course_id", -1L)

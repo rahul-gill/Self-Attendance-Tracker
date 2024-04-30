@@ -10,8 +10,9 @@ import com.github.rahul_gill.attendance.util.StringPreference
 import com.github.rahul_gill.attendance.util.customPreference
 import com.github.rahul_gill.attendance.util.enumPreference
 
-const val DEFAULT_TIME_FORMAT = "hh:mm a"
-const val DEFAULT_DATE_FORMAT = "d MMM, yyyy"
+const val DefaultTimeFormat = "hh:mm a"
+const val DefaultDateFormat = "d MMM, yyyy"
+val DefaultColorSchemeSeed = Color.Green
 
 object PreferenceManager {
     val themePref = LongPreference(key = "app_theme", defaultValue = 0)
@@ -23,18 +24,25 @@ object PreferenceManager {
         key = "dark_theme_type",
         defaultValue = DarkThemeType.Dark
     )
-    val followSystemColors = BooleanPreference(key = "follow_system_colors", defaultValue = false)
+    val followSystemColors =
+        BooleanPreference(key = "follow_system_colors", defaultValue = false)
     val colorSchemeSeed = customPreference(
         backingPref = LongPreference("color_scheme_type", 0),
-        defaultValue = Color(0xFF9867C5),
+        defaultValue = DefaultColorSchemeSeed,
         serialize = { color -> color.value.toLong() },
-        deserialize = { if(it == 0L)  Color(0xFF9867C5) else  Color(it.toULong()) }
+        deserialize = { if (it == 0L) DefaultColorSchemeSeed else Color(it.toULong()) }
     )
 
     val defaultHomeTabPref =
         IntPreference(key = "default_home_tab", defaultValue = 0)
     val defaultTimeFormatPref =
-        StringPreference(key = "default_time_format", defaultValue = DEFAULT_TIME_FORMAT)
+        StringPreference(
+            key = "default_time_format",
+            defaultValue = DefaultTimeFormat
+        )
     val defaultDateFormatPref =
-        StringPreference(key = "default_date_format", defaultValue = DEFAULT_DATE_FORMAT)
+        StringPreference(
+            key = "default_date_format",
+            defaultValue = DefaultDateFormat
+        )
 }

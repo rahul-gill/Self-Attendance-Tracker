@@ -21,7 +21,7 @@ import com.google.android.material.chip.Chip
 
 class CreateCourseFragment : BaseFragment(R.layout.fragment_create_course) {
     private val binding by viewBinding(FragmentCreateCourseBinding::bind)
-    private val dbOps by lazy { DBOps.getInstance(requireContext()) }
+    private val dbOps by lazy { DBOps.instance }
     private var courseName = savedStateOf("course_name", "")
     private var requiredAttendancePercentage = savedStateOf("required_attendance", 75)
     private var classesForTheCourse = savedStateOf("class_details", listOf<ClassDetail>())

@@ -52,6 +52,7 @@ fun BaseDialog(
         usePlatformDefaultWidth = false
     ),
     onDismissRequest: () -> Unit,
+    dialogPadding: PaddingValues = BaseDialogDefaults.dialogMargins,
     contentPadding: PaddingValues = BaseDialogDefaults.contentPadding,
     minWidth: Dp = 280.dp,
     content: @Composable ColumnScope.() -> Unit
@@ -67,7 +68,7 @@ fun BaseDialog(
         Box(
             modifier = modifier
                 .widthIn(min = minWidth)
-                .padding(BaseDialogDefaults.dialogMargins)
+                .padding(dialogPadding)
                 .semantics { paneTitle = "Dialog" }
         ) {
             Column(

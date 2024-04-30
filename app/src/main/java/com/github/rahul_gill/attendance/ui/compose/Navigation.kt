@@ -15,7 +15,6 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.rahul_gill.attendance.R
 import com.github.rahul_gill.attendance.db.DBOps
 import com.github.rahul_gill.attendance.ui.compose.screens.CourseDetailsScreen
@@ -29,6 +28,7 @@ import dev.olshevski.navigation.reimagined.navigate
 import dev.olshevski.navigation.reimagined.pop
 import dev.olshevski.navigation.reimagined.rememberNavController
 import kotlinx.parcelize.Parcelize
+import java.time.LocalDate
 
 sealed interface Screen : Parcelable {
     @Parcelize
@@ -85,6 +85,18 @@ fun RootNavHost() {
                             Screen.CourseDetails(
                                 courseId
                             )
+                        )
+                    },
+                    onSetClassStatus = { item , status ->
+                        if (item.isExtraClass)
+                            DBOps.instance.markAttendanceForExtraClass(
+                                item.scheduleIdOrExtraClassId,
+                                status
+                            )
+                        else DBOps.instance.markAttendanceForScheduleClass(
+                            scheduleId = item.scheduleIdOrExtraClassId,
+                            date = LocalDate.now(),
+                            classStatus = status
                         )
                     }
                 )

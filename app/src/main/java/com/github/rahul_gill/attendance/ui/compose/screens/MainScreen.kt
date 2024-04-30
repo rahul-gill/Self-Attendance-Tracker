@@ -58,6 +58,7 @@ import com.github.rahul_gill.attendance.db.CourseDetailsOverallItem
 import com.github.rahul_gill.attendance.db.DBOps
 import com.github.rahul_gill.attendance.db.TodayCourseItem
 import com.github.rahul_gill.attendance.prefs.PreferenceManager
+import com.github.rahul_gill.attendance.ui.compose.comps.SetClassStatusSheet
 import com.github.rahul_gill.attendance.ui.compose.comps.TabItem
 import com.github.rahul_gill.attendance.ui.compose.comps.Tabs
 import com.github.rahul_gill.attendance.util.timeFormatter
@@ -70,7 +71,8 @@ import java.time.LocalTime
 fun MainScreen(
     onCreateCourse: () -> Unit,
     goToSettings: () -> Unit = {},
-    goToCourseDetails: (courseId: Long) -> Unit
+    goToCourseDetails: (courseId: Long) -> Unit,
+    onSetClassStatus: (item: TodayCourseItem, newStatus: CourseClassStatus) -> Unit
 ) {
     val pagerState = rememberPagerState(
         initialPage = PreferenceManager.defaultHomeTabPref.value,
@@ -168,6 +170,9 @@ fun MainScreen(
                             Text(text = stringResource(id = R.string.no_classes_today))
                         }
                     } else {
+                        var setClassSheetItem: TodayCourseItem? by remember {
+                            mutableStateOf(null)
+                        }
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
                             state = scrollStateToday,
@@ -176,6 +181,9 @@ fun MainScreen(
                                 alignment = Alignment.Top
                             )
                         ) {
+                            item{
+                                Spacer(modifier = Modifier.height(20.dp))
+                            }
                             items(
                                 todayClasses.value,
                                 key = { "" + it.scheduleIdOrExtraClassId + it.isExtraClass }
@@ -184,13 +192,20 @@ fun MainScreen(
                                     item = classItem,
                                     modifier = Modifier.padding(horizontal = 8.dp),
                                     onClick = {
-                                        //TODO
+                                        setClassSheetItem = classItem
                                     }
                                 )
                             }
                             item {
                                 Spacer(modifier = Modifier.height(100.dp))
                             }
+                        }
+                        if (setClassSheetItem != null) {
+                            SetClassStatusSheet(
+                                todayCourseItem = setClassSheetItem!!,
+                                onDismissRequest = { setClassSheetItem = null },
+                                setClasStatus = { onSetClassStatus(setClassSheetItem!!, it) }
+                            )
                         }
                     }
                 } else if (page == 1) {
@@ -207,6 +222,9 @@ fun MainScreen(
                                 alignment = Alignment.Top
                             )
                         ) {
+                            item{
+                                Spacer(modifier = Modifier.height(20.dp))
+                            }
                             items(courses.value, key = { it.courseId }) { courseItem ->
                                 OverallCourseItem(
                                     item = courseItem,

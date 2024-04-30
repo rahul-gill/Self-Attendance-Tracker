@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 
 class OverallItemsFragment : Fragment(R.layout.fragment_overall_items) {
     private val binding by viewBinding(FragmentOverallItemsBinding::bind)
-    private val dbOps by lazy { DBOps.getInstance(requireContext()) }
+    private val dbOps by lazy { DBOps.instance }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

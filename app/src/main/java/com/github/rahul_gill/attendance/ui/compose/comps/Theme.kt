@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.github.rahul_gill.attendance.prefs.DefaultColorSchemeSeed
 import com.materialkolor.dynamicColorScheme
 
 enum class DarkThemeType {
@@ -29,7 +30,6 @@ sealed interface ColorSchemeType {
     data object Dynamic : ColorSchemeType
 }
 
-private val DefaultSeed = Color.Green
 
 @Composable
 fun AttendanceAppTheme(
@@ -50,7 +50,7 @@ fun AttendanceAppTheme(
                     else
                         dynamicLightColorScheme(context)
                 } else {
-                    dynamicColorScheme(DefaultSeed, isDarkTheme)
+                    dynamicColorScheme(DefaultColorSchemeSeed, isDarkTheme)
                 }
             }
 

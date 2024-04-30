@@ -17,7 +17,7 @@ import java.time.LocalDate
 class ClassStatusSetterBottomSheet :
     BottomSheetDialogFragment(R.layout.class_status_setter_bottom_sheet) {
     private val binding by viewBinding(ClassStatusSetterBottomSheetBinding::bind)
-    private val dbOps by lazy { DBOps.getInstance(requireContext()) }
+    private val dbOps by lazy { DBOps.instance }
     private val args by navArgs<ClassStatusSetterBottomSheetArgs>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

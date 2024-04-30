@@ -1,6 +1,5 @@
 package com.github.rahul_gill.attendance.ui.compose.comps
 
-import android.os.Parcelable
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,10 +16,12 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,9 +44,7 @@ import androidx.compose.ui.unit.dp
 import com.github.rahul_gill.attendance.R
 import com.github.rahul_gill.attendance.ui.create.ClassDetail
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 import java.time.DayOfWeek
-import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.TextStyle
 import java.util.Locale
@@ -84,7 +83,8 @@ fun AddClassBottomSheet(
     }
     BaseDialog(
         onDismissRequest = onDismissRequest,
-        contentPadding = PaddingValues(vertical = 24.dp, horizontal = 8.dp)
+        dialogPadding = PaddingValues(0.dp)
+//        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ) {
         Text(
             text = "Select weekday, start time and end time for the new class",
@@ -159,13 +159,13 @@ fun AddClassBottomSheet(
                             initialMinute = if (page == 1) state.startTime.minute else state.endTime.minute
                         )
                         LaunchedEffect(key1 = timePickerState) {
-                            if (page == 1) {
-                                state = state.copy(
+                            state = if (page == 1) {
+                                state.copy(
                                     startTime = state.startTime.withHour(timePickerState.hour)
                                         .withMinute(timePickerState.minute)
                                 )
                             } else {
-                                state = state.copy(
+                                state.copy(
                                     endTime = state.endTime.withHour(timePickerState.hour)
                                         .withMinute(timePickerState.minute)
                                 )

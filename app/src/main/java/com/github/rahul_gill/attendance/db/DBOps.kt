@@ -77,18 +77,18 @@ class DBOps private constructor(
         name: String,
         requiredAttendancePercentage: Double,
         schedule: List<ClassDetail>,
-    ){
+    ) {
         db.transaction {
-            queries.udpateCourse(name, requiredAttendancePercentage,id)
+            queries.udpateCourse(name, requiredAttendancePercentage, id)
             schedule.forEach { (dayOfWeek, startTime, endTime, scheduleID) ->
-                if(scheduleID != null)
-                queries.updateScheduleItemForCourse(
-                    scheduleId = scheduleID,
-                    weekday = dayOfWeek,
-                    startTime = startTime,
-                    endTime = endTime,
-                    includedInSchedule = 1
-                ) else {
+                if (scheduleID != null)
+                    queries.updateScheduleItemForCourse(
+                        scheduleId = scheduleID,
+                        weekday = dayOfWeek,
+                        startTime = startTime,
+                        endTime = endTime,
+                        includedInSchedule = 1
+                    ) else {
                     queries.createScheduleItemForCourse(
                         courseId = id,
                         weekday = dayOfWeek,
@@ -207,13 +207,7 @@ class DBOps private constructor(
         val instance: DBOps by lazy {
             DBOps(getAndroidSqliteDriver(applicationContextGlobal))
         }
-
-        fun getInstance(context: Context): DBOps {
-            return instance
-        }
     }
-
-
 }
 
 data class AttendanceCounts(

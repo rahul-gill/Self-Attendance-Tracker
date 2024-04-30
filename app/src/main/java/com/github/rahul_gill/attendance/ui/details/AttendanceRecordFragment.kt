@@ -23,7 +23,7 @@ interface OnAttendanceRecordClickPropagator{
 class AttendanceRecordFragment: Fragment(R.layout.fragment_attendance_record), OnAttendanceRecordClickPropagator {
     private val binding by viewBinding(FragmentAttendanceRecordBinding::bind)
 
-    private val dbOps by lazy { DBOps.getInstance(requireContext()) }
+    private val dbOps by lazy { DBOps.instance }
 
     private val courseId by lazy {
         requireArguments().getLong("course_id", 0)

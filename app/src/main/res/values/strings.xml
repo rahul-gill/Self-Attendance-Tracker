@@ -134,4 +134,10 @@
     <string name="no_classes_today">No classes today</string>
     <string name="no_courses_added_yet">No courses added yet</string>
     <string name="course_created">Course %1$s Created</string>
+    <string name="present">Present</string>
+    <string name="absent">Absent</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="not_set">Not Set</string>
+
+
 </resources>
