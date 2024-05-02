@@ -138,6 +138,14 @@
     <string name="absent">Absent</string>
     <string name="cancelled">Cancelled</string>
     <string name="not_set">Not Set</string>
+    <string name="current_attendance_percentage">Current Attendance Percentage</string>
+    <string name="weekly_schedule">Weekly Schedule</string>
+    <string name="required_attendance_percentage">Required Attendance Percentage</string>
+    <string name="deleted_schedule_item">Deleted schedule item</string>
+    <string name="delete_schedule_item">Delete schedule item</string>
+    <string name="add_class_on_this_scheduele">Add class on this schedule</string>
+    <string name="course_x_attendance_records">%1$s Attendance Records</string>
+    <string name="delete_record">Delete Record</string>
 
 
 </resources>

@@ -75,6 +75,9 @@ udpateCourse:
 UPDATE Course SET courseName = ?, requiredAttendance = ?
 WHERE courseId = ?;
 
+deleteScheduleItem:
+DELETE FROM Schedule WHERE Schedule.scheduleId = ?;
+
 
 getLastInsertRowID:
 SELECT last_insert_rowid();
@@ -125,6 +128,22 @@ SELECT
 FROM
     Course;
 
+getCoursesDetailsWithId:
+SELECT
+    Course.courseId,
+    Course.courseName,
+    Course.requiredAttendance,
+    (SELECT COUNT(*) FROM Schedule WHERE Schedule.courseId = Course.courseId AND Schedule.weekday = strftime('%w', 'now')) AS numClassesToday,
+    ((SELECT COUNT(*) AS presents FROM Attendance WHERE scheduleId IN (SELECT scheduleId FROM Schedule WHERE courseId = Course.courseId) AND classStatus = 'Present')
+        + (SELECT COUNT(*) AS presents FROM ExtraClasses WHERE courseId = Course.courseId AND classStatus = 'Present')) AS nPresents,
+    ((SELECT COUNT(*) AS presents FROM Attendance WHERE scheduleId IN (SELECT scheduleId FROM Schedule WHERE courseId = Course.courseId) AND classStatus = 'Absent')
+        + (SELECT COUNT(*) AS presents FROM ExtraClasses WHERE courseId = Course.courseId AND classStatus = 'Absent')) AS nAbsents,
+    ((SELECT COUNT(*) AS presents FROM Attendance WHERE scheduleId IN (SELECT scheduleId FROM Schedule WHERE courseId = Course.courseId) AND classStatus = 'Cancelled')
+        + (SELECT COUNT(*) AS presents FROM ExtraClasses WHERE courseId = Course.courseId AND classStatus = 'Cancelled')) AS nCancels
+FROM
+    Course
+WHERE Course.courseId = ?;
+
 getScheduleClassesForCourse:
 SELECT * FROM Schedule WHERE Schedule.courseId = ? AND Schedule.includedInSchedule <> 0 ORDER BY Schedule.weekday, Schedule.startTime;
 
@@ -164,6 +183,9 @@ DELETE FROM Course WHERE Course.courseId = ?;
 
 deleteExtraClass:
 DELETE FROM ExtraClasses WHERE  ExtraClasses.extraClassId = ?;
+
+deleteScheduleAttendanceRecord:
+DELETE FROM Attendance WHERE Attendance.scheduleId = ? AND Attendance.date = ?;
 
 markedAttendancesForCourse:
 SELECT a.scheduleId AS entityId, a.date, s.startTime, s.endTime, a.classStatus, 0 AS isExtraCLass FROM Attendance a JOIN Schedule s ON a.scheduleId = s.scheduleId WHERE s.courseId = :courseId

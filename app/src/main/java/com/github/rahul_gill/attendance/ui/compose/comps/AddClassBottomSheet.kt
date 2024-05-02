@@ -84,7 +84,6 @@ fun AddClassBottomSheet(
     BaseDialog(
         onDismissRequest = onDismissRequest,
         dialogPadding = PaddingValues(0.dp)
-//        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ) {
         Text(
             text = "Select weekday, start time and end time for the new class",

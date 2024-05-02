@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
@@ -81,7 +82,7 @@ fun BaseDialog(
                     )
                     .padding(contentPadding),
             ) {
-                CompositionLocalProvider(LocalContentColor  provides MaterialTheme.colorScheme.onSurfaceVariant) {
+                CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
                     content()
                 }
             }
@@ -103,9 +104,9 @@ private fun AlertDialogPreview() {
             }
         }
     }
-    if(show){
+    if (show) {
         AlertDialog(
-            onDismissRequest = {show = false },
+            onDismissRequest = { show = false },
             title = { Text(text = "Alert Dialog Title") },
             body = {
                 Text(text = "Some text ", modifier = Modifier.padding(8.dp))
@@ -158,7 +159,7 @@ fun AlertDialog(
                         .height(26.dp)
                 )
             }
-            Row {
+            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                 buttonBar?.let { it() }
             }
         }

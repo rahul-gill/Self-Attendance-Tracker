@@ -146,6 +146,31 @@ class DBOps private constructor(
         ).asFlow().mapToList(Dispatchers.IO)
     }
 
+    fun deleteScheduleWithId(id: Long){
+        queries.deleteScheduleItem(id)
+    }
+
+    fun deleteScheduleAttendanceRecord(id: Long, date: LocalDate){
+        queries.deleteScheduleAttendanceRecord(id, date)
+    }
+
+    fun getCoursesDetailsWithId(id: Long): Flow<CourseDetailsOverallItem> {
+        return queries.getCoursesDetailsWithId(
+            courseId = id,
+            mapper = { courseId, courseName, requiredAttendance, _, presents, absents, cancels ->
+                CourseDetailsOverallItem(
+                    courseId = courseId,
+                    courseName = courseName,
+                    requiredAttendance = requiredAttendance,
+                    currentAttendancePercentage = if (absents + presents == 0L) 100.0 else 100.0 * presents / (presents + absents),
+                    presents = presents.toInt(),
+                    absents = absents.toInt(),
+                    cancels = cancels.toInt()
+                )
+            }
+        ).asFlow().mapToOne(Dispatchers.IO)
+    }
+
     fun getCourseAttendancePercentage(courseId: Long): Flow<AttendanceCounts> {
         return queries.getCourseDetailsSingle(
             courseId,

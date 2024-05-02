@@ -23,7 +23,7 @@ android {
 
     defaultConfig {
         applicationId = "com.github.rahul_gill.attendance"
-        minSdk = 21
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0.0"
@@ -120,5 +120,4 @@ dependencies {
     implementation("com.materialkolor:material-kolor:1.3.0")
     implementation("com.github.skydoves:colorpicker-compose:1.0.7")
     implementation("dev.olshevski.navigation:reimagined:1.5.0")
-
 }
