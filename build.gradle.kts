@@ -4,9 +4,7 @@ plugins {
     id("com.android.application") version "8.3.2" apply false
     id("com.android.library") version "8.3.2" apply false
     id("org.jetbrains.kotlin.android") version "1.9.23" apply false
-//    id("com.google.dagger.hilt.android") version "2.44" apply false
-    id("androidx.navigation.safeargs.kotlin") version "2.5.3" apply false
-    id("app.cash.sqldelight") version "2.0.0-alpha05" apply false
+    id("app.cash.sqldelight") version "2.0.2" apply false
     id("com.github.ben-manes.versions") version "0.46.0"
     id("io.gitlab.arturbosch.detekt") version "1.22.0"
 }

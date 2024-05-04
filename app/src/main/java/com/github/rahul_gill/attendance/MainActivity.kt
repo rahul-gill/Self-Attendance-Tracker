@@ -11,15 +11,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.github.rahul_gill.attendance.prefs.PreferenceManager
-import com.github.rahul_gill.attendance.ui.compose.RootNavHost
-import com.github.rahul_gill.attendance.ui.compose.comps.AttendanceAppTheme
-import com.github.rahul_gill.attendance.ui.compose.comps.ColorSchemeType
+import com.github.rahul_gill.attendance.ui.RootNavHost
+import com.github.rahul_gill.attendance.ui.comps.AttendanceAppTheme
+import com.github.rahul_gill.attendance.ui.comps.ColorSchemeType
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //WindowCompat.setDecorFitsSystemWindows(window, false)
-        //setContentView(R.layout.activity_main)
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.light(
                 Color.TRANSPARENT, Color.TRANSPARENT
@@ -50,10 +48,4 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-//
-//    override fun onSupportNavigateUp(): Boolean {
-//        val navHostFragment = supportFragmentManager
-//            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-//        return navHostFragment.navController.navigateUp() || super.onSupportNavigateUp()
-//    }
 }

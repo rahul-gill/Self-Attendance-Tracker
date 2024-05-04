@@ -1,8 +1,8 @@
 package com.github.rahul_gill.attendance.prefs
 
 import androidx.compose.ui.graphics.Color
-import com.github.rahul_gill.attendance.ui.compose.comps.DarkThemeType
-import com.github.rahul_gill.attendance.ui.compose.comps.ThemeConfig
+import com.github.rahul_gill.attendance.ui.comps.DarkThemeType
+import com.github.rahul_gill.attendance.ui.comps.ThemeConfig
 import com.github.rahul_gill.attendance.util.BooleanPreference
 import com.github.rahul_gill.attendance.util.IntPreference
 import com.github.rahul_gill.attendance.util.LongPreference

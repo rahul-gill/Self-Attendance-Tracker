@@ -23,15 +23,14 @@ CREATE TABLE Schedule (
 );
 
 CREATE TABLE Attendance (
-    scheduleId INTEGER NOT NULL,
+    attendanceId INTEGER PRIMARY KEY AUTOINCREMENT,
+    scheduleId INTEGER,
     classStatus TEXT AS CourseClassStatus NOT NULL,
     date TEXT AS LocalDate NOT NULL,
     CONSTRAINT fk_schedule
         FOREIGN KEY (scheduleId)
         REFERENCES Schedule (scheduleId)
-        ON DELETE CASCADE,
-    CONSTRAINT pk_attendance
-        PRIMARY KEY (scheduleId, date)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE ExtraClasses (
@@ -48,10 +47,11 @@ CREATE TABLE ExtraClasses (
 );
 
 getCourseListForToday:
-SELECT Schedule.scheduleId, Course.courseName, Schedule.startTime, Schedule.endTime,
+SELECT Attendance.attendanceId, Schedule.scheduleId, Course.courseName, Schedule.startTime, Schedule.endTime,
        CASE WHEN Attendance.classStatus IS NULL THEN 'Unset'
             ELSE Attendance.classStatus
-       END AS classStatus
+       END AS classStatus,
+       Attendance.date
 FROM Schedule
 JOIN Course ON Schedule.courseId = Course.courseId AND Schedule.weekday = strftime('%w', 'now')
 LEFT JOIN Attendance ON Schedule.scheduleId = Attendance.scheduleId AND Attendance.date = DATE('now', 'localtime')
@@ -60,7 +60,7 @@ AND DATE('now', 'localtime') = Attendance.date
 OR (Attendance.scheduleId IS NULL AND DATE('now', 'localtime') = DATE('now', 'localtime'));
 
 getExtraClassesListForToday:
-SELECT Course.courseName, ExtraClasses.startTime, ExtraClasses.endTime, ExtraClasses.classStatus, ExtraClasses.extraClassId
+SELECT Course.courseName, ExtraClasses.startTime, ExtraClasses.endTime, ExtraClasses.classStatus, ExtraClasses.extraClassId, ExtraClasses.date
 FROM Course
 JOIN ExtraClasses ON Course.courseId = ExtraClasses.courseId
 WHERE ExtraClasses.date = DATE('now', 'localtime');
@@ -160,8 +160,16 @@ SET classStatus = :status
 WHERE extraClassId = :extraClassId;
 
 markAttendance:
-INSERT OR REPLACE INTO Attendance (scheduleId, date, classStatus)
-VALUES (?, ?, ?);
+INSERT OR REPLACE INTO Attendance (attendanceId, classStatus, scheduleId, date)
+VALUES (?,  ?, ?, ?);
+
+markAttendanceInsert:
+INSERT  INTO Attendance (classStatus, scheduleId, date)
+VALUES ( ?, ?, ?);
+
+
+markAttendanceUpdate:
+UPDATE Attendance SET classStatus = :status WHERE  attendanceId = :attendanceId;
 
 checkOverlappingSchedule:
 SELECT COUNT(*) = 0
@@ -185,12 +193,17 @@ deleteExtraClass:
 DELETE FROM ExtraClasses WHERE  ExtraClasses.extraClassId = ?;
 
 deleteScheduleAttendanceRecord:
-DELETE FROM Attendance WHERE Attendance.scheduleId = ? AND Attendance.date = ?;
+DELETE FROM Attendance WHERE Attendance.attendanceId = ?;
+
 
 markedAttendancesForCourse:
-SELECT a.scheduleId AS entityId, a.date, s.startTime, s.endTime, a.classStatus, 0 AS isExtraCLass FROM Attendance a JOIN Schedule s ON a.scheduleId = s.scheduleId WHERE s.courseId = :courseId
+SELECT a.attendanceId AS entityId, a.scheduleId AS scheduleId,  a.date, s.startTime, s.endTime, a.classStatus, 0 AS isExtraCLass, course.courseName
+    FROM Attendance a, Schedule s,  Course course
+    WHERE a.scheduleId = s.scheduleId AND s.courseId = :courseId AND s.courseId = course.courseId
 UNION
-SELECT e.extraClassId AS entityId, e.date, e.startTime, e.endTime, e.classStatus, 1 AS isExtraCLass FROM ExtraClasses e WHERE e.courseId = :courseId;
+SELECT e.extraClassId AS entityId, NULL AS scheduleId, e.date, e.startTime, e.endTime, e.classStatus, 1 AS isExtraCLass , course.courseName
+    FROM ExtraClasses e, Course course
+    WHERE e.courseId = :courseId AND e.courseId = course.courseId;
 
 getCourseDetailsSingle:
 SELECT

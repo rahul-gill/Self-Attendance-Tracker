@@ -9,11 +9,9 @@ import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.github.rahul_gill.attendance.Database
 import com.github.rahul_gill.attendance.ui.create.ClassDetail
-import com.github.rahul_gill.attendance.ui.details.ExtraClassTimings
 import com.github.rahul_gill.attendance.util.applicationContextGlobal
 import com.github.rahulgill.attendance.Attendance
 import com.github.rahulgill.attendance.ExtraClasses
-import com.github.rahulgill.attendance.MarkedAttendancesForCourse
 import com.github.rahulgill.attendance.Schedule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -101,27 +99,29 @@ class DBOps private constructor(
         }
     }
 
-    fun getScheduleAndExtraClassesForToday(): Flow<List<TodayCourseItem>> {
-        val scheduleClassesFlow = queries.getCourseListForToday(
-            mapper = { scheduleId, courseName, startTime, endTime, classStatus ->
-                TodayCourseItem(
-                    scheduleId,
-                    courseName,
-                    startTime,
-                    endTime,
-                    CourseClassStatus.fromString(classStatus)
+    fun getScheduleAndExtraClassesForToday(): Flow<List<AttendanceRecordHybrid>> {
+        val scheduleClassesFlow: Flow<List<AttendanceRecordHybrid>> = queries.getCourseListForToday(
+            mapper = { attendanceId, scheduleId, courseName, startTime, endTime, classStatus, date ->
+                AttendanceRecordHybrid.ScheduledClass(
+                    attendanceId = attendanceId,
+                    scheduleId = scheduleId,
+                    startTime = startTime,
+                    endTime = endTime,
+                    courseName = courseName,
+                    date = date ?: LocalDate.now(),
+                    classStatus = CourseClassStatus.fromString(classStatus)
                 )
             }
         ).asFlow().mapToList(Dispatchers.IO)
-        val extraClassesFlow =
-            queries.getExtraClassesListForToday(mapper = { courseName, startTime, endTime, classStatus, extraClassId ->
-                TodayCourseItem(
-                    extraClassId,
-                    courseName,
-                    startTime,
-                    endTime,
-                    classStatus,
-                    isExtraClass = true
+        val extraClassesFlow: Flow<List<AttendanceRecordHybrid>> =
+            queries.getExtraClassesListForToday(mapper = { courseName, startTime, endTime, classStatus, extraClassId,date ->
+                AttendanceRecordHybrid.ExtraClass(
+                    extraClassId = extraClassId,
+                    startTime = startTime,
+                    endTime = endTime,
+                    courseName = courseName,
+                    date = date,
+                    classStatus = classStatus
                 )
             }).asFlow().mapToList(Dispatchers.IO)
         return scheduleClassesFlow.combine(extraClassesFlow) { list1, list2 ->
@@ -146,12 +146,12 @@ class DBOps private constructor(
         ).asFlow().mapToList(Dispatchers.IO)
     }
 
-    fun deleteScheduleWithId(id: Long){
+    fun deleteScheduleWithId(id: Long) {
         queries.deleteScheduleItem(id)
     }
 
-    fun deleteScheduleAttendanceRecord(id: Long, date: LocalDate){
-        queries.deleteScheduleAttendanceRecord(id, date)
+    fun deleteScheduleAttendanceRecord(id: Long) {
+        queries.deleteScheduleAttendanceRecord(id)
     }
 
     fun getCoursesDetailsWithId(id: Long): Flow<CourseDetailsOverallItem> {
@@ -183,11 +183,14 @@ class DBOps private constructor(
     }
 
     fun markAttendanceForScheduleClass(
-        scheduleId: Long,
-        date: LocalDate,
-        classStatus: CourseClassStatus
+        attendanceId: Long?,
+        classStatus: CourseClassStatus,
+        scheduleId: Long?,
+        date: LocalDate
     ) {
-        queries.markAttendance(scheduleId, date, classStatus)
+        if(attendanceId != null)
+        queries.markAttendance(attendanceId, classStatus, scheduleId, date)
+        else queries.markAttendanceInsert( classStatus, scheduleId, date)
     }
 
     fun markAttendanceForExtraClass(
@@ -224,8 +227,40 @@ class DBOps private constructor(
 
     fun deleteExtraClass(extraClassId: Long) = queries.deleteExtraClass(extraClassId)
 
-    fun getMarkedAttendancesForCourse(courseId: Long): Flow<List<MarkedAttendancesForCourse>> {
-        return queries.markedAttendancesForCourse(courseId).asFlow().mapToList(Dispatchers.IO)
+    fun getMarkedAttendancesForCourse(courseId: Long): Flow<List<AttendanceRecordHybrid>> {
+        return queries.markedAttendancesForCourse(
+            courseId = courseId,
+            mapper = { entityId,
+                       scheduleId,
+                       date,
+                       startTime,
+                       endTime,
+                       classStatus,
+                       isExtraCLass,
+                        courseName ->
+                if(isExtraCLass != 0L){
+                    AttendanceRecordHybrid.ExtraClass(
+                        extraClassId = entityId,
+                        startTime = startTime,
+                        endTime = endTime,
+                        courseName = courseName,
+                        date = date,
+                        classStatus = classStatus
+                    )
+                } else {
+                    AttendanceRecordHybrid.ScheduledClass(
+                        attendanceId = entityId,
+                        scheduleId = scheduleId!!,
+                        startTime = startTime,
+                        endTime = endTime,
+                        courseName = courseName,
+                        date = date,
+                        classStatus = classStatus
+                    )
+                }
+            }
+        )
+            .asFlow().mapToList(Dispatchers.IO)
     }
 
     companion object {
