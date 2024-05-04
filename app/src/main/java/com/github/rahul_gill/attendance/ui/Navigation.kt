@@ -119,7 +119,13 @@ fun RootNavHost() {
                             )
                         )
                     },
-                    onSetClassStatus = onSetClassStatus
+                    onSetClassStatus = onSetClassStatus,
+                    todayClasses =
+                    DBOps.instance.getScheduleAndExtraClassesForToday().collectAsStateWithLifecycle(
+                        initialValue = listOf()
+                    ).value,
+                    courses = DBOps.instance.getCoursesDetailsList()
+                        .collectAsStateWithLifecycle(initialValue = listOf()).value
                 )
             }
 
@@ -141,7 +147,10 @@ fun RootNavHost() {
                         classes = classes.value,
                         goToClassRecords = { navController.navigate(Screen.CourseClassRecords(screen.courseId)) },
                         onCreateExtraClass = { timings ->
-                            DBOps.instance.createExtraClasses(courseId = courseDetails.value!!.courseId, timings = timings)
+                            DBOps.instance.createExtraClasses(
+                                courseId = courseDetails.value!!.courseId,
+                                timings = timings
+                            )
                         }
                     )
                 } else {

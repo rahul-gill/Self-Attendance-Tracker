@@ -55,6 +55,7 @@ import com.github.rahul_gill.attendance.R
 import com.github.rahul_gill.attendance.db.DBOps
 import com.github.rahul_gill.attendance.ui.comps.AddClassBottomSheet
 import com.github.rahul_gill.attendance.db.ClassDetail
+import com.github.rahul_gill.attendance.ui.comps.ScheduleItem
 import com.github.rahul_gill.attendance.util.timeFormatter
 import kotlinx.coroutines.launch
 
@@ -197,24 +198,11 @@ fun CreateCourseScreen(
                 text = stringResource(id = R.string.select_schedule_of_classes),
                 style = MaterialTheme.typography.titleLarge
             )
-            Spacer(modifier = Modifier.height(8.dp))
-
-            FlowRow(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+            Column {
                 classesForTheCourse.forEachIndexed { index, classDetail ->
-                    ClassChip(
-                        label = {
-                            Text(
-                                text = stringResource(
-                                    id = R.string.schedule_class_weekday_and_start_end_time,
-                                    classDetail.dayOfWeek.name,
-                                    classDetail.startTime.format(timeFormatter),
-                                    classDetail.endTime.format(timeFormatter)
-                                )
-                            )
-                        },
+                    Spacer(modifier = Modifier.height(8.dp))
+                    ScheduleItem(
+                        item = classDetail,
                         onClick = {
                             classToUpdateIndex = index
                             showAddClassBottomSheet = true
@@ -247,30 +235,3 @@ fun CreateCourseScreen(
         )
     }
 }
-
-
-@Composable
-private fun ClassChip(
-    label: @Composable () -> Unit,
-    onClick: () -> Unit,
-    onCloseClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    OutlinedCard(onClick = onClick, modifier = modifier) {
-        Row(
-            Modifier.padding(vertical = 4.dp, horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            label()
-            Spacer(modifier = Modifier.width(8.dp))
-            IconButton(onClick = onCloseClick) {
-                Icon(
-                    Icons.Default.Close,
-                    contentDescription = stringResource(id = R.string.remove_class)
-                )
-            }
-        }
-    }
-}
-
-

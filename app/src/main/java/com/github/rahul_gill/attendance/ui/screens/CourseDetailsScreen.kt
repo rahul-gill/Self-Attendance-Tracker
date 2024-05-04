@@ -21,8 +21,13 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.sharp.Info
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -69,6 +74,7 @@ import com.github.rahul_gill.attendance.db.ExtraClassTimings
 import com.github.rahul_gill.attendance.ui.comps.BaseDialog
 import com.github.rahul_gill.attendance.ui.comps.ClassStatusOptions
 import com.github.rahul_gill.attendance.ui.comps.PopupMenu
+import com.github.rahul_gill.attendance.ui.comps.ScheduleItem
 import com.github.rahul_gill.attendance.ui.comps.SelectableMenuItem
 import com.github.rahul_gill.attendance.ui.comps.TabItem
 import com.github.rahul_gill.attendance.ui.comps.Tabs
@@ -144,6 +150,7 @@ fun CourseDetailsScreen(
             Modifier
                 .padding(paddings)
                 .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             Spacer(modifier = Modifier.height(16.dp))
             Row(
@@ -201,11 +208,11 @@ fun CourseDetailsScreen(
             }
             Spacer(modifier = Modifier.height(16.dp))
             FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 OutlinedButton(onClick = goToClassRecords) {
-                    Text(text = "See attendance records")
+                    Text(text = "Attendance records")
                 }
                 OutlinedButton(onClick = { showAddExtraSheet = true }) {
                     Text(text = "Create extra class")
@@ -213,33 +220,45 @@ fun CourseDetailsScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = stringResource(id = R.string.weekly_schedule),
-                style = MaterialTheme.typography.titleLarge
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(classes) { classDetail ->
-                    var showPopup by remember {
-                        mutableStateOf(false)
-                    }
-                    OutlinedCard(onClick = {
-                        showPopup = true
-                    }) {
-                        Row(
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(id = R.string.weekly_schedule),
+                    style = MaterialTheme.typography.titleLarge
+                )
+                var showTip by remember {
+                    mutableStateOf(false)
+                }
+                IconButton(onClick = { showTip = true }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Info,
+                        contentDescription = stringResource(id = R.string.tip)
+                    )
+                    if (showTip) {
+                        PopupMenu(
+                            onDismissRequest = { showTip = false }
                         ) {
-                            Text(text = classDetail.dayOfWeek.name)
                             Text(
-                                text = stringResource(
-                                    id = R.string.time_range,
-                                    classDetail.startTime.format(timeFormatter),
-                                    classDetail.endTime.format(timeFormatter)
-                                )
+                                modifier = Modifier.padding(8.dp),
+                                text = "Clicking on the schedule items, you can create attendance records on that schedule"
                             )
                         }
+                    }
+
+                }
+            }
+            classes.forEach { classDetail ->
+                var showPopup by remember {
+                    mutableStateOf(false)
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                ScheduleItem(
+                    item = classDetail,
+                    onClick = { showPopup = true },
+                    popupContent = {
                         if (showPopup) {
                             PopupMenu(
                                 onDismissRequest = { showPopup = false }
@@ -271,7 +290,7 @@ fun CourseDetailsScreen(
                             }
                         }
                     }
-                }
+                )
             }
         }
     }
@@ -362,7 +381,12 @@ fun CourseDetailsScreen(
         AddExtraBottomSheet(
             courseName = courseDetails.courseName,
             onDismissRequest = { showAddExtraSheet = false },
-            onCreateExtraClass = onCreateExtraClass
+            onCreateExtraClass = { timings ->
+                onCreateExtraClass(timings)
+                scope.launch {
+                    snackbarHostState.showSnackbar("Extra class created", withDismissAction = true)
+                }
+            }
         )
     }
 }

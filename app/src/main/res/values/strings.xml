@@ -148,6 +148,7 @@
     <string name="delete_record">Delete Record</string>
     <string name="err_end_time_should_be_after_start_time">End time should come after start time</string>
     <string name="select_weekday_start_time_and_end_time_for_the_new_class">Select weekday, start time and end time for the new class</string>
+    <string name="tip">Tip</string>
 
 
 </resources>

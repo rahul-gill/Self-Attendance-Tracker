@@ -34,6 +34,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +47,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -71,18 +73,15 @@ fun MainScreen(
     onCreateCourse: () -> Unit,
     goToSettings: () -> Unit = {},
     goToCourseDetails: (courseId: Long) -> Unit,
-    onSetClassStatus: (item: AttendanceRecordHybrid, newStatus: CourseClassStatus) -> Unit
+    onSetClassStatus: (item: AttendanceRecordHybrid, newStatus: CourseClassStatus) -> Unit,
+    todayClasses:List<AttendanceRecordHybrid> ,
+    courses: List<CourseDetailsOverallItem>
 ) {
     val pagerState = rememberPagerState(
         initialPage = PreferenceManager.defaultHomeTabPref.value,
         pageCount = { 2 })
-    val todayClasses =
-        DBOps.instance.getScheduleAndExtraClassesForToday().collectAsStateWithLifecycle(
-            initialValue = listOf()
-        )
+
     val scope = rememberCoroutineScope()
-    val courses =
-        DBOps.instance.getCoursesDetailsList().collectAsStateWithLifecycle(initialValue = listOf())
     val scrollStateToday = rememberLazyListState()
     val scrollStateOverall = rememberLazyListState()
     val isScrolling = if (pagerState.currentPage == 0) {
@@ -153,6 +152,7 @@ fun MainScreen(
                 )
                 TabItem(
                     modifier = Modifier
+                        .testTag("courses_button")
                         .onSizeChanged {
                             commonMinWidth = maxOf(commonMinWidth, it.width)
                         }
@@ -170,7 +170,7 @@ fun MainScreen(
                     .fillMaxWidth()
             ) { page ->
                 if (page == 0) {
-                    if (todayClasses.value.isEmpty()) {
+                    if (todayClasses.isEmpty()) {
                         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             Text(text = stringResource(id = R.string.no_classes_today))
                         }
@@ -190,7 +190,7 @@ fun MainScreen(
                                 Spacer(modifier = Modifier.height(20.dp))
                             }
                             items(
-                                todayClasses.value,
+                                todayClasses,
                                 key = {
                                     when(it){
                                         is AttendanceRecordHybrid.ExtraClass -> "" + it.extraClassId + "_ext"
@@ -219,7 +219,7 @@ fun MainScreen(
                         }
                     }
                 } else if (page == 1) {
-                    if (courses.value.isEmpty()) {
+                    if (courses.isEmpty()) {
                         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             Text(text = stringResource(id = R.string.no_courses_added_yet))
                         }
@@ -235,7 +235,7 @@ fun MainScreen(
                             item{
                                 Spacer(modifier = Modifier.height(20.dp))
                             }
-                            items(courses.value, key = { it.courseId }) { courseItem ->
+                            items(courses, key = { it.courseId }) { courseItem ->
                                 OverallCourseItem(
                                     item = courseItem,
                                     modifier = Modifier.padding(horizontal = 8.dp),

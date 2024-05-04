@@ -22,9 +22,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -207,8 +209,8 @@ data class MenuColors(
  */
 @Composable
 fun menuColors(
-    background: Color = MaterialTheme.colorScheme.surfaceVariant,
-    stroke: Color = MaterialTheme.colorScheme.onSurfaceVariant
+    background: Color = MaterialTheme.colorScheme.surface,
+    stroke: Color = MaterialTheme.colorScheme.primary
 ): MenuColors = MenuColors(
     background = background,
     stroke = stroke
@@ -223,7 +225,7 @@ object MenuDefaults {
         25
     )
 
-    val elevation = 5.dp
+    val elevation = 4.dp
 
     val margin = 16.dp
 
@@ -266,15 +268,17 @@ fun SelectableMenuItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(
-            text = label,
-            style = labelStyle,
-            color = MaterialTheme.colorScheme.primary
-        )
-        Spacer(
-            modifier = Modifier
-                .width(MenuItemDefaults.iconSpacing)
-        )
+        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.primary) {
+            Text(
+                text = label,
+                style = labelStyle,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(
+                modifier = Modifier
+                    .width(MenuItemDefaults.iconSpacing)
+            )
+        }
     }
 }
 
