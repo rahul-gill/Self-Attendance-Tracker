@@ -85,7 +85,7 @@
         <item>End Time</item>
     </string-array>
 
-    <string name="attendance_status_setter_info">Set Attendance Status for %1$s&#xA;from %2$s to %3$s%4$s%5$s</string>
+    <string name="attendance_status_setter_info">Set Attendance Status for %1$s from %2$s to %3$s%4$s %5$s</string>
     <string name="attendance_status_setter_info_extra_class">(Extra class)</string>
     <string name="attendance_status_setter_info_on_date">&#32;on %1$s</string>
     <string name="time_range">%1$s to %2$s</string>
@@ -146,6 +146,8 @@
     <string name="add_class_on_this_scheduele">Add class on this schedule</string>
     <string name="course_x_attendance_records">%1$s Attendance Records</string>
     <string name="delete_record">Delete Record</string>
+    <string name="err_end_time_should_be_after_start_time">End time should come after start time</string>
+    <string name="select_weekday_start_time_and_end_time_for_the_new_class">Select weekday, start time and end time for the new class</string>
 
 
 </resources>

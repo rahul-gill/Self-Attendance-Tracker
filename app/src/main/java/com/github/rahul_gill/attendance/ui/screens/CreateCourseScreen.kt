@@ -54,7 +54,7 @@ import androidx.compose.ui.unit.dp
 import com.github.rahul_gill.attendance.R
 import com.github.rahul_gill.attendance.db.DBOps
 import com.github.rahul_gill.attendance.ui.comps.AddClassBottomSheet
-import com.github.rahul_gill.attendance.ui.create.ClassDetail
+import com.github.rahul_gill.attendance.db.ClassDetail
 import com.github.rahul_gill.attendance.util.timeFormatter
 import kotlinx.coroutines.launch
 

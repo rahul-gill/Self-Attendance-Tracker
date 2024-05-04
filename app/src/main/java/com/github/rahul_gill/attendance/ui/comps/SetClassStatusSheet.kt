@@ -42,8 +42,7 @@ fun SetClassStatusSheet(
     }
     BaseDialog(
         onDismissRequest = onDismissRequest,
-        contentPadding = PaddingValues(top = 24.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
-        //sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        dialogPadding = PaddingValues(0.dp)
     ) {
         Text(
             text = stringResource(
@@ -60,7 +59,8 @@ fun SetClassStatusSheet(
                 )
             ),
             style = MaterialTheme.typography.titleLarge,
-        )//modifier = Modifier.padding(horizontal = 16.dp))
+            modifier = Modifier.padding(16.dp)
+        )
         Spacer(modifier = Modifier.height(16.dp))
         ClassStatusOptions(newStatus) { newStatus = it }
         Row(modifier = Modifier.fillMaxWidth()) {

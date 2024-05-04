@@ -1,4 +1,4 @@
-package com.github.rahul_gill.attendance.ui.create
+package com.github.rahul_gill.attendance.db
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

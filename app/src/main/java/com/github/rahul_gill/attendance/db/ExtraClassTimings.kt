@@ -11,4 +11,15 @@ data class ExtraClassTimings(
     val date: LocalDate,
     val startTime: LocalTime,
     val endTime: LocalTime,
-) : Parcelable
+) : Parcelable{
+    companion object{
+        fun defaultTimeAdjusted(): ExtraClassTimings {
+            val start = LocalTime.now().withMinute(0)
+            return ExtraClassTimings(
+                date = LocalDate.now(),
+                startTime = start,
+                endTime = start.plusHours(1)
+            )
+        }
+    }
+}

@@ -8,7 +8,6 @@ import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.github.rahul_gill.attendance.Database
-import com.github.rahul_gill.attendance.ui.create.ClassDetail
 import com.github.rahul_gill.attendance.util.applicationContextGlobal
 import com.github.rahulgill.attendance.Attendance
 import com.github.rahulgill.attendance.ExtraClasses

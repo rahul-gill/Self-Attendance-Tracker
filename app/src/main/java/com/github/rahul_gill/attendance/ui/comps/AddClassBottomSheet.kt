@@ -1,5 +1,6 @@
 package com.github.rahul_gill.attendance.ui.comps
 
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,32 +34,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.rahul_gill.attendance.R
-import com.github.rahul_gill.attendance.ui.create.ClassDetail
+import com.github.rahul_gill.attendance.db.ClassDetail
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalTime
 import java.time.format.TextStyle
 import java.util.Locale
 
-
-@Composable
-@Preview(showBackground = true)
-private fun AddClassBottomSheetPreview() {
-    MaterialTheme {
-        AddClassBottomSheet(
-            initialState = ClassDetail(),
-            onDismissRequest = {},
-            onCreateClass = { }
-        )
-    }
-}
 
 private fun defaultClassDetailWithTimeAdjusted(): ClassDetail {
     val start = LocalTime.now().withMinute(0)
@@ -84,7 +73,7 @@ fun AddClassBottomSheet(
         dialogPadding = PaddingValues(0.dp)
     ) {
         Text(
-            text = "Select weekday, start time and end time for the new class",
+            text = stringResource(R.string.select_weekday_start_time_and_end_time_for_the_new_class),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(16.dp)
         )
@@ -155,17 +144,27 @@ fun AddClassBottomSheet(
                             initialHour = if (page == 1) state.startTime.hour else state.endTime.hour,
                             initialMinute = if (page == 1) state.startTime.minute else state.endTime.minute
                         )
-                        LaunchedEffect(key1 = timePickerState) {
+                        val context  = LocalContext.current
+                        LaunchedEffect(timePickerState.hour, timePickerState.minute) {
                             state = if (page == 1) {
+                                val newStart = state.startTime.withHour(timePickerState.hour)
+                                    .withMinute(timePickerState.minute)
                                 state.copy(
-                                    startTime = state.startTime.withHour(timePickerState.hour)
-                                        .withMinute(timePickerState.minute)
+                                    startTime = newStart,
+                                    endTime = newStart.plusHours(1)
                                 )
                             } else {
-                                state.copy(
-                                    endTime = state.endTime.withHour(timePickerState.hour)
-                                        .withMinute(timePickerState.minute)
-                                )
+                                val newEnd = state.endTime.withHour(timePickerState.hour)
+                                    .withMinute(timePickerState.minute)
+                                if(newEnd > state.startTime){
+                                    state.copy(
+                                        endTime = newEnd
+                                    )
+                                } else {
+                                    Toast.makeText(context,
+                                        context.getString(R.string.err_end_time_should_be_after_start_time), Toast.LENGTH_SHORT).show()
+                                    state
+                                }
                             }
                         }
                         TimePicker(state = timePickerState)

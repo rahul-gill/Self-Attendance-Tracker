@@ -13,8 +13,11 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.rahul_gill.attendance.R
@@ -136,8 +139,13 @@ fun RootNavHost() {
                         onGoBack = { navController.pop() },
                         courseDetails = courseDetails.value!!,
                         classes = classes.value,
-                        goToClassRecords = { navController.navigate(Screen.CourseClassRecords(screen.courseId)) }
+                        goToClassRecords = { navController.navigate(Screen.CourseClassRecords(screen.courseId)) },
+                        onCreateExtraClass = { timings ->
+                            DBOps.instance.createExtraClasses(courseId = courseDetails.value!!.courseId, timings = timings)
+                        }
                     )
+                } else {
+                    Box(Modifier.fillMaxSize())
                 }
 
             }
@@ -166,6 +174,8 @@ fun RootNavHost() {
                             }
                         }
                     }
+                } else {
+                    Box(Modifier.fillMaxSize())
                 }
             }
         }
