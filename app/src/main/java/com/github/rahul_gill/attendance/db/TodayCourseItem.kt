@@ -8,6 +8,7 @@ import java.time.LocalTime
 
 sealed interface AttendanceRecordHybrid : Parcelable {
     val courseName: String
+    val courseId: Long
     val startTime: LocalTime
     val endTime: LocalTime
     val classStatus: CourseClassStatus
@@ -22,6 +23,7 @@ sealed interface AttendanceRecordHybrid : Parcelable {
     class ScheduledClass(
         val attendanceId: Long?,
         val scheduleId: Long?,
+        override val courseId: Long,
         override val courseName: String,
         override val startTime: LocalTime,
         override val endTime: LocalTime,
@@ -32,6 +34,7 @@ sealed interface AttendanceRecordHybrid : Parcelable {
     @Parcelize
     class ExtraClass(
         val extraClassId: Long,
+        override val courseId: Long,
         override val courseName: String,
         override val startTime: LocalTime,
         override val endTime: LocalTime,

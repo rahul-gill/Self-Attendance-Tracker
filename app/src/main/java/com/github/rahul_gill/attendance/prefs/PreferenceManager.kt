@@ -14,8 +14,13 @@ const val DefaultTimeFormat = "hh:mm a"
 const val DefaultDateFormat = "d MMM, yyyy"
 val DefaultColorSchemeSeed = Color.Green
 
+enum class UnsetClassesBehavior {
+    ConsiderPresent,
+    ConsiderAbsent,
+    None
+}
+
 object PreferenceManager {
-    val themePref = LongPreference(key = "app_theme", defaultValue = 0)
     val themeConfig = enumPreference(
         key = "theme_config",
         defaultValue = ThemeConfig.FollowSystem
@@ -23,6 +28,10 @@ object PreferenceManager {
     val darkThemeType = enumPreference(
         key = "dark_theme_type",
         defaultValue = DarkThemeType.Dark
+    )
+    val unsetClassesBehavior = enumPreference(
+        key = "unset_classes_behaviour",
+        defaultValue = UnsetClassesBehavior.None
     )
     val followSystemColors =
         BooleanPreference(key = "follow_system_colors", defaultValue = false)

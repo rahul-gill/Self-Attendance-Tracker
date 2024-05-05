@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
@@ -28,9 +26,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.sharp.Info
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -74,6 +71,7 @@ import com.github.rahul_gill.attendance.db.CourseClassStatus
 import com.github.rahul_gill.attendance.db.CourseDetailsOverallItem
 import com.github.rahul_gill.attendance.db.DBOps
 import com.github.rahul_gill.attendance.db.ExtraClassTimings
+import com.github.rahul_gill.attendance.ui.comps.AddClassBottomSheet
 import com.github.rahul_gill.attendance.ui.comps.AlertDialog
 import com.github.rahul_gill.attendance.ui.comps.BaseDialog
 import com.github.rahul_gill.attendance.ui.comps.ClassStatusOptions
@@ -115,7 +113,10 @@ fun CourseDetailsScreen(
     goToClassRecords: () -> Unit = {},
     goToCourseEdit: (CourseDetailsOverallItem) -> Unit = {},
     onCreateExtraClass: (ExtraClassTimings) -> Unit,
-    onDeleteCourse: (Long) -> Unit
+    onDeleteCourse: (Long) -> Unit,
+    onAddScheduleClass: (ClassDetail) -> Unit,
+    onDeleteScheduleItem: (classDetails: ClassDetail) -> Unit,
+    changeActivateStatusOfScheduleItem: (classDetails: ClassDetail, activate: Boolean) -> Unit
 ) {
     var scheduleToAddClassOn by remember {
         mutableStateOf<ClassDetail?>(null)
@@ -123,13 +124,19 @@ fun CourseDetailsScreen(
     var showAddExtraSheet by remember {
         mutableStateOf(false)
     }
+    var showAddClassBottomSheet by rememberSaveable {
+        mutableStateOf(false)
+    }
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-    var showDeleteDialog by remember {
+    var showDeleteCourseDialog by remember {
         mutableStateOf(false)
+    }
+    var scheduleItemToBeDeleted: ClassDetail? by remember {
+        mutableStateOf(null)
     }
     Scaffold(
         snackbarHost = {
@@ -162,7 +169,7 @@ fun CourseDetailsScreen(
                             )
                         )
                     }
-                    IconButton(onClick = { showDeleteDialog = true }) {
+                    IconButton(onClick = { showDeleteCourseDialog = true }) {
                         Icon(
                             imageVector = Icons.Default.Delete, contentDescription = stringResource(
                                 id = R.string.delete_course_dialog_title
@@ -291,26 +298,35 @@ fun CourseDetailsScreen(
                                 onDismissRequest = { showPopup = false }
                             ) {
                                 val context = LocalContext.current
-                                SelectableMenuItem(
-                                    label = stringResource(id = R.string.add_class_on_this_scheduele),
-                                    onSelect = {
-                                        scheduleToAddClassOn = classDetail
-                                        showPopup = false
-                                    },
-                                )
+                                if(classDetail.includedInSchedule){
+                                    SelectableMenuItem(
+                                        label = stringResource(id = R.string.add_class_on_this_scheduele),
+                                        onSelect = {
+                                            scheduleToAddClassOn = classDetail
+                                            showPopup = false
+                                        },
+                                    )
+                                    SelectableMenuItem(
+                                        label = stringResource(id = R.string.exclude_schedule_item_from_schedule),
+                                        onSelect = {
+                                            changeActivateStatusOfScheduleItem(classDetail, false)
+                                            showPopup = false
+                                        },
+                                    )
+                                } else {
+                                    SelectableMenuItem(
+                                        label = stringResource(id = R.string.include_schedule_item_from_schedule),
+                                        onSelect = {
+                                            changeActivateStatusOfScheduleItem(classDetail, true)
+                                            showPopup = false
+                                        },
+                                    )
+                                }
                                 SelectableMenuItem(
                                     label = stringResource(id = R.string.delete_schedule_item),
                                     onSelect = {
-                                        //TODO: ask to want to delete attendance records too?
-                                        if (classDetail.scheduleId != null) {
-                                            DBOps.instance.deleteScheduleWithId(classDetail.scheduleId)
-                                            scope.launch {
-                                                snackbarHostState.showSnackbar(
-                                                    message = context.getString(R.string.deleted_schedule_item),
-                                                    withDismissAction = true
-                                                )
-                                            }
-                                        }
+                                        scheduleItemToBeDeleted = classDetail
+
                                         showPopup = false
                                     },
                                 )
@@ -319,90 +335,31 @@ fun CourseDetailsScreen(
                     }
                 )
             }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                OutlinedButton(onClick = { showAddClassBottomSheet = true }) {
+                    Text(text = stringResource(id = R.string.add_schedule_item))
+                }
+            }
         }
     }
+    if (scheduleItemToBeDeleted != null) {
+        DeleteScheduleItemDialog(
+            onDismissRequest = { scheduleItemToBeDeleted = null },
+            scheduleItemToBeDeleted = scheduleItemToBeDeleted!!,
+            deleteScheduleItem = onDeleteScheduleItem
+        )
+    }
     if (scheduleToAddClassOn != null) {
-        BaseDialog(
-            onDismissRequest = { scheduleToAddClassOn = null },
-            dialogPadding = PaddingValues(0.dp)
-        ) {
-            Text(
-                text = "Select date to add class on ${scheduleToAddClassOn!!.dayOfWeek.name} from ${
-                    scheduleToAddClassOn!!.startTime.format(
-                        timeFormatter
-                    )
-                } to ${scheduleToAddClassOn!!.endTime.format(timeFormatter)}",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(16.dp)
-            )
-            val epochDay0 = remember {
-                LocalDate.ofEpochDay(0)
+        AddAttendanceRecordOnSchedule(
+            courseId = courseDetails.courseId,
+            scheduleToAddClassOn = scheduleToAddClassOn!!,
+            onDismissRequest = {
+                scheduleToAddClassOn = null
             }
-            val weeksSinceEpoch = remember {
-                weeksSinceEpoch().toInt()
-            }
-            val pagerState = rememberPagerState(
-                initialPage = weeksSinceEpoch - 1,
-                pageCount = { weeksSinceEpoch })
-            var classStatus by remember {
-                mutableStateOf(CourseClassStatus.Unset)
-            }
-            VerticalPager(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp)
-                    .padding(vertical = 24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                state = pagerState,
-                reverseLayout = true,
-                contentPadding = PaddingValues(vertical = 32.dp),
-            ) { pageNum ->
-                val offSetNormalized = pagerState.pageOffsetCoerced(pageNum)
-                val scaleFactor = calculateScale(pagerState, pageNum)
-                Text(
-                    text = epochDay0.plusWeeks((pageNum + 1).toLong()).format(dateFormatter),
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontSize = MaterialTheme.typography.titleLarge.fontSize.times(scaleFactor)
-                    ),
-                    color = run {
-                        val b = MaterialTheme.colorScheme.primary
-                        val a = MaterialTheme.colorScheme.onSurface
-                        Color.Black.copy(
-                            red = (offSetNormalized * a.red + (1 - offSetNormalized) * b.red) / a.colorSpace.getMaxValue(
-                                1
-                            ),
-                            green = (offSetNormalized * a.green + (1 - offSetNormalized) * b.green) / a.colorSpace.getMaxValue(
-                                2
-                            ),
-                            blue = (offSetNormalized * a.blue + (1 - offSetNormalized) * b.blue) / a.colorSpace.getMaxValue(
-                                3
-                            )
-                        )
-                    }
-                )
-            }
-            ClassStatusOptions(classStatus) { classStatus = it }
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                TextButton(onClick = { scheduleToAddClassOn = null }) {
-                    Text(text = stringResource(id = R.string.cancel))
-                }
-                TextButton(onClick = {
-                    DBOps.instance.markAttendanceForScheduleClass(
-                        scheduleId = scheduleToAddClassOn!!.scheduleId!!,
-                        classStatus = classStatus,
-                        attendanceId = 0,//TODO
-                        date = epochDay0.plusWeeks(pagerState.currentPage.toLong() + 1)
-                            .with(
-                                ChronoField.DAY_OF_WEEK,
-                                scheduleToAddClassOn!!.dayOfWeek.value.toLong()
-                            )
-                    )
-                    scheduleToAddClassOn = null
-                }) {
-                    Text(text = stringResource(id = R.string.ok))
-                }
-            }
-        }
+        )
     }
     if (showAddExtraSheet) {
         AddExtraBottomSheet(
@@ -416,14 +373,157 @@ fun CourseDetailsScreen(
             }
         )
     }
-    if (showDeleteDialog) {
+    if (showDeleteCourseDialog) {
         DeleteCourseDialog(
             courseName = courseDetails.courseName,
-            onDismissRequest = { showDeleteDialog = false },
+            onDismissRequest = { showDeleteCourseDialog = false },
             onDeleteCourse = {
                 onDeleteCourse(courseDetails.courseId)
             }
         )
+    }
+    if (showAddClassBottomSheet) {
+        AddClassBottomSheet(
+            onDismissRequest = { showAddClassBottomSheet = false },
+            onCreateClass = { params ->
+                onAddScheduleClass(params)
+                showAddClassBottomSheet = false
+            }
+        )
+    }
+}
+
+@Composable
+fun DeleteScheduleItemDialog(
+    onDismissRequest: () -> Unit,
+    scheduleItemToBeDeleted: ClassDetail,
+    deleteScheduleItem: (classDetails: ClassDetail) -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = {
+            Text(
+                text = stringResource(
+                    id = R.string.delete_schedule_item_with_details,
+                    scheduleItemToBeDeleted.dayOfWeek.name,
+                    scheduleItemToBeDeleted.startTime.format(timeFormatter),
+                    scheduleItemToBeDeleted.endTime.format(timeFormatter)
+                )
+            )
+        },
+        body = {
+            Text(text = stringResource(id = R.string.delete_schedule_item_behaviour))
+        },
+        buttonBar = {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+
+                TextButton(onClick = onDismissRequest) {
+                    Text(text = stringResource(id = R.string.cancel))
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                TextButton(
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    ),
+                    onClick = {
+                    deleteScheduleItem(scheduleItemToBeDeleted)
+                    onDismissRequest()
+                }) {
+                    Text(text = stringResource(id = R.string.delete))
+                }
+            }
+        }
+    )
+}
+
+@Composable
+@OptIn(ExperimentalFoundationApi::class)
+private fun AddAttendanceRecordOnSchedule(
+    courseId: Long,
+    scheduleToAddClassOn: ClassDetail,
+    onDismissRequest: () -> Unit
+) {
+    BaseDialog(
+        onDismissRequest = onDismissRequest,
+        dialogPadding = PaddingValues(0.dp)
+    ) {
+        Text(
+            text = "Select date to add class on ${scheduleToAddClassOn!!.dayOfWeek.name} from ${
+                scheduleToAddClassOn!!.startTime.format(
+                    timeFormatter
+                )
+            } to ${scheduleToAddClassOn!!.endTime.format(timeFormatter)}",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(16.dp)
+        )
+        val epochDay0 = remember {
+            LocalDate.ofEpochDay(0)
+        }
+        val weeksSinceEpoch = remember {
+            weeksSinceEpoch().toInt()
+        }
+        val pagerState = rememberPagerState(
+            initialPage = weeksSinceEpoch - 1,
+            pageCount = { weeksSinceEpoch })
+        var classStatus by remember {
+            mutableStateOf(CourseClassStatus.Unset)
+        }
+        VerticalPager(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp)
+                .padding(vertical = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            state = pagerState,
+            reverseLayout = true,
+            contentPadding = PaddingValues(vertical = 32.dp),
+        ) { pageNum ->
+            val offSetNormalized = pagerState.pageOffsetCoerced(pageNum)
+            val scaleFactor = calculateScale(pagerState, pageNum)
+            Text(
+                text = epochDay0.plusWeeks((pageNum + 1).toLong()).format(dateFormatter),
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontSize = MaterialTheme.typography.titleLarge.fontSize.times(scaleFactor)
+                ),
+                color = run {
+                    val b = MaterialTheme.colorScheme.primary
+                    val a = MaterialTheme.colorScheme.onSurface
+                    Color.Black.copy(
+                        red = (offSetNormalized * a.red + (1 - offSetNormalized) * b.red) / a.colorSpace.getMaxValue(
+                            1
+                        ),
+                        green = (offSetNormalized * a.green + (1 - offSetNormalized) * b.green) / a.colorSpace.getMaxValue(
+                            2
+                        ),
+                        blue = (offSetNormalized * a.blue + (1 - offSetNormalized) * b.blue) / a.colorSpace.getMaxValue(
+                            3
+                        )
+                    )
+                }
+            )
+        }
+        ClassStatusOptions(classStatus) { classStatus = it }
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            TextButton(onClick = onDismissRequest) {
+                Text(text = stringResource(id = R.string.cancel))
+            }
+            TextButton(onClick = {
+                DBOps.instance.markAttendanceForScheduleClass(
+                    scheduleId = scheduleToAddClassOn.scheduleId!!,
+                    classStatus = classStatus,
+                    attendanceId = null,
+                    date = epochDay0.plusWeeks(pagerState.currentPage.toLong() + 1)
+                        .with(
+                            ChronoField.DAY_OF_WEEK,
+                            scheduleToAddClassOn.dayOfWeek.value.toLong()
+                        ),
+                    courseId = courseId
+                )
+                onDismissRequest()
+            }) {
+                Text(text = stringResource(id = R.string.ok))
+            }
+        }
     }
 }
 

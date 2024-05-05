@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -37,6 +38,7 @@ import dev.olshevski.navigation.reimagined.NavBackHandler
 import dev.olshevski.navigation.reimagined.navigate
 import dev.olshevski.navigation.reimagined.pop
 import dev.olshevski.navigation.reimagined.rememberNavController
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
 sealed interface Screen : Parcelable {
@@ -79,7 +81,8 @@ fun RootNavHost() {
                         attendanceId = item.attendanceId,
                         classStatus = status,
                         scheduleId = item.scheduleId,
-                        date = item.date
+                        date = item.date,
+                        courseId = item.courseId
                     )
                 }
             }
@@ -146,6 +149,7 @@ fun RootNavHost() {
                 val classes = DBOps.instance.getScheduleClassesForCourse(courseId = screen.courseId)
                     .collectAsStateWithLifecycle(initialValue = listOf())
                 if (courseDetails.value != null) {
+                    val scope = rememberCoroutineScope()
                     CourseDetailsScreen(
                         onGoBack = { navController.pop() },
                         courseDetails = courseDetails.value!!,
@@ -162,6 +166,29 @@ fun RootNavHost() {
                         },
                         onDeleteCourse = { courseId ->
                             DBOps.instance.deleteCourse(courseId)
+                        },
+                        onAddScheduleClass = { classDetail ->
+                            DBOps.instance.addScheduleClassForCourse(
+                                courseId = courseDetails.value!!.courseId,
+                                classDetails = classDetail
+                            )
+                        },
+                        onDeleteScheduleItem = { classDetails ->
+                            if (classDetails.scheduleId != null) {
+                                DBOps.instance.deleteScheduleWithId(
+                                    classDetails.scheduleId,
+                                )
+                                Toast.makeText(
+                                    context,
+                                    R.string.deleted_schedule_item,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        },
+                        changeActivateStatusOfScheduleItem = { classDetails, activate ->
+                            if(classDetails.scheduleId != null){
+                                DBOps.instance.changeActivateStatusOfScheduleItem(classDetails.scheduleId, activate)
+                            }
                         }
                     )
                 } else {

@@ -7,9 +7,10 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 @Parcelize
-data class ClassDetail(
+data class ClassDetail constructor(
     val dayOfWeek: DayOfWeek = LocalDate.now().dayOfWeek,
     val startTime: LocalTime = LocalTime.now(),
     val endTime: LocalTime = LocalTime.now(),
     val scheduleId: Long? = null,
+    val includedInSchedule: Boolean = true
 ) : Parcelable

@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.github.rahul_gill.attendance.R
 import com.github.rahul_gill.attendance.prefs.PreferenceManager
+import com.github.rahul_gill.attendance.prefs.UnsetClassesBehavior
 import com.github.rahul_gill.attendance.ui.comps.AlertDialog
 import com.github.rahul_gill.attendance.ui.comps.AttendanceAppTheme
 import com.github.rahul_gill.attendance.ui.comps.ColorSchemeType
@@ -71,6 +73,7 @@ fun SettingsScreen(
     val followSystemColor = PreferenceManager.followSystemColors.asState()
     val seedColor = PreferenceManager.colorSchemeSeed.asState()
     val theme = PreferenceManager.themeConfig.asState()
+    val unsetClassBehaviour = PreferenceManager.unsetClassesBehavior.asState()
     val darkThemeType = PreferenceManager.darkThemeType.asState()
     val dateFormatOption = PreferenceManager.defaultDateFormatPref.asState()
     val timeFormatOption = PreferenceManager.defaultTimeFormatPref.asState()
@@ -245,6 +248,29 @@ fun SettingsScreen(
                     }
                 }
             }
+
+            PreferenceGroupHeader(title = stringResource(id = R.string.behaviour))
+            val unsetClassesBehaviorValues = UnsetClassesBehavior.entries.toTypedArray().toList()
+            ListPreference(
+                title = stringResource(id = R.string.unset_classes_behaviour),
+                items = unsetClassesBehaviorValues,
+                leadingIcon = {
+                    Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                },
+                selectedItemIndex = unsetClassesBehaviorValues.indexOf(unsetClassBehaviour.value),
+                onItemSelection = { PreferenceManager.unsetClassesBehavior.setValue(unsetClassesBehaviorValues[it]) },
+                itemToDescription = { index ->
+                    stringResource(
+                        id = when (unsetClassesBehaviorValues[index]) {
+                            UnsetClassesBehavior.ConsiderPresent -> R.string.consider_as_presents
+                            UnsetClassesBehavior.ConsiderAbsent -> R.string.consider_as_absents
+                            UnsetClassesBehavior.None -> R.string.do_nothing
+                        }
+                    )
+                }
+            )
+
+
             PreferenceGroupHeader(title = stringResource(id = R.string.date_time_formatting))
 
             val timeFormatOptions = stringArrayResource(id = R.array.time_format_choices).toList()

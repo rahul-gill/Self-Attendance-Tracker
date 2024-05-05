@@ -143,13 +143,27 @@
     <string name="required_attendance_percentage">Required Attendance Percentage</string>
     <string name="deleted_schedule_item">Deleted schedule item</string>
     <string name="delete_schedule_item">Delete schedule item</string>
+    <string name="delete_schedule_item_with_details">Delete schedule item on %1$s from %2$s to %3$s</string>
     <string name="add_class_on_this_scheduele">Add class on this schedule</string>
     <string name="course_x_attendance_records">%1$s Attendance Records</string>
     <string name="delete_record">Delete Record</string>
+    <string name="delete">Delete</string>
     <string name="err_end_time_should_be_after_start_time">End time should come after start time</string>
     <string name="select_weekday_start_time_and_end_time_for_the_new_class">Select weekday, start time and end time for the new class</string>
     <string name="tip">Tip</string>
     <string name="course_updated">Course Updated</string>
+    <string name="add_schedule_item">Add schedule item</string>
+    <string name="delete_schedule_item_behaviour">Deleting schedule item will delete attendance records related to it</string>
+    <string name="delete_attendance_records_too">Delete related attendance records too</string>
+    <string name="only_delete_schedule_item">Only delete schedule item</string>
+    <string name="exclude_schedule_item_from_schedule">Exclude schedule item from schedule</string>
+    <string name="include_schedule_item_from_schedule">Include schedule item to schedule</string>
+    <string name="excluded_from_schedule">Excluded from schedule</string>
+    <string name="behaviour">Behaviour</string>
+    <string name="unset_classes_behaviour">Unset classes behaviour</string>
+    <string name="consider_as_presents">Consider as presents</string>
+    <string name="consider_as_absents">Consider as Absents</string>
+    <string name="do_nothing">Do nothing</string>
 
 
 </resources>

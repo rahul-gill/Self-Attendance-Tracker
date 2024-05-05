@@ -11,5 +11,6 @@ data class CourseDetailsOverallItem(
     val currentAttendancePercentage: Double,
     val presents: Int = 0,
     val absents: Int = 0,
-    val cancels: Int = 0
+    val cancels: Int = 0,
+    val unsets: Int = 0
 ) : Parcelable

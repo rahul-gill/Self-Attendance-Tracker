@@ -25,11 +25,16 @@ CREATE TABLE Schedule (
 CREATE TABLE Attendance (
     attendanceId INTEGER PRIMARY KEY AUTOINCREMENT,
     scheduleId INTEGER,
+    courseId INTEGER,
     classStatus TEXT AS CourseClassStatus NOT NULL,
     date TEXT AS LocalDate NOT NULL,
     CONSTRAINT fk_schedule
-        FOREIGN KEY (scheduleId)
-        REFERENCES Schedule (scheduleId)
+       FOREIGN KEY (scheduleId)
+       REFERENCES Schedule (scheduleId)
+       ON DELETE CASCADE,
+    CONSTRAINT fk_course
+        FOREIGN KEY (courseId)
+        REFERENCES Course (courseId)
         ON DELETE CASCADE
 );
 
@@ -47,7 +52,7 @@ CREATE TABLE ExtraClasses (
 );
 
 getCourseListForToday:
-SELECT Attendance.attendanceId, Schedule.scheduleId, Course.courseName, Schedule.startTime, Schedule.endTime,
+SELECT Attendance.attendanceId, Schedule.scheduleId, Course.courseId, Course.courseName, Schedule.startTime, Schedule.endTime,
        CASE WHEN Attendance.classStatus IS NULL THEN 'Unset'
             ELSE Attendance.classStatus
        END AS classStatus,
@@ -60,10 +65,15 @@ AND DATE('now', 'localtime') = Attendance.date
 OR (Attendance.scheduleId IS NULL AND DATE('now', 'localtime') = DATE('now', 'localtime'));
 
 getExtraClassesListForToday:
-SELECT Course.courseName, ExtraClasses.startTime, ExtraClasses.endTime, ExtraClasses.classStatus, ExtraClasses.extraClassId, ExtraClasses.date
+SELECT Course.courseId, Course.courseName, ExtraClasses.startTime, ExtraClasses.endTime, ExtraClasses.classStatus, ExtraClasses.extraClassId, ExtraClasses.date
 FROM Course
 JOIN ExtraClasses ON Course.courseId = ExtraClasses.courseId
 WHERE ExtraClasses.date = DATE('now', 'localtime');
+
+changeActivateStatusOfScheduleItem:
+UPDATE Schedule
+SET includedInSchedule = :activate
+WHERE scheduleId = :scheduleId;
 
 
 
@@ -77,6 +87,10 @@ WHERE courseId = ?;
 
 deleteScheduleItem:
 DELETE FROM Schedule WHERE Schedule.scheduleId = ?;
+
+deleteAttendanceRecordsOnSchedule:
+DELETE FROM Attendance WHERE Attendance.scheduleId = ?;
+
 
 
 getLastInsertRowID:
@@ -124,7 +138,9 @@ SELECT
     ((SELECT COUNT(*) AS presents FROM Attendance WHERE scheduleId IN (SELECT scheduleId FROM Schedule WHERE courseId = Course.courseId) AND classStatus = 'Absent')
         + (SELECT COUNT(*) AS presents FROM ExtraClasses WHERE courseId = Course.courseId AND classStatus = 'Absent')) AS nAbsents,
     ((SELECT COUNT(*) AS presents FROM Attendance WHERE scheduleId IN (SELECT scheduleId FROM Schedule WHERE courseId = Course.courseId) AND classStatus = 'Cancelled')
-        + (SELECT COUNT(*) AS presents FROM ExtraClasses WHERE courseId = Course.courseId AND classStatus = 'Cancelled')) AS nCancels
+        + (SELECT COUNT(*) AS presents FROM ExtraClasses WHERE courseId = Course.courseId AND classStatus = 'Cancelled')) AS nCancels,
+    ((SELECT COUNT(*) AS presents FROM Attendance WHERE scheduleId IN (SELECT scheduleId FROM Schedule WHERE courseId = Course.courseId) AND classStatus = 'Unset')
+            + (SELECT COUNT(*) AS presents FROM ExtraClasses WHERE courseId = Course.courseId AND classStatus = 'Unset')) AS nUnsets
 FROM
     Course;
 
@@ -139,13 +155,15 @@ SELECT
     ((SELECT COUNT(*) AS presents FROM Attendance WHERE scheduleId IN (SELECT scheduleId FROM Schedule WHERE courseId = Course.courseId) AND classStatus = 'Absent')
         + (SELECT COUNT(*) AS presents FROM ExtraClasses WHERE courseId = Course.courseId AND classStatus = 'Absent')) AS nAbsents,
     ((SELECT COUNT(*) AS presents FROM Attendance WHERE scheduleId IN (SELECT scheduleId FROM Schedule WHERE courseId = Course.courseId) AND classStatus = 'Cancelled')
-        + (SELECT COUNT(*) AS presents FROM ExtraClasses WHERE courseId = Course.courseId AND classStatus = 'Cancelled')) AS nCancels
+        + (SELECT COUNT(*) AS presents FROM ExtraClasses WHERE courseId = Course.courseId AND classStatus = 'Cancelled')) AS nCancels,
+    ((SELECT COUNT(*) AS presents FROM Attendance WHERE scheduleId IN (SELECT scheduleId FROM Schedule WHERE courseId = Course.courseId) AND classStatus = 'Unset')
+            + (SELECT COUNT(*) AS presents FROM ExtraClasses WHERE courseId = Course.courseId AND classStatus = 'Unset')) AS nUnsets
 FROM
     Course
 WHERE Course.courseId = ?;
 
 getScheduleClassesForCourse:
-SELECT * FROM Schedule WHERE Schedule.courseId = ? AND Schedule.includedInSchedule <> 0 ORDER BY Schedule.weekday, Schedule.startTime;
+SELECT * FROM Schedule WHERE Schedule.courseId = ? ORDER BY Schedule.includedInSchedule, Schedule.weekday, Schedule.startTime;
 
 getExtraClasssesForCourse:
 SELECT * FROM ExtraClasses WHERE ExtraClasses.courseId = ? ORDER BY ExtraClasses.date DESC, ExtraClasses.startTime;
@@ -160,12 +178,12 @@ SET classStatus = :status
 WHERE extraClassId = :extraClassId;
 
 markAttendance:
-INSERT OR REPLACE INTO Attendance (attendanceId, classStatus, scheduleId, date)
-VALUES (?,  ?, ?, ?);
+INSERT OR REPLACE INTO Attendance (attendanceId, classStatus, scheduleId, date, courseId)
+VALUES (?,  ?, ?, ?, ?);
 
 markAttendanceInsert:
-INSERT  INTO Attendance (classStatus, scheduleId, date)
-VALUES ( ?, ?, ?);
+INSERT  INTO Attendance (classStatus, scheduleId, date, courseId)
+VALUES ( ?, ?, ?, ?);
 
 
 markAttendanceUpdate:
@@ -197,11 +215,11 @@ DELETE FROM Attendance WHERE Attendance.attendanceId = ?;
 
 
 markedAttendancesForCourse:
-SELECT a.attendanceId AS entityId, a.scheduleId AS scheduleId,  a.date, s.startTime, s.endTime, a.classStatus, 0 AS isExtraCLass, course.courseName
+SELECT a.attendanceId AS entityId, a.scheduleId AS scheduleId,  a.date, s.startTime, s.endTime, a.classStatus, 0 AS isExtraCLass, course.courseName, course.courseId
     FROM Attendance a, Schedule s,  Course course
     WHERE a.scheduleId = s.scheduleId AND s.courseId = :courseId AND s.courseId = course.courseId
 UNION
-SELECT e.extraClassId AS entityId, NULL AS scheduleId, e.date, e.startTime, e.endTime, e.classStatus, 1 AS isExtraCLass , course.courseName
+SELECT e.extraClassId AS entityId, NULL AS scheduleId, e.date, e.startTime, e.endTime, e.classStatus, 1 AS isExtraCLass , course.courseName, course.courseId
     FROM ExtraClasses e, Course course
     WHERE e.courseId = :courseId AND e.courseId = course.courseId;
 
@@ -213,6 +231,9 @@ SELECT
         + (SELECT COUNT(*) AS presents FROM ExtraClasses WHERE courseId = Course.courseId AND classStatus = 'Absent')) AS nAbsents,
     ((SELECT COUNT(*) AS presents FROM Attendance WHERE scheduleId IN (SELECT scheduleId FROM Schedule WHERE courseId = Course.courseId) AND classStatus = 'Cancelled')
         + (SELECT COUNT(*) AS presents FROM ExtraClasses WHERE courseId = Course.courseId AND classStatus = 'Cancelled')) AS nCancels,
+
+    ((SELECT COUNT(*) AS presents FROM Attendance WHERE scheduleId IN (SELECT scheduleId FROM Schedule WHERE courseId = Course.courseId) AND classStatus = 'Unset')
+            + (SELECT COUNT(*) AS presents FROM ExtraClasses WHERE courseId = Course.courseId AND classStatus = 'Unset')) AS nUnsets,
     Course.requiredAttendance
 FROM Course
 WHERE courseId = ?;

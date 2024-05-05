@@ -5,6 +5,9 @@ on:
     branches:
       - master
 
+env:
+  SIGN_RELEASE_WITH_DEBUG_KEY_CI: 1
+
 jobs:
   build:
     runs-on: ubuntu-latest

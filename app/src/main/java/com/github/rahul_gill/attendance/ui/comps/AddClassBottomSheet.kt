@@ -1,5 +1,6 @@
 package com.github.rahul_gill.attendance.ui.comps
 
+import android.text.format.DateFormat
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +22,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,6 +46,7 @@ import com.github.rahul_gill.attendance.R
 import com.github.rahul_gill.attendance.db.ClassDetail
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.TextStyle
 import java.util.Locale
@@ -58,15 +61,57 @@ private fun defaultClassDetailWithTimeAdjusted(): ClassDetail {
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun AddClassBottomSheet(
     initialState: ClassDetail? = null,
     onDismissRequest: () -> Unit,
     onCreateClass: (ClassDetail) -> Unit
 ) {
-    var state by rememberSaveable {
-        mutableStateOf(initialState ?: defaultClassDetailWithTimeAdjusted())
+    var dayOfWeekSelected by rememberSaveable {
+        mutableStateOf(initialState?.dayOfWeek ?: LocalDate.now().dayOfWeek)
+    }
+    val context = LocalContext.current
+    var startTimeState = rememberSaveable(
+        saver = TimePickerState.Saver()
+    ) {
+        TimePickerState(
+            initialHour = initialState?.startTime?.hour ?: 0,
+            initialMinute = initialState?.startTime?.minute ?: 0,
+            is24Hour = DateFormat.is24HourFormat(context),
+        )
+    }
+    var endTimeState = rememberSaveable(
+        saver = TimePickerState.Saver()
+    ) {
+        TimePickerState(
+            initialHour = initialState?.endTime?.hour ?: 0,
+            initialMinute = initialState?.endTime?.minute ?: 0,
+            is24Hour = DateFormat.is24HourFormat(context),
+        )
+    }
+    LaunchedEffect(startTimeState) {
+        endTimeState = TimePickerState(
+            initialHour = (startTimeState.hour + 1) % 24,
+            initialMinute = endTimeState.minute,
+            is24Hour = DateFormat.is24HourFormat(context),
+        )
+    }
+    LaunchedEffect(endTimeState) {
+        val newEnd = LocalTime.of(endTimeState.hour, endTimeState.minute)
+        val start = LocalTime.of(startTimeState.hour, startTimeState.minute)
+        if (newEnd <= start) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.err_end_time_should_be_after_start_time),
+                Toast.LENGTH_SHORT
+            ).show()
+            endTimeState = TimePickerState(
+                initialHour = (startTimeState.hour + 1) % 24,
+                initialMinute = endTimeState.minute,
+                is24Hour = DateFormat.is24HourFormat(context),
+            )
+        }
     }
     BaseDialog(
         onDismissRequest = onDismissRequest,
@@ -109,15 +154,15 @@ fun AddClassBottomSheet(
                                     .fillMaxWidth()
                                     .height(56.dp)
                                     .selectable(
-                                        selected = (dayOfWeek == state.dayOfWeek),
-                                        onClick = { state = state.copy(dayOfWeek = dayOfWeek) },
+                                        selected = (dayOfWeekSelected == dayOfWeek),
+                                        onClick = { dayOfWeekSelected = dayOfWeek },
                                         role = Role.RadioButton
                                     )
                                     .padding(horizontal = 16.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 RadioButton(
-                                    selected = (dayOfWeek == state.dayOfWeek),
+                                    selected = (dayOfWeek == dayOfWeekSelected),
                                     onClick = null // null recommended for accessibility with screenreaders
                                 )
                                 Text(
@@ -134,40 +179,25 @@ fun AddClassBottomSheet(
                 }
 
                 else -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .onSizeChanged { pagerMinSize = maxOf(pagerMinSize, it.height) },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        val timePickerState = rememberTimePickerState(
-                            initialHour = if (page == 1) state.startTime.hour else state.endTime.hour,
-                            initialMinute = if (page == 1) state.startTime.minute else state.endTime.minute
-                        )
-                        val context  = LocalContext.current
-                        LaunchedEffect(timePickerState.hour, timePickerState.minute) {
-                            state = if (page == 1) {
-                                val newStart = state.startTime.withHour(timePickerState.hour)
-                                    .withMinute(timePickerState.minute)
-                                state.copy(
-                                    startTime = newStart,
-                                    endTime = newStart.plusHours(1)
-                                )
-                            } else {
-                                val newEnd = state.endTime.withHour(timePickerState.hour)
-                                    .withMinute(timePickerState.minute)
-                                if(newEnd > state.startTime){
-                                    state.copy(
-                                        endTime = newEnd
-                                    )
-                                } else {
-                                    Toast.makeText(context,
-                                        context.getString(R.string.err_end_time_should_be_after_start_time), Toast.LENGTH_SHORT).show()
-                                    state
-                                }
-                            }
+                    if (page == 1) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .onSizeChanged { pagerMinSize = maxOf(pagerMinSize, it.height) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            TimePicker(state = startTimeState)
                         }
-                        TimePicker(state = timePickerState)
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .onSizeChanged { pagerMinSize = maxOf(pagerMinSize, it.height) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            TimePicker(state = endTimeState)
+                        }
+                        val context = LocalContext.current
                     }
                 }
             }
@@ -177,7 +207,13 @@ fun AddClassBottomSheet(
                 Text(text = stringResource(id = R.string.cancel))
             }
             TextButton(onClick = {
-                onCreateClass(state)
+                onCreateClass(
+                    ClassDetail(
+                        dayOfWeek = dayOfWeekSelected,
+                        startTime = LocalTime.of(startTimeState.hour, startTimeState.minute),
+                        endTime = LocalTime.of(endTimeState.hour, endTimeState.minute)
+                    )
+                )
                 onDismissRequest()
             }) {
                 Text(text = stringResource(id = R.string.ok))

@@ -1,5 +1,6 @@
 package com.github.rahul_gill.attendance.ui.comps
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -8,11 +9,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
@@ -36,6 +40,7 @@ fun ScheduleItem(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
+            .animateContentSize()
             .then(modifier)
     ) {
         Row(
@@ -64,6 +69,20 @@ fun ScheduleItem(
             }
             if (popupContent != null) {
                 popupContent()
+            }
+        }
+        if(!item.includedInSchedule){
+            Surface(
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                shape = RoundedCornerShape(25),
+                color = MaterialTheme.colorScheme.secondaryContainer
+            ) {
+                Text(
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                    text = stringResource(id = R.string.excluded_from_schedule),
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    style = MaterialTheme.typography.labelMedium
+                )
             }
         }
     }
