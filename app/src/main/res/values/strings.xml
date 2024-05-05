@@ -92,7 +92,7 @@
     <string name="scheduled_class">Scheduled Class</string>
     <string name="extra_class">Extra Class</string>
 
-    <string name="delete_course_dialog_title">Delete course: %1$s?</string>
+    <string name="delete_course_dialog_title">Delete course: %1$s</string>
     <string name="delete_course_dialog_description">Do you really want to delete this course item? You\'ll lose all the data associated with this course.</string>
 
     <string name="required_percentage_detail">Required Attendance: %1$d</string>
@@ -149,6 +149,7 @@
     <string name="err_end_time_should_be_after_start_time">End time should come after start time</string>
     <string name="select_weekday_start_time_and_end_time_for_the_new_class">Select weekday, start time and end time for the new class</string>
     <string name="tip">Tip</string>
+    <string name="course_updated">Course Updated</string>
 
 
 </resources>

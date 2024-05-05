@@ -73,11 +73,11 @@ class DBOps private constructor(
         id: Long,
         name: String,
         requiredAttendancePercentage: Double,
-        schedule: List<ClassDetail>,
+        schedule: List<ClassDetail>? = null,
     ) {
         db.transaction {
             queries.udpateCourse(name, requiredAttendancePercentage, id)
-            schedule.forEach { (dayOfWeek, startTime, endTime, scheduleID) ->
+            schedule?.forEach { (dayOfWeek, startTime, endTime, scheduleID) ->
                 if (scheduleID != null)
                     queries.updateScheduleItemForCourse(
                         scheduleId = scheduleID,
@@ -85,7 +85,8 @@ class DBOps private constructor(
                         startTime = startTime,
                         endTime = endTime,
                         includedInSchedule = 1
-                    ) else {
+                    )
+                else {
                     queries.createScheduleItemForCourse(
                         courseId = id,
                         weekday = dayOfWeek,
@@ -113,7 +114,7 @@ class DBOps private constructor(
             }
         ).asFlow().mapToList(Dispatchers.IO)
         val extraClassesFlow: Flow<List<AttendanceRecordHybrid>> =
-            queries.getExtraClassesListForToday(mapper = { courseName, startTime, endTime, classStatus, extraClassId,date ->
+            queries.getExtraClassesListForToday(mapper = { courseName, startTime, endTime, classStatus, extraClassId, date ->
                 AttendanceRecordHybrid.ExtraClass(
                     extraClassId = extraClassId,
                     startTime = startTime,
@@ -187,9 +188,9 @@ class DBOps private constructor(
         scheduleId: Long?,
         date: LocalDate
     ) {
-        if(attendanceId != null)
-        queries.markAttendance(attendanceId, classStatus, scheduleId, date)
-        else queries.markAttendanceInsert( classStatus, scheduleId, date)
+        if (attendanceId != null)
+            queries.markAttendance(attendanceId, classStatus, scheduleId, date)
+        else queries.markAttendanceInsert(classStatus, scheduleId, date)
     }
 
     fun markAttendanceForExtraClass(
@@ -236,8 +237,8 @@ class DBOps private constructor(
                        endTime,
                        classStatus,
                        isExtraCLass,
-                        courseName ->
-                if(isExtraCLass != 0L){
+                       courseName ->
+                if (isExtraCLass != 0L) {
                     AttendanceRecordHybrid.ExtraClass(
                         extraClassId = entityId,
                         startTime = startTime,

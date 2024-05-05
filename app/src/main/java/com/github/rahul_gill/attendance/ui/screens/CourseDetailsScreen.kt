@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -25,6 +26,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.sharp.Info
@@ -71,6 +74,7 @@ import com.github.rahul_gill.attendance.db.CourseClassStatus
 import com.github.rahul_gill.attendance.db.CourseDetailsOverallItem
 import com.github.rahul_gill.attendance.db.DBOps
 import com.github.rahul_gill.attendance.db.ExtraClassTimings
+import com.github.rahul_gill.attendance.ui.comps.AlertDialog
 import com.github.rahul_gill.attendance.ui.comps.BaseDialog
 import com.github.rahul_gill.attendance.ui.comps.ClassStatusOptions
 import com.github.rahul_gill.attendance.ui.comps.PopupMenu
@@ -109,7 +113,9 @@ fun CourseDetailsScreen(
         ClassDetail(), ClassDetail(), ClassDetail()
     ),
     goToClassRecords: () -> Unit = {},
-    onCreateExtraClass: (ExtraClassTimings) -> Unit
+    goToCourseEdit: (CourseDetailsOverallItem) -> Unit = {},
+    onCreateExtraClass: (ExtraClassTimings) -> Unit,
+    onDeleteCourse: (Long) -> Unit
 ) {
     var scheduleToAddClassOn by remember {
         mutableStateOf<ClassDetail?>(null)
@@ -122,7 +128,9 @@ fun CourseDetailsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-
+    var showDeleteDialog by remember {
+        mutableStateOf(false)
+    }
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
@@ -131,18 +139,37 @@ fun CourseDetailsScreen(
             .nestedScroll(scrollBehavior.nestedScrollConnection)
             .fillMaxSize(),
         topBar = {
-            LargeTopAppBar(title = {
-                Text(
-                    text = courseDetails.courseName,
-                )
-            }, navigationIcon = {
-                IconButton(onClick = onGoBack) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(id = R.string.go_back_screen)
+            LargeTopAppBar(
+                title = {
+                    Text(
+                        text = courseDetails.courseName,
                     )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onGoBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(id = R.string.go_back_screen)
+                        )
+                    }
+                },
+                scrollBehavior = scrollBehavior,
+                actions = {
+                    IconButton(onClick = { goToCourseEdit(courseDetails) }) {
+                        Icon(
+                            imageVector = Icons.Default.Edit, contentDescription = stringResource(
+                                id = R.string.delete_course_dialog_title
+                            )
+                        )
+                    }
+                    IconButton(onClick = { showDeleteDialog = true }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete, contentDescription = stringResource(
+                                id = R.string.delete_course_dialog_title
+                            )
+                        )
+                    }
                 }
-            }, scrollBehavior = scrollBehavior
             )
         },
     ) { paddings ->
@@ -389,6 +416,51 @@ fun CourseDetailsScreen(
             }
         )
     }
+    if (showDeleteDialog) {
+        DeleteCourseDialog(
+            courseName = courseDetails.courseName,
+            onDismissRequest = { showDeleteDialog = false },
+            onDeleteCourse = {
+                onDeleteCourse(courseDetails.courseId)
+            }
+        )
+    }
+}
+
+@Composable
+fun DeleteCourseDialog(
+    onDismissRequest: () -> Unit,
+    courseName: String,
+    onDeleteCourse: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = {
+            Text(
+                text = stringResource(
+                    id = R.string.delete_course_dialog_title,
+                    courseName
+                )
+            )
+        },
+        body = {
+            Text(text = stringResource(id = R.string.delete_course_dialog_description))
+        },
+        buttonBar = {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                TextButton(onClick = onDismissRequest) {
+                    Text(text = stringResource(id = R.string.cancel))
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                TextButton(onClick = {
+                    onDeleteCourse()
+                    onDismissRequest()
+                }) {
+                    Text(text = stringResource(id = R.string.ok))
+                }
+            }
+        }
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)

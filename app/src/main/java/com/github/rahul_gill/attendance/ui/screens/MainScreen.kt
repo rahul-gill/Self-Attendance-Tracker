@@ -191,12 +191,6 @@ fun MainScreen(
                             }
                             items(
                                 todayClasses,
-                                key = {
-                                    when(it){
-                                        is AttendanceRecordHybrid.ExtraClass -> "" + it.extraClassId + "_ext"
-                                        is AttendanceRecordHybrid.ScheduledClass -> "" + it.attendanceId + "_sch"
-                                    }
-                                }
                             ) { classItem ->
                                 TodayClassItem(
                                     item = classItem,

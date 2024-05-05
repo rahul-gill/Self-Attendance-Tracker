@@ -23,9 +23,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.rahul_gill.attendance.R
 import com.github.rahul_gill.attendance.db.AttendanceRecordHybrid
 import com.github.rahul_gill.attendance.db.CourseClassStatus
+import com.github.rahul_gill.attendance.db.CourseDetailsOverallItem
 import com.github.rahul_gill.attendance.db.DBOps
 import com.github.rahul_gill.attendance.ui.screens.CourseAttendanceRecordScreen
 import com.github.rahul_gill.attendance.ui.screens.CourseDetailsScreen
+import com.github.rahul_gill.attendance.ui.screens.CourseEditScreen
 import com.github.rahul_gill.attendance.ui.screens.CreateCourseScreen
 import com.github.rahul_gill.attendance.ui.screens.MainScreen
 import com.github.rahul_gill.attendance.ui.screens.SettingsScreen
@@ -53,6 +55,9 @@ sealed interface Screen : Parcelable {
 
     @Parcelize
     class CourseClassRecords(val courseId: Long) : Screen
+
+    @Parcelize
+    class EditCourse(val courseDetailsOverallItem: CourseDetailsOverallItem) : Screen
 }
 
 @Composable
@@ -151,6 +156,12 @@ fun RootNavHost() {
                                 courseId = courseDetails.value!!.courseId,
                                 timings = timings
                             )
+                        },
+                        goToCourseEdit = {
+                            navController.navigate(Screen.EditCourse(it))
+                        },
+                        onDeleteCourse = { courseId ->
+                            DBOps.instance.deleteCourse(courseId)
                         }
                     )
                 } else {
@@ -186,6 +197,20 @@ fun RootNavHost() {
                 } else {
                     Box(Modifier.fillMaxSize())
                 }
+            }
+
+            is Screen.EditCourse -> {
+                CourseEditScreen(
+                    courseDetails = screen.courseDetailsOverallItem,
+                    onGoBack = { navController.pop() },
+                    onSave = { newName, newRequiredPercentage ->
+                        DBOps.instance.updateCourseDetails(
+                            id = screen.courseDetailsOverallItem.courseId,
+                            name = newName,
+                            requiredAttendancePercentage = newRequiredPercentage.toDouble(),
+                        )
+                    }
+                )
             }
         }
     }
