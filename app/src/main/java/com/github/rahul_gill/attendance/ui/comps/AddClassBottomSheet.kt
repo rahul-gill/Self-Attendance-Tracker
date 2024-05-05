@@ -31,6 +31,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -81,23 +83,43 @@ fun AddClassBottomSheet(
             is24Hour = DateFormat.is24HourFormat(context),
         )
     }
-    var endTimeState = rememberSaveable(
-        saver = TimePickerState.Saver()
+    var endTimeState by rememberSaveable(
+        saver = Saver(
+            save = {
+                listOf(
+                    it.value.hour,
+                    it.value.minute,
+                    it.value.is24hour
+                )
+            },
+            restore = { value ->
+                mutableStateOf(
+                    TimePickerState(
+                        initialHour = value[0] as Int,
+                        initialMinute = value[1] as Int,
+                        is24Hour = value[2] as Boolean
+                    )
+                )
+            }
+        )
     ) {
-        TimePickerState(
-            initialHour = initialState?.endTime?.hour ?: 0,
-            initialMinute = initialState?.endTime?.minute ?: 0,
-            is24Hour = DateFormat.is24HourFormat(context),
+        mutableStateOf(
+            TimePickerState(
+                initialHour = initialState?.endTime?.hour ?: 0,
+                initialMinute = initialState?.endTime?.minute ?: 0,
+                is24Hour = DateFormat.is24HourFormat(context),
+            )
         )
     }
-    LaunchedEffect(startTimeState) {
+    LaunchedEffect(startTimeState.hour, startTimeState.minute) {
         endTimeState = TimePickerState(
             initialHour = (startTimeState.hour + 1) % 24,
-            initialMinute = endTimeState.minute,
+            initialMinute = startTimeState.minute,
             is24Hour = DateFormat.is24HourFormat(context),
         )
     }
-    LaunchedEffect(endTimeState) {
+    LaunchedEffect(endTimeState.hour, endTimeState.minute) {
+        println("q3rqwrqw  ${endTimeState.hour} ${endTimeState.minute}")
         val newEnd = LocalTime.of(endTimeState.hour, endTimeState.minute)
         val start = LocalTime.of(startTimeState.hour, startTimeState.minute)
         if (newEnd <= start) {
@@ -108,7 +130,7 @@ fun AddClassBottomSheet(
             ).show()
             endTimeState = TimePickerState(
                 initialHour = (startTimeState.hour + 1) % 24,
-                initialMinute = endTimeState.minute,
+                initialMinute = startTimeState.minute,
                 is24Hour = DateFormat.is24HourFormat(context),
             )
         }
@@ -177,27 +199,24 @@ fun AddClassBottomSheet(
                         }
                     }
                 }
-
-                else -> {
-                    if (page == 1) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .onSizeChanged { pagerMinSize = maxOf(pagerMinSize, it.height) },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            TimePicker(state = startTimeState)
-                        }
-                    } else {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .onSizeChanged { pagerMinSize = maxOf(pagerMinSize, it.height) },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            TimePicker(state = endTimeState)
-                        }
-                        val context = LocalContext.current
+                1 -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .onSizeChanged { pagerMinSize = maxOf(pagerMinSize, it.height) },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        TimePicker(state = startTimeState)
+                    }
+                }
+                2 -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .onSizeChanged { pagerMinSize = maxOf(pagerMinSize, it.height) },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        TimePicker(state = endTimeState)
                     }
                 }
             }

@@ -150,7 +150,11 @@ fun CourseAttendanceRecordScreen(
                     var prevDateTime: LocalDate? = null
                     records
                         .sortedWith { first, second ->
-                            first.date.compareTo(second.date)
+                            val dateCompare = second.date.compareTo(first.date)
+                            if(dateCompare == 0)
+                                second.startTime.compareTo(first.startTime)
+                            else
+                                dateCompare
                         }.forEach { item ->
                             if (prevDateTime == null || prevDateTime!! != item.date) {
                                 finalList.add(HeaderListItem.Header(item.date))

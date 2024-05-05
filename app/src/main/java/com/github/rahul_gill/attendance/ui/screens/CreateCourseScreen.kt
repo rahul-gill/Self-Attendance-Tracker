@@ -140,7 +140,7 @@ fun CreateCourseScreen(
                         }
                         return@onClickSave
                     }
-                    onSave(courseName, requiredAttendancePercentage, classesForTheCourse.toList())
+                    onSave(courseName.trim(), requiredAttendancePercentage, classesForTheCourse.toList())
                     onGoBack()
                 },
                 modifier = Modifier.imePadding()

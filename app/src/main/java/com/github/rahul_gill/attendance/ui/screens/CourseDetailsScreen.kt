@@ -462,6 +462,12 @@ private fun AddAttendanceRecordOnSchedule(
         val weeksSinceEpoch = remember {
             weeksSinceEpoch().toInt()
         }
+        val pageNumToDate = remember {{ pageNum: Int ->
+            epochDay0.plusWeeks(pageNum.toLong() + 1).with(
+                ChronoField.DAY_OF_WEEK,
+                scheduleToAddClassOn.dayOfWeek.value.toLong()
+            )
+        }}
         val pagerState = rememberPagerState(
             initialPage = weeksSinceEpoch - 1,
             pageCount = { weeksSinceEpoch })
@@ -481,7 +487,7 @@ private fun AddAttendanceRecordOnSchedule(
             val offSetNormalized = pagerState.pageOffsetCoerced(pageNum)
             val scaleFactor = calculateScale(pagerState, pageNum)
             Text(
-                text = epochDay0.plusWeeks((pageNum + 1).toLong()).format(dateFormatter),
+                text = pageNumToDate(pageNum).format(dateFormatter),
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontSize = MaterialTheme.typography.titleLarge.fontSize.times(scaleFactor)
                 ),
@@ -512,11 +518,7 @@ private fun AddAttendanceRecordOnSchedule(
                     scheduleId = scheduleToAddClassOn.scheduleId!!,
                     classStatus = classStatus,
                     attendanceId = null,
-                    date = epochDay0.plusWeeks(pagerState.currentPage.toLong() + 1)
-                        .with(
-                            ChronoField.DAY_OF_WEEK,
-                            scheduleToAddClassOn.dayOfWeek.value.toLong()
-                        ),
+                    date = pageNumToDate(pagerState.currentPage),
                     courseId = courseId
                 )
                 onDismissRequest()
@@ -689,7 +691,7 @@ fun AddExtraBottomSheet(
 fun weeksSinceEpoch(): Long {
     val now = LocalDate.now()
     val epoch = LocalDate.ofEpochDay(0)
-    return ChronoUnit.WEEKS.between(epoch, now)
+    return ChronoUnit.WEEKS.between(epoch, now) + 1
 }
 
 
