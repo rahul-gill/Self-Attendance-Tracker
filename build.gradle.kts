@@ -47,7 +47,7 @@ detekt {
 }
 
 dependencies {
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.22.0")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.6")
 }
 
 val detektFormat by tasks.registering(io.gitlab.arturbosch.detekt.Detekt::class) {
