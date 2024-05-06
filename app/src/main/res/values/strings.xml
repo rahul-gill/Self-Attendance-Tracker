@@ -164,6 +164,9 @@
     <string name="consider_as_presents">Consider as presents</string>
     <string name="consider_as_absents">Consider as Absents</string>
     <string name="do_nothing">Do nothing</string>
+    <string name="can_be_absent_in_n_classes">Can be absent in %1$d classes</string>
+    <string name="need_to_attend_n_more_classes">Need to attend %1$d more classes</string>
+    <string name="cannot_miss_next_class">Cannot miss next claas</string>
 
 
 </resources>

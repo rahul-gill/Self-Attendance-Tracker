@@ -1,6 +1,7 @@
 package com.github.rahul_gill.attendance.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -59,6 +60,7 @@ import com.github.rahul_gill.attendance.db.AttendanceRecordHybrid
 import com.github.rahul_gill.attendance.db.CourseClassStatus
 import com.github.rahul_gill.attendance.db.CourseDetailsOverallItem
 import com.github.rahul_gill.attendance.db.DBOps
+import com.github.rahul_gill.attendance.db.FutureThingCalculations
 import com.github.rahul_gill.attendance.prefs.PreferenceManager
 import com.github.rahul_gill.attendance.ui.comps.SetClassStatusSheet
 import com.github.rahul_gill.attendance.ui.comps.TabItem
@@ -74,7 +76,7 @@ fun MainScreen(
     goToSettings: () -> Unit = {},
     goToCourseDetails: (courseId: Long) -> Unit,
     onSetClassStatus: (item: AttendanceRecordHybrid, newStatus: CourseClassStatus) -> Unit,
-    todayClasses:List<AttendanceRecordHybrid> ,
+    todayClasses: List<AttendanceRecordHybrid>,
     courses: List<CourseDetailsOverallItem>
 ) {
     val pagerState = rememberPagerState(
@@ -97,7 +99,10 @@ fun MainScreen(
                         text = stringResource(id = R.string.app_name),
                         style = MaterialTheme.typography.titleLarge.copy(
                             brush = Brush.linearGradient(
-                                colors = listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.tertiary),
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.primary,
+                                    MaterialTheme.colorScheme.tertiary
+                                ),
                                 tileMode = TileMode.Mirror
                             )
                         )
@@ -186,7 +191,7 @@ fun MainScreen(
                                 alignment = Alignment.Top
                             )
                         ) {
-                            item{
+                            item {
                                 Spacer(modifier = Modifier.height(20.dp))
                             }
                             items(
@@ -226,7 +231,7 @@ fun MainScreen(
                                 alignment = Alignment.Top
                             )
                         ) {
-                            item{
+                            item {
                                 Spacer(modifier = Modifier.height(20.dp))
                             }
                             items(courses, key = { it.courseId }) { courseItem ->
@@ -344,6 +349,13 @@ fun OverallCourseItem(
                     Text(text = item.cancels.toString())
                 }
             }
+            Spacer(modifier = Modifier.padding(top = 4.dp))
+            Text(
+                text = FutureThingCalculations.getMessageForFuture(
+                    item.presents, item.absents, item.requiredAttendance.toInt()
+                ),
+                style = MaterialTheme.typography.labelMedium
+            )
         }
     }
 }
@@ -355,68 +367,92 @@ fun TodayClassItem(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
-    OutlinedCard(modifier = modifier, onClick = onClick) {
-        Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
-            Column {
-                Text(
-                    text = item.startTime.format(timeFormatter),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = item.endTime.format(timeFormatter),
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 16.dp)
+    val attendanceCounts =
+        DBOps.instance.getCourseAttendancePercentage(item.courseId).collectAsStateWithLifecycle(
+            initialValue = null
+        )
+    OutlinedCard(
+        modifier = Modifier
+            .animateContentSize()
+            .then(modifier),
+        onClick = onClick
+    ) {
+        Column(modifier = Modifier.padding(8.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = item.courseName, style = MaterialTheme.typography.titleLarge)
-                if (item is AttendanceRecordHybrid.ExtraClass) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Surface(
-                        shape = RoundedCornerShape(25),
-                        color = MaterialTheme.colorScheme.secondaryContainer
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            text = stringResource(id = R.string.extra_class),
-                            color = MaterialTheme.colorScheme.onSecondaryContainer,
-                            style = MaterialTheme.typography.labelMedium
-                        )
+                Column {
+                    Text(
+                        text = item.startTime.format(timeFormatter),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = item.endTime.format(timeFormatter),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Text(text = item.courseName, style = MaterialTheme.typography.titleLarge)
+                    if (item is AttendanceRecordHybrid.ExtraClass) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Surface(
+                            shape = RoundedCornerShape(25),
+                            color = MaterialTheme.colorScheme.secondaryContainer
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                text = stringResource(id = R.string.extra_class),
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
                     }
                 }
-            }
-            val surfaceColor = when (item.classStatus) {
-                CourseClassStatus.Present -> MaterialTheme.colorScheme.primaryContainer
-                CourseClassStatus.Absent -> MaterialTheme.colorScheme.errorContainer
-                CourseClassStatus.Cancelled -> MaterialTheme.colorScheme.surfaceVariant
-                CourseClassStatus.Unset -> MaterialTheme.colorScheme.surfaceVariant
-            }
-            Surface(
-                modifier = Modifier
-                    .background(shape = RoundedCornerShape(25), color = surfaceColor),
-                shape = RoundedCornerShape(25),
-                color = surfaceColor
-            ) {
-                Text(
+                val surfaceColor = when (item.classStatus) {
+                    CourseClassStatus.Present -> MaterialTheme.colorScheme.primaryContainer
+                    CourseClassStatus.Absent -> MaterialTheme.colorScheme.errorContainer
+                    CourseClassStatus.Cancelled -> MaterialTheme.colorScheme.surfaceVariant
+                    CourseClassStatus.Unset -> MaterialTheme.colorScheme.surfaceVariant
+                }
+                Surface(
                     modifier = Modifier
-                        .minimumInteractiveComponentSize(),
-                    text = when (item.classStatus) {
-                        CourseClassStatus.Present -> "P"
-                        CourseClassStatus.Absent -> "A"
-                        CourseClassStatus.Cancelled -> "C"
-                        CourseClassStatus.Unset -> "~"
-                    },
-                    color = when (item.classStatus) {
-                        CourseClassStatus.Present -> MaterialTheme.colorScheme.onPrimaryContainer
-                        CourseClassStatus.Absent -> MaterialTheme.colorScheme.onErrorContainer
-                        CourseClassStatus.Cancelled -> MaterialTheme.colorScheme.onSurfaceVariant
-                        CourseClassStatus.Unset -> MaterialTheme.colorScheme.onSurfaceVariant
-                    }
-                )
+                        .background(shape = RoundedCornerShape(25), color = surfaceColor),
+                    shape = RoundedCornerShape(25),
+                    color = surfaceColor
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .minimumInteractiveComponentSize(),
+                        text = when (item.classStatus) {
+                            CourseClassStatus.Present -> "P"
+                            CourseClassStatus.Absent -> "A"
+                            CourseClassStatus.Cancelled -> "C"
+                            CourseClassStatus.Unset -> "~"
+                        },
+                        color = when (item.classStatus) {
+                            CourseClassStatus.Present -> MaterialTheme.colorScheme.onPrimaryContainer
+                            CourseClassStatus.Absent -> MaterialTheme.colorScheme.onErrorContainer
+                            CourseClassStatus.Cancelled -> MaterialTheme.colorScheme.onSurfaceVariant
+                            CourseClassStatus.Unset -> MaterialTheme.colorScheme.onSurfaceVariant
+                        }
+                    )
+                }
             }
+            Spacer(modifier = Modifier.padding(top = 4.dp))
+            Text(
+                text = if (attendanceCounts.value != null)
+                    FutureThingCalculations.getMessageForFuture(
+                        attendanceCounts.value!!.present.toInt(),
+                        attendanceCounts.value!!.absents.toInt(),
+                        attendanceCounts.value!!.requiredPercentage.toInt()
+                    ) else "",
+                style = MaterialTheme.typography.labelMedium
+            )
         }
     }
 }

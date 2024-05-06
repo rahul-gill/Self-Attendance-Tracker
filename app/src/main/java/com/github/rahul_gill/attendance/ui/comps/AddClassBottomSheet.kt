@@ -119,7 +119,6 @@ fun AddClassBottomSheet(
         )
     }
     LaunchedEffect(endTimeState.hour, endTimeState.minute) {
-        println("q3rqwrqw  ${endTimeState.hour} ${endTimeState.minute}")
         val newEnd = LocalTime.of(endTimeState.hour, endTimeState.minute)
         val start = LocalTime.of(startTimeState.hour, startTimeState.minute)
         if (newEnd <= start) {

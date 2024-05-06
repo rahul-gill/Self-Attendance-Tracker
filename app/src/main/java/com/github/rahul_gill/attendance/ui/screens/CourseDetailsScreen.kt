@@ -71,6 +71,7 @@ import com.github.rahul_gill.attendance.db.CourseClassStatus
 import com.github.rahul_gill.attendance.db.CourseDetailsOverallItem
 import com.github.rahul_gill.attendance.db.DBOps
 import com.github.rahul_gill.attendance.db.ExtraClassTimings
+import com.github.rahul_gill.attendance.db.FutureThingCalculations
 import com.github.rahul_gill.attendance.ui.comps.AddClassBottomSheet
 import com.github.rahul_gill.attendance.ui.comps.AlertDialog
 import com.github.rahul_gill.attendance.ui.comps.BaseDialog
@@ -237,6 +238,12 @@ fun CourseDetailsScreen(
                             courseDetails.cancels
                         ),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.padding(top = 4.dp))
+                    Text(
+                        text = FutureThingCalculations.getMessageForFuture(
+                            courseDetails.presents, courseDetails.absents, courseDetails.requiredAttendance.toInt()
+                        )
                     )
                 }
             }
