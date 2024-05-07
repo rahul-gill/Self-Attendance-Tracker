@@ -46,7 +46,7 @@ fun getSqliteDB(driver: SqlDriver): Database {
     )
 }
 
-class DBOps private constructor(
+class DBOps(
     driver: SqlDriver
 ) {
     val db by lazy { getSqliteDB(driver) }
@@ -116,7 +116,7 @@ class DBOps private constructor(
         )
     }
 
-    fun getScheduleAndExtraClassesForToday(): Flow<List<AttendanceRecordHybrid>> {
+    fun getScheduleAndExtraClassesForToday(): Flow<List<Pair<AttendanceRecordHybrid, AttendanceCounts>>> {
         val scheduleClassesFlow: Flow<List<AttendanceRecordHybrid>> = queries.getCourseListForToday(
             mapper = { attendanceId, scheduleId, courseId, courseName, startTime, endTime, classStatus, date ->
                 AttendanceRecordHybrid.ScheduledClass(
@@ -145,6 +145,10 @@ class DBOps private constructor(
             }).asFlow().mapToList(Dispatchers.IO)
         return scheduleClassesFlow.combine(extraClassesFlow) { list1, list2 ->
             (list1 + list2).sortedByDescending { it.startTime }
+        }.map {  attendanceRecords ->
+            attendanceRecords.map {
+                Pair(it, getCourseAttendancePercentage(it.courseId))
+            }
         }
     }
 
@@ -200,7 +204,7 @@ class DBOps private constructor(
         ).asFlow().mapToOne(Dispatchers.IO)
     }
 
-    fun getCourseAttendancePercentage(courseId: Long): Flow<AttendanceCounts> {
+    private fun getCourseAttendancePercentage(courseId: Long): AttendanceCounts {
         return queries.getCourseDetailsSingle(
             courseId,
             mapper = { presents, absents, cancels, unsets, requiredPercentage ->
@@ -212,7 +216,7 @@ class DBOps private constructor(
                     if (absentsLater + presentsLater == 0L) 100.0 else 100.0 * presentsLater / (absentsLater + presentsLater),
                     presentsLater, absentsLater, cancels, unsets, requiredPercentage
                 )
-            }).asFlow().mapToOne(Dispatchers.IO)
+            }).executeAsOne()
     }
 
     fun markAttendanceForScheduleClass(

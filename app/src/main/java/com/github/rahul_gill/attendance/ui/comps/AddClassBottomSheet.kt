@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -233,7 +234,8 @@ fun AddClassBottomSheet(
                     )
                 )
                 onDismissRequest()
-            }) {
+            }, modifier = Modifier.testTag("sheet_add_class_button")
+            ) {
                 Text(text = stringResource(id = R.string.ok))
             }
         }

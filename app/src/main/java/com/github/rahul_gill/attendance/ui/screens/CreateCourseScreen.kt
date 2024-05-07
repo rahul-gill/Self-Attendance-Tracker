@@ -48,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -64,13 +65,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CreateCourseScreen(
     onGoBack: () -> Unit,
-    onSave: (courseName: String, requiredPercentage: Int, classes: List<ClassDetail>) -> Unit = { courseName, percentage, classes ->
-        DBOps.instance.createCourse(
-            name = courseName,
-            requiredAttendancePercentage = percentage.toDouble(),
-            schedule = classes
-        )
-    }
+    onSave: (courseName: String, requiredPercentage: Int, classes: List<ClassDetail>) -> Unit
 ) {
     var courseName by rememberSaveable {
         mutableStateOf("")
@@ -110,7 +105,7 @@ fun CreateCourseScreen(
                     text = stringResource(id = R.string.create_a_course),
                 )
             }, navigationIcon = {
-                IconButton(onClick = onGoBack) {
+                IconButton(onClick = onGoBack, modifier = Modifier.testTag("go_back")) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(id = R.string.go_back_screen)
@@ -174,7 +169,7 @@ fun CreateCourseScreen(
                         }
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("course_name_input"),
                 label = {
                     Text(text = stringResource(id = R.string.course_name))
                 }
@@ -216,7 +211,8 @@ fun CreateCourseScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            OutlinedButton(onClick = { showAddClassBottomSheet = true }) {
+            OutlinedButton(onClick = { showAddClassBottomSheet = true },
+                modifier = Modifier.testTag("add_class_button")) {
                 Text(text = stringResource(id = R.string.add_class))
             }
         }

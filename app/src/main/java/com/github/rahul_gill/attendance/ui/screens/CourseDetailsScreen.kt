@@ -62,6 +62,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -117,7 +118,8 @@ fun CourseDetailsScreen(
     onDeleteCourse: (Long) -> Unit,
     onAddScheduleClass: (ClassDetail) -> Unit,
     onDeleteScheduleItem: (classDetails: ClassDetail) -> Unit,
-    changeActivateStatusOfScheduleItem: (classDetails: ClassDetail, activate: Boolean) -> Unit
+    changeActivateStatusOfScheduleItem: (classDetails: ClassDetail, activate: Boolean) -> Unit,
+    createAttendanceRecordOnSchedule: (scheduleId: Long, classStatus: CourseClassStatus, date: LocalDate) -> Unit
 ) {
     var scheduleToAddClassOn by remember {
         mutableStateOf<ClassDetail?>(null)
@@ -154,7 +156,7 @@ fun CourseDetailsScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onGoBack) {
+                    IconButton(onClick = onGoBack, modifier = Modifier.testTag("go_back")) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(id = R.string.go_back_screen)
@@ -365,6 +367,9 @@ fun CourseDetailsScreen(
             scheduleToAddClassOn = scheduleToAddClassOn!!,
             onDismissRequest = {
                 scheduleToAddClassOn = null
+            },
+            onMarkAttendance = { classStatus, date ->
+                createAttendanceRecordOnSchedule(scheduleToAddClassOn!!.scheduleId!!, classStatus, date)
             }
         )
     }
@@ -448,7 +453,8 @@ fun DeleteScheduleItemDialog(
 private fun AddAttendanceRecordOnSchedule(
     courseId: Long,
     scheduleToAddClassOn: ClassDetail,
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
+    onMarkAttendance: (classStatus: CourseClassStatus, date: LocalDate) -> Unit
 ) {
     BaseDialog(
         onDismissRequest = onDismissRequest,
@@ -521,13 +527,7 @@ private fun AddAttendanceRecordOnSchedule(
                 Text(text = stringResource(id = R.string.cancel))
             }
             TextButton(onClick = {
-                DBOps.instance.markAttendanceForScheduleClass(
-                    scheduleId = scheduleToAddClassOn.scheduleId!!,
-                    classStatus = classStatus,
-                    attendanceId = null,
-                    date = pageNumToDate(pagerState.currentPage),
-                    courseId = courseId
-                )
+                onMarkAttendance(classStatus, pageNumToDate(pagerState.currentPage))
                 onDismissRequest()
             }) {
                 Text(text = stringResource(id = R.string.ok))

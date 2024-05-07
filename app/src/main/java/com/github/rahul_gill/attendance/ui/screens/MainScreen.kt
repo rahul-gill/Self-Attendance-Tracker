@@ -56,6 +56,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.rahul_gill.attendance.R
+import com.github.rahul_gill.attendance.db.AttendanceCounts
 import com.github.rahul_gill.attendance.db.AttendanceRecordHybrid
 import com.github.rahul_gill.attendance.db.CourseClassStatus
 import com.github.rahul_gill.attendance.db.CourseDetailsOverallItem
@@ -76,8 +77,8 @@ fun MainScreen(
     goToSettings: () -> Unit = {},
     goToCourseDetails: (courseId: Long) -> Unit,
     onSetClassStatus: (item: AttendanceRecordHybrid, newStatus: CourseClassStatus) -> Unit,
-    todayClasses: List<AttendanceRecordHybrid>,
-    courses: List<CourseDetailsOverallItem>
+    todayClasses: List<Pair<AttendanceRecordHybrid, AttendanceCounts>>,
+    courses: List<CourseDetailsOverallItem>,
 ) {
     val pagerState = rememberPagerState(
         initialPage = PreferenceManager.defaultHomeTabPref.value,
@@ -109,7 +110,7 @@ fun MainScreen(
                     )
                 },
                 actions = {
-                    IconButton(onClick = goToSettings) {
+                    IconButton(onClick = goToSettings, modifier = Modifier.testTag("go_to_settings")) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_settings_24),
                             contentDescription = stringResource(
@@ -127,7 +128,8 @@ fun MainScreen(
                 exit = slideOutHorizontally(targetOffsetX = { it / 2 })
             ) {
                 ExtendedFloatingActionButton(
-                    onClick = onCreateCourse
+                    onClick = onCreateCourse,
+                    modifier = Modifier.testTag("create_course_button")
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_add_24),
@@ -198,11 +200,12 @@ fun MainScreen(
                                 todayClasses,
                             ) { classItem ->
                                 TodayClassItem(
-                                    item = classItem,
+                                    item = classItem.first,
                                     modifier = Modifier.padding(horizontal = 8.dp),
                                     onClick = {
-                                        setClassSheetItem = classItem
-                                    }
+                                        setClassSheetItem = classItem.first
+                                    },
+                                    attendanceCounts = classItem.second
                                 )
                             }
                             item {
@@ -364,13 +367,10 @@ fun OverallCourseItem(
 @Composable
 fun TodayClassItem(
     item: AttendanceRecordHybrid,
+    attendanceCounts: AttendanceCounts?,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
-    val attendanceCounts =
-        DBOps.instance.getCourseAttendancePercentage(item.courseId).collectAsStateWithLifecycle(
-            initialValue = null
-        )
     OutlinedCard(
         modifier = Modifier
             .animateContentSize()
@@ -445,11 +445,11 @@ fun TodayClassItem(
             }
             Spacer(modifier = Modifier.padding(top = 4.dp))
             Text(
-                text = if (attendanceCounts.value != null)
+                text = if (attendanceCounts != null)
                     FutureThingCalculations.getMessageForFuture(
-                        attendanceCounts.value!!.present.toInt(),
-                        attendanceCounts.value!!.absents.toInt(),
-                        attendanceCounts.value!!.requiredPercentage.toInt()
+                        attendanceCounts.present.toInt(),
+                        attendanceCounts.absents.toInt(),
+                        attendanceCounts.requiredPercentage.toInt()
                     ) else "",
                 style = MaterialTheme.typography.labelMedium
             )

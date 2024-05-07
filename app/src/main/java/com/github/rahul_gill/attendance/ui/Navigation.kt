@@ -38,6 +38,7 @@ import dev.olshevski.navigation.reimagined.NavBackHandler
 import dev.olshevski.navigation.reimagined.navigate
 import dev.olshevski.navigation.reimagined.pop
 import dev.olshevski.navigation.reimagined.rememberNavController
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
@@ -63,21 +64,23 @@ sealed interface Screen : Parcelable {
 }
 
 @Composable
-fun RootNavHost() {
+fun RootNavHost(
+    dbOps: DBOps = DBOps.instance
+) {
     val navController = rememberNavController<Screen>(Screen.Main)
     val context = LocalContext.current
     val onSetClassStatus = remember {
         { item: AttendanceRecordHybrid, status: CourseClassStatus ->
             when (item) {
                 is AttendanceRecordHybrid.ExtraClass -> {
-                    DBOps.instance.markAttendanceForExtraClass(
+                    dbOps.markAttendanceForExtraClass(
                         item.extraClassId,
                         status
                     )
                 }
 
                 is AttendanceRecordHybrid.ScheduledClass -> {
-                    DBOps.instance.markAttendanceForScheduleClass(
+                    dbOps.markAttendanceForScheduleClass(
                         attendanceId = item.attendanceId,
                         classStatus = status,
                         scheduleId = item.scheduleId,
@@ -102,7 +105,7 @@ fun RootNavHost() {
                 CreateCourseScreen(
                     onGoBack = { navController.pop() },
                     onSave = { courseName, percentage, classes ->
-                        DBOps.instance.createCourse(
+                        dbOps.createCourse(
                             name = courseName,
                             requiredAttendancePercentage = percentage.toDouble(),
                             schedule = classes
@@ -117,6 +120,9 @@ fun RootNavHost() {
             }
 
             Screen.Main -> {
+                val todayItems = dbOps.getScheduleAndExtraClassesForToday().collectAsStateWithLifecycle(
+                    initialValue = listOf()
+                ).value
                 MainScreen(
                     onCreateCourse = { navController.navigate(Screen.CreateCourse) },
                     goToSettings = { navController.navigate(Screen.Settings) },
@@ -128,11 +134,9 @@ fun RootNavHost() {
                         )
                     },
                     onSetClassStatus = onSetClassStatus,
-                    todayClasses =
-                    DBOps.instance.getScheduleAndExtraClassesForToday().collectAsStateWithLifecycle(
-                        initialValue = listOf()
-                    ).value,
-                    courses = DBOps.instance.getCoursesDetailsList()
+                    todayClasses = todayItems
+                    ,
+                    courses = dbOps.getCoursesDetailsList()
                         .collectAsStateWithLifecycle(initialValue = listOf()).value
                 )
             }
@@ -144,9 +148,9 @@ fun RootNavHost() {
             }
 
             is Screen.CourseDetails -> {
-                val courseDetails = DBOps.instance.getCoursesDetailsWithId(screen.courseId)
+                val courseDetails = dbOps.getCoursesDetailsWithId(screen.courseId)
                     .collectAsStateWithLifecycle(null)
-                val classes = DBOps.instance.getScheduleClassesForCourse(courseId = screen.courseId)
+                val classes = dbOps.getScheduleClassesForCourse(courseId = screen.courseId)
                     .collectAsStateWithLifecycle(initialValue = listOf())
                 if (courseDetails.value != null) {
                     val scope = rememberCoroutineScope()
@@ -156,7 +160,7 @@ fun RootNavHost() {
                         classes = classes.value,
                         goToClassRecords = { navController.navigate(Screen.CourseClassRecords(screen.courseId)) },
                         onCreateExtraClass = { timings ->
-                            DBOps.instance.createExtraClasses(
+                            dbOps.createExtraClasses(
                                 courseId = courseDetails.value!!.courseId,
                                 timings = timings
                             )
@@ -165,17 +169,17 @@ fun RootNavHost() {
                             navController.navigate(Screen.EditCourse(it))
                         },
                         onDeleteCourse = { courseId ->
-                            DBOps.instance.deleteCourse(courseId)
+                            dbOps.deleteCourse(courseId)
                         },
                         onAddScheduleClass = { classDetail ->
-                            DBOps.instance.addScheduleClassForCourse(
+                            dbOps.addScheduleClassForCourse(
                                 courseId = courseDetails.value!!.courseId,
                                 classDetails = classDetail
                             )
                         },
                         onDeleteScheduleItem = { classDetails ->
                             if (classDetails.scheduleId != null) {
-                                DBOps.instance.deleteScheduleWithId(
+                                dbOps.deleteScheduleWithId(
                                     classDetails.scheduleId,
                                 )
                                 Toast.makeText(
@@ -187,8 +191,17 @@ fun RootNavHost() {
                         },
                         changeActivateStatusOfScheduleItem = { classDetails, activate ->
                             if(classDetails.scheduleId != null){
-                                DBOps.instance.changeActivateStatusOfScheduleItem(classDetails.scheduleId, activate)
+                                dbOps.changeActivateStatusOfScheduleItem(classDetails.scheduleId, activate)
                             }
+                        },
+                        createAttendanceRecordOnSchedule = { scheduleId, classStatus, date ->
+                            DBOps.instance.markAttendanceForScheduleClass(
+                                scheduleId = scheduleId,
+                                classStatus = classStatus,
+                                attendanceId = null,
+                                date = date,
+                                courseId = courseDetails.value!!.courseId
+                            )
                         }
                     )
                 } else {
@@ -198,9 +211,9 @@ fun RootNavHost() {
             }
 
             is Screen.CourseClassRecords -> {
-                val items = DBOps.instance.getMarkedAttendancesForCourse(screen.courseId)
+                val items = dbOps.getMarkedAttendancesForCourse(screen.courseId)
                     .collectAsStateWithLifecycle(initialValue = listOf())
-                val courseDetails = DBOps.instance.getCoursesDetailsWithId(screen.courseId)
+                val courseDetails = dbOps.getCoursesDetailsWithId(screen.courseId)
                     .collectAsStateWithLifecycle(null)
                 if (courseDetails.value != null) {
                     CourseAttendanceRecordScreen(
@@ -211,12 +224,12 @@ fun RootNavHost() {
                     ) { todayItem ->
                         when (todayItem) {
                             is AttendanceRecordHybrid.ExtraClass -> {
-                                DBOps.instance.deleteExtraClass(todayItem.extraClassId)
+                                dbOps.deleteExtraClass(todayItem.extraClassId)
                             }
 
                             is AttendanceRecordHybrid.ScheduledClass -> {
                                 if (todayItem.attendanceId != null) {
-                                    DBOps.instance.deleteScheduleAttendanceRecord(todayItem.attendanceId)
+                                    dbOps.deleteScheduleAttendanceRecord(todayItem.attendanceId)
                                 }
                             }
                         }
@@ -231,7 +244,7 @@ fun RootNavHost() {
                     courseDetails = screen.courseDetailsOverallItem,
                     onGoBack = { navController.pop() },
                     onSave = { newName, newRequiredPercentage ->
-                        DBOps.instance.updateCourseDetails(
+                        dbOps.updateCourseDetails(
                             id = screen.courseDetailsOverallItem.courseId,
                             name = newName,
                             requiredAttendancePercentage = newRequiredPercentage.toDouble(),

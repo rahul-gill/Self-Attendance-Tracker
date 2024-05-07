@@ -9,8 +9,8 @@ import java.time.LocalTime
 @Parcelize
 data class ClassDetail constructor(
     val dayOfWeek: DayOfWeek = LocalDate.now().dayOfWeek,
-    val startTime: LocalTime = LocalTime.now(),
-    val endTime: LocalTime = LocalTime.now(),
+    val startTime: LocalTime = LocalTime.now().withMinute(0),
+    val endTime: LocalTime = startTime.plusHours(1),
     val scheduleId: Long? = null,
     val includedInSchedule: Boolean = true
 ) : Parcelable
