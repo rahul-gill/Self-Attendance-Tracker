@@ -2,6 +2,5 @@
 
 | 1 | 2 | 3 | 4|
 |---|---|---|---|
-|![Screenshot_20230703_123942](https://github.com/rahul-gill/Self-Attendance-Tracker/assets/76812499/66856058-b770-4db2-831f-5fae1353cf97)|![5](https://github.com/rahul-gill/Self-Attendance-Tracker/assets/76812499/20d6ddac-b140-4b11-8b79-fccc5281d98c)|![4](https://github.com/rahul-gill/Self-Attendance-Tracker/assets/76812499/0e8150f6-25a9-4d31-97f6-3f177e57513c)|![3](https://github.com/rahul-gill/Self-Attendance-Tracker/assets/76812499/840c87c9-6b14-410e-921c-abe333fe0ded)|
-|![2](https://github.com/rahul-gill/Self-Attendance-Tracker/assets/76812499/41d42f75-3e21-492b-ad04-c43a3c9ab079)||||
-
+|![1_main_screen_today_1715112567124](https://raw.githubusercontent.com/rahul-gill/Self-Attendance-Tracker/1.1.0/fastlane/metadata/android/en-US/images/phoneScreenshots/1_main_screen_today_1715112567124.png)|![2_main_screen_overall_courses_1715112568781](https://raw.githubusercontent.com/rahul-gill/Self-Attendance-Tracker/1.1.0/fastlane/metadata/android/en-US/images/phoneScreenshots/2_main_screen_overall_courses_1715112568781.png)|![3_course_details_1715112569747](https://raw.githubusercontent.com/rahul-gill/Self-Attendance-Tracker/1.1.0/fastlane/metadata/android/en-US/images/phoneScreenshots/3_course_details_1715112569747.png)|![4_create_course_1715112572076](https://raw.githubusercontent.com/rahul-gill/Self-Attendance-Tracker/1.1.0/fastlane/metadata/android/en-US/images/phoneScreenshots/4_create_course_1715112572076.png)|
+|![5_settings_1715112573323](https://raw.githubusercontent.com/rahul-gill/Self-Attendance-Tracker/1.1.0/fastlane/metadata/android/en-US/images/phoneScreenshots/5_settings_1715112573323.png)||||
