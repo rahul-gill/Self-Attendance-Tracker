@@ -1,0 +1,39 @@
+import com.github.rahul_gill.attendance.db.CourseClassStatus;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+CREATE TABLE Attendance_temp (
+    attendanceId INTEGER PRIMARY KEY AUTOINCREMENT,
+    scheduleId INTEGER,
+    courseId INTEGER,
+    classStatus TEXT NOT NULL,
+    date TEXT  NOT NULL
+);
+
+INSERT INTO Attendance_temp(scheduleId, courseId, classStatus, date)
+SELECT Attendance.scheduleId, (SELECT Schedule.courseId  FROM Schedule WHERE Schedule.scheduleId = Attendance.scheduleId), Attendance.classStatus, Attendance.date
+FROM Attendance;
+
+DROP TABLE Attendance;
+
+CREATE TABLE Attendance (
+    attendanceId INTEGER PRIMARY KEY AUTOINCREMENT,
+    scheduleId INTEGER,
+    courseId INTEGER,
+    classStatus TEXT AS CourseClassStatus NOT NULL,
+    date TEXT AS LocalDate NOT NULL,
+    CONSTRAINT fk_schedule
+       FOREIGN KEY (scheduleId)
+       REFERENCES Schedule (scheduleId)
+       ON DELETE CASCADE,
+    CONSTRAINT fk_course
+        FOREIGN KEY (courseId)
+        REFERENCES Course (courseId)
+        ON DELETE CASCADE
+);
+
+INSERT INTO Attendance(attendanceId, scheduleId, courseId, classStatus, date)
+SELECT tmp.attendanceId, tmp.scheduleId, tmp.classStatus, tmp.classStatus, tmp.date FROM  Attendance_temp tmp;
+
+DROP TABLE Attendance_temp;

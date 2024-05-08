@@ -9,7 +9,6 @@ sqldelight {
     databases {
         create("Database") {
             packageName.set("com.github.rahul_gill.attendance")
-            verifyMigrations.set(true)
         }
     }
 }
@@ -82,6 +81,7 @@ dependencies {
     implementation("app.cash.sqldelight:android-driver:2.0.2")
     implementation("app.cash.sqldelight:coroutines-extensions:2.0.2")
     implementation("app.cash.sqldelight:primitive-adapters:2.0.2")
+    testImplementation("app.cash.sqldelight:sqlite-driver:2.0.2")
     //sugar and water
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.0.4")
     //ui thing

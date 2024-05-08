@@ -47,7 +47,9 @@ fun getSqliteDB(driver: SqlDriver): Database {
 }
 
 class DBOps(
-    driver: SqlDriver
+    driver: SqlDriver,
+    private val unsetClassesBehavior: UnsetClassesBehavior
+    = PreferenceManager.unsetClassesBehavior.value
 ) {
     val db by lazy { getSqliteDB(driver) }
     private val queries by lazy { db.appQueries }
@@ -145,7 +147,7 @@ class DBOps(
             }).asFlow().mapToList(Dispatchers.IO)
         return scheduleClassesFlow.combine(extraClassesFlow) { list1, list2 ->
             (list1 + list2).sortedByDescending { it.startTime }
-        }.map {  attendanceRecords ->
+        }.map { attendanceRecords ->
             attendanceRecords.map {
                 Pair(it, getCourseAttendancePercentage(it.courseId))
             }
@@ -156,10 +158,12 @@ class DBOps(
     fun getCoursesDetailsList(): Flow<List<CourseDetailsOverallItem>> {
         return queries.getCoursesDetailsList(
             mapper = { courseId, courseName, requiredAttendance, _, presents, absents, cancels, unsets ->
-                val presentsLater = (presents +  if(PreferenceManager.unsetClassesBehavior.value == UnsetClassesBehavior.ConsiderPresent)
+                val presentsLater =
+                    (presents + if (unsetClassesBehavior == UnsetClassesBehavior.ConsiderPresent)
                         unsets else 0L).toInt()
-                val absentsLater = (absents +  if(PreferenceManager.unsetClassesBehavior.value == UnsetClassesBehavior.ConsiderAbsent)
-                    unsets else 0L).toInt()
+                val absentsLater =
+                    (absents + if (unsetClassesBehavior == UnsetClassesBehavior.ConsiderAbsent)
+                        unsets else 0L).toInt()
                 CourseDetailsOverallItem(
                     courseId = courseId,
                     courseName = courseName,
@@ -186,10 +190,12 @@ class DBOps(
         return queries.getCoursesDetailsWithId(
             courseId = id,
             mapper = { courseId, courseName, requiredAttendance, _, presents, absents, cancels, unsets ->
-                val presentsLater = (presents +  if(PreferenceManager.unsetClassesBehavior.value == UnsetClassesBehavior.ConsiderPresent)
-                    unsets else 0L).toInt()
-                val absentsLater = (absents +  if(PreferenceManager.unsetClassesBehavior.value == UnsetClassesBehavior.ConsiderAbsent)
-                    unsets else 0L).toInt()
+                val presentsLater =
+                    (presents + if (unsetClassesBehavior == UnsetClassesBehavior.ConsiderPresent)
+                        unsets else 0L).toInt()
+                val absentsLater =
+                    (absents + if (unsetClassesBehavior == UnsetClassesBehavior.ConsiderAbsent)
+                        unsets else 0L).toInt()
                 CourseDetailsOverallItem(
                     courseId = courseId,
                     courseName = courseName,
@@ -208,10 +214,12 @@ class DBOps(
         return queries.getCourseDetailsSingle(
             courseId,
             mapper = { presents, absents, cancels, unsets, requiredPercentage ->
-                val presentsLater = (presents +  if(PreferenceManager.unsetClassesBehavior.value == UnsetClassesBehavior.ConsiderPresent)
-                    unsets else 0L)
-                val absentsLater = (absents +  if(PreferenceManager.unsetClassesBehavior.value == UnsetClassesBehavior.ConsiderAbsent)
-                    unsets else 0L)
+                val presentsLater =
+                    (presents + if (unsetClassesBehavior == UnsetClassesBehavior.ConsiderPresent)
+                        unsets else 0L)
+                val absentsLater =
+                    (absents + if (unsetClassesBehavior == UnsetClassesBehavior.ConsiderAbsent)
+                        unsets else 0L)
                 AttendanceCounts(
                     if (absentsLater + presentsLater == 0L) 100.0 else 100.0 * presentsLater / (absentsLater + presentsLater),
                     presentsLater, absentsLater, cancels, unsets, requiredPercentage
@@ -276,7 +284,7 @@ class DBOps(
                        classStatus,
                        isExtraCLass,
                        courseName,
-                       _->
+                       _ ->
                 if (isExtraCLass != 0L) {
                     AttendanceRecordHybrid.ExtraClass(
                         extraClassId = entityId,
@@ -305,7 +313,10 @@ class DBOps(
     }
 
     fun changeActivateStatusOfScheduleItem(scheduleId: Long, activate: Boolean) {
-        queries.changeActivateStatusOfScheduleItem(scheduleId = scheduleId, activate = if(activate) 1 else 0)
+        queries.changeActivateStatusOfScheduleItem(
+            scheduleId = scheduleId,
+            activate = if (activate) 1 else 0
+        )
     }
 
     companion object {

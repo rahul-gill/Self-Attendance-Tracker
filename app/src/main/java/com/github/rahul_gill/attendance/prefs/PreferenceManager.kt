@@ -46,12 +46,12 @@ object PreferenceManager {
         IntPreference(key = "default_home_tab", defaultValue = 0)
     val defaultTimeFormatPref =
         StringPreference(
-            key = "default_time_format",
+            key = "time_format",
             defaultValue = DefaultTimeFormat
         )
     val defaultDateFormatPref =
         StringPreference(
-            key = "default_date_format",
+            key = "date_format",
             defaultValue = DefaultDateFormat
         )
 }
