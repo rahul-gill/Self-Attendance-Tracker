@@ -94,7 +94,7 @@ dependencies {
     implementation("com.materialkolor:material-kolor:1.3.0")
     implementation("com.github.skydoves:colorpicker-compose:1.0.7")
     implementation("dev.olshevski.navigation:reimagined:1.5.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.0")
     androidTestImplementation("tools.fastlane:screengrab:2.1.1")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
