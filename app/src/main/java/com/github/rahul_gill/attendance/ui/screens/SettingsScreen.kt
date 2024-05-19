@@ -319,6 +319,19 @@ fun SettingsScreen(
 
             PreferenceGroupHeader(title = stringResource(id = R.string.about))
             val context = LocalContext.current
+
+            GenericPreference(
+                title = stringResource(R.string.privacy_policy),
+                onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse(Constants.PRIVACY_POLICY_LINK)
+                    context.startActivity(intent)
+                },
+                leadingIcon = {
+                    Icon(painterResource(id = R.drawable.baseline_privacy_tip_24), contentDescription = null)
+                },
+            )
+
             GenericPreference(
                 title = stringResource(R.string.source_code),
                 summary = Constants.GITHUB_APP_LINK,
