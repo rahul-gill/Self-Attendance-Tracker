@@ -21,7 +21,7 @@ android {
         applicationId = "com.github.rahul_gill.attendance"
         minSdk = 26
         targetSdk = 34
-        versionCode = 2
+        versionCode = 3
         versionName = "1.1.0"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -41,6 +41,7 @@ android {
                 applicationIdSuffix = ".ci"
                 signingConfig = signingConfigs.getByName("debug")
             }
+            ndk.debugSymbolLevel = "FULL"
         }
     }
     compileOptions {
