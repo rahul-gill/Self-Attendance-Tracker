@@ -24,7 +24,6 @@ class AttendanceApp : Application() {
                     .detectLeakedSqlLiteObjects()
                     .detectLeakedClosableObjects()
                     .penaltyLog()
-                    //.penaltyDeath()
                     .build()
             )
         }

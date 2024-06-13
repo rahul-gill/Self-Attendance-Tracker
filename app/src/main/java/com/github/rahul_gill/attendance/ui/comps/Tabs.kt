@@ -1,7 +1,6 @@
 package com.github.rahul_gill.attendance.ui.comps
 
 
-//import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

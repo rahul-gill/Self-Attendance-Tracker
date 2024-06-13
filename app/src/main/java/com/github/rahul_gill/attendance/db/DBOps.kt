@@ -5,6 +5,7 @@ import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOne
+import app.cash.sqldelight.coroutines.mapToOneOrNull
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.github.rahul_gill.attendance.Database
@@ -186,7 +187,7 @@ class DBOps(
         queries.deleteScheduleAttendanceRecord(id)
     }
 
-    fun getCoursesDetailsWithId(id: Long): Flow<CourseDetailsOverallItem> {
+    fun getCoursesDetailsWithId(id: Long): Flow<CourseDetailsOverallItem?> {
         return queries.getCoursesDetailsWithId(
             courseId = id,
             mapper = { courseId, courseName, requiredAttendance, _, presents, absents, cancels, unsets ->
@@ -207,7 +208,7 @@ class DBOps(
                     unsets = unsets.toInt()
                 )
             }
-        ).asFlow().mapToOne(Dispatchers.IO)
+        ).asFlow().mapToOneOrNull(Dispatchers.IO)
     }
 
     private fun getCourseAttendancePercentage(courseId: Long): AttendanceCounts {

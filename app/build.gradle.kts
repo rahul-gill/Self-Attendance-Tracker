@@ -3,6 +3,7 @@ plugins {
     kotlin("android")
     id("kotlin-parcelize")
     id("app.cash.sqldelight")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 sqldelight {
@@ -13,16 +14,30 @@ sqldelight {
     }
 }
 
+object VersionProperties {
+    private const val versionMajor: Int = 1
+    private const val versionMinor: Int = 0
+    private const val versionPatch: Int = 0
+    private const val versionBuild: Int = 5
+    const val compileSdk: Int = 34
+    const val minSdk: Int = 26
+
+    val versionCode
+        get() = versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
+    val versionName
+        get() = "$versionMajor.$versionMinor.$versionPatch"
+}
+
 android {
     namespace = "com.github.rahul_gill.attendance"
-    compileSdk = 34
+    compileSdk = VersionProperties.compileSdk
 
     defaultConfig {
         applicationId = "com.github.rahul_gill.attendance"
-        minSdk = 26
-        targetSdk = 34
-        versionCode = 3
-        versionName = "1.1.0"
+        minSdk = VersionProperties.minSdk
+        targetSdk = VersionProperties.compileSdk
+        versionCode = VersionProperties.versionCode
+        versionName = VersionProperties.versionName
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -53,12 +68,8 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
     buildFeatures{
-        viewBinding = true
         buildConfig = true
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.12"
     }
 
     packaging {
@@ -86,8 +97,8 @@ dependencies {
     //sugar and water
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.0.4")
     //ui thing
-    implementation (platform("androidx.compose:compose-bom:2024.05.00"))
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.05.00"))
+    implementation (platform("androidx.compose:compose-bom:2024.06.00"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2024.06.00"))
     implementation ("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
@@ -95,7 +106,7 @@ dependencies {
     implementation("com.materialkolor:material-kolor:1.6.1")
     implementation("com.github.skydoves:colorpicker-compose:1.0.7")
     implementation("dev.olshevski.navigation:reimagined:1.5.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
     androidTestImplementation("tools.fastlane:screengrab:2.1.1")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")

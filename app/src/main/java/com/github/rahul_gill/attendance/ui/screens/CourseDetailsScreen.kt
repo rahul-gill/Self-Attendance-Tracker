@@ -391,6 +391,7 @@ fun CourseDetailsScreen(
             onDismissRequest = { showDeleteCourseDialog = false },
             onDeleteCourse = {
                 onDeleteCourse(courseDetails.courseId)
+                onGoBack()
             }
         )
     }
