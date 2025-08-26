@@ -32,7 +32,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -75,15 +74,11 @@ fun AddClassBottomSheet(
         mutableStateOf(initialState?.dayOfWeek ?: LocalDate.now().dayOfWeek)
     }
     val context = LocalContext.current
-    var startTimeState = rememberSaveable(
-        saver = TimePickerState.Saver()
-    ) {
-        TimePickerState(
-            initialHour = initialState?.startTime?.hour ?: 0,
-            initialMinute = initialState?.startTime?.minute ?: 0,
-            is24Hour = DateFormat.is24HourFormat(context),
-        )
-    }
+    val startTimeState = rememberTimePickerState(
+        initialHour = initialState?.startTime?.hour ?: 0,
+        initialMinute = initialState?.startTime?.minute ?: 0,
+        is24Hour = DateFormat.is24HourFormat(context),
+    )
     var endTimeState by rememberSaveable(
         saver = Saver(
             save = {

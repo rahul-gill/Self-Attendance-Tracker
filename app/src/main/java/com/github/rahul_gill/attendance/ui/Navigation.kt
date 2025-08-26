@@ -69,7 +69,7 @@ fun RootNavHost(
 ) {
     val navController = rememberNavController<Screen>(Screen.Main)
     val context = LocalContext.current
-    val onSetClassStatus = remember {
+    val onSetClassStatus : (item: AttendanceRecordHybrid, newStatus: CourseClassStatus) -> Unit = remember {
         { item: AttendanceRecordHybrid, status: CourseClassStatus ->
             when (item) {
                 is AttendanceRecordHybrid.ExtraClass -> {
@@ -89,6 +89,7 @@ fun RootNavHost(
                     )
                 }
             }
+             Unit
         }
     }
 

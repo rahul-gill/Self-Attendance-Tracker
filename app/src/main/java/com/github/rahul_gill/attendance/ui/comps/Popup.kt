@@ -3,6 +3,7 @@ package com.github.rahul_gill.attendance.ui.comps
 
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
@@ -25,6 +26,7 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -133,7 +135,7 @@ private fun PopupContent(
     val expandedState = remember { MutableTransitionState(false) }
     expandedState.targetState = visible
 
-    val transition = updateTransition(expandedState, "Menu fade in/out")
+    val transition = rememberTransition(expandedState, "Menu fade in/out")
 
     val size by transition.animateFloat(
         transitionSpec = {
@@ -257,7 +259,7 @@ fun SelectableMenuItem(
             .fillMaxWidth()
             .clickable(
                 interactionSource = interactionSource,
-                indication = rememberRipple(
+                indication = ripple(
                     color = colors.ripple
                 ),
                 role = Role.DropdownList,
@@ -311,7 +313,7 @@ fun MenuItem(
             .fillMaxWidth()
             .clickable(
                 interactionSource = interactionSource,
-                indication = rememberRipple(
+                indication = ripple(
                     color = colors.ripple
                 ),
                 role = Role.DropdownList,

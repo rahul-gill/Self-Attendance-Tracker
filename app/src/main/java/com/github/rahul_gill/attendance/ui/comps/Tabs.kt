@@ -20,6 +20,7 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -89,7 +90,7 @@ fun TabItem(
             .clip(TabsDefaults.itemShape)
             .clickable(
                 interactionSource = interactionSource,
-                indication = rememberRipple(
+                indication = ripple(
                     color = colors.itemRipple
                 ),
                 role = Role.Tab,
@@ -162,7 +163,7 @@ fun CustomTabItem(
             .clip(TabsDefaults.itemShape)
             .clickable(
                 interactionSource = interactionSource,
-                indication = rememberRipple(
+                indication = ripple(
                     color = colors.itemRipple
                 ),
                 role = Role.Tab,

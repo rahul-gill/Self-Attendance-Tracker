@@ -1,13 +1,13 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
-    id("com.android.application") version "8.4.1" apply false
-    id("com.android.library") version "8.4.1" apply false
-    id("org.jetbrains.kotlin.android") version "2.0.0" apply false
-    id("app.cash.sqldelight") version "2.0.2" apply false
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0" apply false
-    id("com.github.ben-manes.versions") version "0.46.0"
-    id("io.gitlab.arturbosch.detekt") version "1.22.0"
+    id("com.android.application") version "8.12.1" apply false
+    id("com.android.library") version "8.12.1" apply false
+    id("org.jetbrains.kotlin.android") version "2.2.0" apply false
+    id("app.cash.sqldelight") version "2.1.0" apply false
+    id("org.jetbrains.kotlin.plugin.compose") version "2.2.0" apply false
+    id("com.github.ben-manes.versions") version "0.52.0"
+    id("io.gitlab.arturbosch.detekt") version "1.23.8"
 }
 
 //Versions plugin
@@ -38,17 +38,18 @@ detekt {
     toolVersion = "1.22.0"
     buildUponDefaultConfig = true
     baseline = baselineFile
-    config = files("config/detekt/detekt.yml")
-    source = objects.fileCollection().from(
+    config.setFrom(files("config/detekt/detekt.yml"))
+
+    source.setFrom(objects.fileCollection().from(
         io.gitlab.arturbosch.detekt.extensions.DetektExtension.DEFAULT_SRC_DIR_JAVA,
         "src/test/java",
         io.gitlab.arturbosch.detekt.extensions.DetektExtension.DEFAULT_SRC_DIR_KOTLIN,
         "src/test/kotlin"
-    )
+    ))
 }
 
 dependencies {
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.1")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8")
 }
 
 val detektFormat by tasks.registering(io.gitlab.arturbosch.detekt.Detekt::class) {
