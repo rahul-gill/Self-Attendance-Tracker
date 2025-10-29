@@ -1,0 +1,173 @@
+<resources>
+    <string name="app_name">Посещаемость</string>
+    <string name="create_a_course">Создать курс</string>
+    <string name="course_name">Название курса</string>
+    <string name="save">Сохранить</string>
+    <string name="select_schedule_of_classes">Выбрать расписание</string>
+    <string name="ok">ОК</string>
+    <string name="error_course_name_blank">Название не может быть пустым</string>
+    <string name="error_no_classes_for_course">Добавьте хотя бы один класс для этого курса</string>
+    <string name="monday">Понедельник</string>
+    <string name="sunday">Воскресенье</string>
+    <string name="saturday">Суббота</string>
+    <string name="friday">Пятница</string>
+    <string name="thursday">Четверг</string>
+    <string name="wednesday">Среда</string>
+    <string name="tuesday">Вторник</string>
+    <string name="done">Готово</string>
+    <string name="cancel">Отмена</string>
+
+    <string name="course_detail_card_transition" translatable="false">course_details_card_%1$d</string>
+    <string name="course_detail_page_transition" translatable="false">course_details_page</string>
+
+    <string name="app_theme_key"  translatable="false">app_theme</string>
+    <string name="app_theme_title">Тема</string>
+    <string name="pure_dark_key"  translatable="false">pure_dark</string>
+    <string name="pure_dark_title">Pure Dark</string>
+    <string name="material_you_dynamic_color_key" translatable="false">material_you_dynamic_color</string>
+    <string name="material_you_dynamic_color_title">Динамические цвета</string>
+    <string name="theming_category_title">Оформление</string>
+    <string name="default_main_pager_tab_key"  translatable="false">default_main_pager_tab</string>
+    <string name="default_main_page_tab_title">Главный экран</string>
+    <string name="settings">Настройки</string>
+    <string name="time_format">Формат времени</string>
+    <string name="date_format">Формат даты</string>
+    <string name="double_repr">%.2f%%</string>
+
+
+    <string-array name="theme_entries"  translatable="false">
+        <item>system</item>
+        <item>light</item>
+        <item>dark</item>
+    </string-array>
+    <string-array name="theme_entries_values">
+        <item>Как в системе</item>
+        <item>Светлая тема</item>
+        <item>Темная тема</item>
+    </string-array>
+
+
+    <string-array name="default_main_pager_tab_entries"  translatable="false">
+        <item>today</item>
+        <item>overall</item>
+    </string-array>
+    <string-array name="default_main_pager_tab_entries_values">
+        <item>Сегодня</item>
+        <item>Общее</item>
+    </string-array>
+
+    <string-array name="date_format_choices" translatable="false">
+        <item>d MMM, yyyy</item>
+        <item>EEEE, MMMM d, yyyy</item>
+        <item>MM/dd/yyy</item>
+        <item>MMM dd, yyyy</item>
+        <item>dd MMMM yyy</item>
+    </string-array>
+    <string-array name="time_format_choices" translatable="false">
+        <item>hh:mm a</item>
+        <item>HH:mm</item>
+    </string-array>
+    <string-array name="view_course_tabs">
+        <item>О курсу</item>
+        <item>Доп. занятия</item>
+        <item>Посещаемость</item>
+    </string-array>
+
+    <string-array name="add_schedule_class_bottom_sheet_tabs">
+        <item>День недели</item>
+        <item>Начало</item>
+        <item>Конец</item>
+    </string-array>
+
+    <string-array name="add_extra_class_bottom_sheet_tabs">
+        <item>Дата</item>
+        <item>Начало</item>
+        <item>Конец</item>
+    </string-array>
+
+    <string name="attendance_status_setter_info">Статус для %1$s с %2$s до %3$s%4$s %5$s</string>
+    <string name="attendance_status_setter_info_extra_class">(Доп. занятие)</string>
+    <string name="attendance_status_setter_info_on_date">&#32; %1$s</string>
+    <string name="time_range">%1$s - %2$s</string>
+    <string name="scheduled_class">По расписанию</string>
+    <string name="extra_class">Доп. занятие</string>
+
+    <string name="delete_course_dialog_title">Удалить курс: %1$s</string>
+    <string name="delete_course_dialog_description">Вы уверены, что хотите удалить этот курс? Все данные будут навсегда утеряны.</string>
+
+    <string name="required_percentage_detail">Нужно посещать: %1$d</string>
+    <string name="schedule_class_weekday_and_start_end_time">%1$s; %2$s - %3$s</string>
+    <string name="delete_extra_class_dialog_title">Удалить доп. занятие?</string>
+    <string name="delete_extra_class_dialog_description">Вы уверены, что хотите удалить занятие %1$s с %2$s до %3$s?</string>
+
+    <string name="presents_count">Присутствие: %1$d</string>
+    <string name="absents_count">Отсутствие: %1$d</string>
+    <string name="cancelled_classes_count">Отменено: %1$d</string>
+
+    <string name="edit_course_screen_title">Редактировать %1$s</string>
+    <string name="previous_course_name">Было: %1$s</string>
+    <string name="previous_value_int_percentage">Было: %d%%</string>
+    <string name="required_attendance_updated_int_percentage">Теперь: %d%%</string>
+
+    <string name="app_theme">Тема</string>
+    <string name="go_back_screen">Назад</string>
+    <string name="look_and_feel">Внешний вид</string>
+    <string name="custom_color_scheme_seed">Цвет темы</string>
+    <string name="follow_system_colors">Как в системе</string>
+    <string name="pure_black_background">Черный фон</string>
+    <string name="follow_system">Как в системе</string>
+    <string name="light">Светлая</string>
+    <string name="dark">Темная</string>
+    <string name="custom_color_scheme_seed_summary">Основной цвет</string>
+    <string name="date_time_formatting">Формат даты и времени</string>
+    <string name="default_home_tab">Главный экран</string>
+    <string name="today_classes">Занятия сегодня</string>
+    <string name="other_ui_options">Другие настройки</string>
+    <string name="about">О приложении</string>
+    <string name="source_code">Исходный код</string>
+    <string name="author_info">Автор: Rahul Gill</string>
+    <string name="clear_text">Очистить</string>
+    <string name="required_attendance_text">"Нужно посещать: %1$d%%"</string>
+    <string name="add_class">Добавить занятие</string>
+    <string name="remove_class">Удалить занятие</string>
+    <string name="courses">Курсы</string>
+    <string name="no_classes_today">Нет занятий сегодня</string>
+    <string name="no_courses_added_yet">Нет курсов</string>
+    <string name="course_created">Курс %1$s создан</string>
+    <string name="present">Был</string>
+    <string name="absent">Отсутствовал</string>
+    <string name="cancelled">Отменено</string>
+    <string name="not_set">Не задано</string>
+    <string name="current_attendance_percentage">Текущая посещаемость</string>
+    <string name="weekly_schedule">Расписание</string>
+    <string name="required_attendance_percentage">Необходимая посещаемость</string>
+    <string name="deleted_schedule_item">Удалено из расписания</string>
+    <string name="delete_schedule_item">Удалить из расписания</string>
+    <string name="delete_schedule_item_with_details">Удалить  %1$s с %2$s до %3$s</string>
+    <string name="add_class_on_this_scheduele">Добавить занятие</string>
+    <string name="course_x_attendance_records">Посещаемость %1$s</string>
+    <string name="delete_record">Удалить запись</string>
+    <string name="delete">Удалить</string>
+    <string name="err_end_time_should_be_after_start_time">Время окончания должно быть позже начала</string>
+    <string name="select_weekday_start_time_and_end_time_for_the_new_class">Выберите день, время начала и окончания?</string>
+    <string name="tip">Подсказка</string>
+    <string name="course_updated">Курс обновлен</string>
+    <string name="add_schedule_item">Добавить в расписание</string>
+    <string name="delete_schedule_item_behaviour">Удаление записи также удалит и связанные данные о посещаемости</string>
+    <string name="delete_attendance_records_too">Удалить и записи посещаемости</string>
+    <string name="only_delete_schedule_item">Только удалить из расписания</string>
+    <string name="exclude_schedule_item_from_schedule">Исключить из расписания</string>
+    <string name="include_schedule_item_from_schedule">Включить в расписание</string>
+    <string name="excluded_from_schedule">Исключено из расписания</string>
+    <string name="behaviour">Действие</string>
+    <string name="unset_classes_behaviour">Для непомеченных занятий</string>
+    <string name="consider_as_presents">Считать присутствием</string>
+    <string name="consider_as_absents">Считать отсутствием</string>
+    <string name="do_nothing">Ничего не делать</string>
+    <string name="can_be_absent_in_n_classes">Можно пропустить: %1$d занятий</string>
+    <string name="need_to_attend_n_more_classes">Нужно посетить: %1$d занятий</string>
+    <string name="cannot_miss_next_class">Нельзя пропустить следующее</string>
+    <string name="privacy_policy">Политика конфиденциальности</string>
+
+
+</resources>

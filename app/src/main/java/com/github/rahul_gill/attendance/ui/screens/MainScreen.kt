@@ -35,7 +35,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -54,13 +53,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.rahul_gill.attendance.R
 import com.github.rahul_gill.attendance.db.AttendanceCounts
 import com.github.rahul_gill.attendance.db.AttendanceRecordHybrid
 import com.github.rahul_gill.attendance.db.CourseClassStatus
 import com.github.rahul_gill.attendance.db.CourseDetailsOverallItem
-import com.github.rahul_gill.attendance.db.DBOps
 import com.github.rahul_gill.attendance.db.FutureThingCalculations
 import com.github.rahul_gill.attendance.prefs.PreferenceManager
 import com.github.rahul_gill.attendance.ui.comps.SetClassStatusSheet
@@ -262,7 +259,7 @@ fun MainScreen(
 fun OverallCourseItem(
     item: CourseDetailsOverallItem = CourseDetailsOverallItem(
         courseId = 1,
-        courseName = "Maths",
+        courseName = "Maths ka nam lamba lamba lamba lamba hai",
         requiredAttendance = 75.0,
         currentAttendancePercentage = 86.0,
         presents = 100,
@@ -285,13 +282,16 @@ fun OverallCourseItem(
             ) {
                 Text(
                     text = item.courseName,
-                    style = MaterialTheme.typography.titleLarge,
-                    overflow = TextOverflow.Ellipsis
+                    style = MaterialTheme.typography.titleMedium,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    modifier = Modifier
+                        .weight(1f)
                 )
                 Text(
                     modifier = Modifier.padding(start = 4.dp),
                     text = "Current: ${item.currentAttendancePercentage.toInt()}% Goal: ${item.requiredAttendance.toInt()}%",
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleSmall
                 )
             }
             Spacer(modifier = Modifier.height(4.dp))
@@ -322,7 +322,7 @@ fun OverallCourseItem(
                         .padding(vertical = 4.dp, horizontal = 8.dp)
                 ) {
                     Text(text = "P", color = MaterialTheme.colorScheme.onPrimaryContainer)
-                    Text(text = item.presents.toString())
+                    Text(text = item.presents.toString(), color = MaterialTheme.colorScheme.onPrimaryContainer)
                 }
                 Spacer(modifier = Modifier.padding(horizontal = 4.dp))
                 Row(
@@ -335,7 +335,7 @@ fun OverallCourseItem(
                         .padding(vertical = 4.dp, horizontal = 8.dp)
                 ) {
                     Text(text = "A", color = MaterialTheme.colorScheme.onErrorContainer)
-                    Text(text = item.absents.toString())
+                    Text(text = item.absents.toString(), color = MaterialTheme.colorScheme.onErrorContainer)
                 }
 
                 Spacer(modifier = Modifier.padding(horizontal = 4.dp))
@@ -349,7 +349,7 @@ fun OverallCourseItem(
                         .padding(vertical = 4.dp, horizontal = 8.dp)
                 ) {
                     Text(text = "C", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text(text = item.cancels.toString())
+                    Text(text = item.cancels.toString(), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
             Spacer(modifier = Modifier.padding(top = 4.dp))

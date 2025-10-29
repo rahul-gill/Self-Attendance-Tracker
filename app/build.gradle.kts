@@ -20,8 +20,8 @@ sqldelight {
 object VersionProperties {
     private const val versionMajor: Int = 1
     private const val versionMinor: Int = 0
-    private const val versionPatch: Int = 0
-    private const val versionBuild: Int = 6
+    private const val versionPatch: Int = 1
+    private const val versionBuild: Int = 0
     const val compileSdk: Int = 36
     const val minSdk: Int = 26
 
@@ -102,18 +102,18 @@ dependencies {
     //sugar and water
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.1.5")
     //ui thing
-    implementation (platform("androidx.compose:compose-bom:2025.08.00"))
-    androidTestImplementation(platform("androidx.compose:compose-bom:2025.08.00"))
+    implementation (platform("androidx.compose:compose-bom:2025.10.01"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2025.10.01"))
     implementation ("androidx.compose.material3:material3")
     // https://mvnrepository.com/artifact/androidx.compose.material/material-icons-extended
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
-    implementation("androidx.activity:activity-compose:1.10.1")
-    implementation("com.materialkolor:material-kolor:3.0.1")
+    implementation("androidx.activity:activity-compose:1.11.0")
+    implementation("com.materialkolor:material-kolor:4.0.2")
     implementation("com.github.skydoves:colorpicker-compose:1.1.2")
     implementation("dev.olshevski.navigation:reimagined:1.5.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.4")
     androidTestImplementation("tools.fastlane:screengrab:2.1.1")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
