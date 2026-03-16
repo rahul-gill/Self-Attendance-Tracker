@@ -115,6 +115,8 @@ dependencies {
     implementation("dev.olshevski.navigation:reimagined:1.5.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.4")
     androidTestImplementation("tools.fastlane:screengrab:2.1.1")
+    //WorkManager for daily alarm scheduling
+    implementation("androidx.work:work-runtime-ktx:2.10.1")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
 
