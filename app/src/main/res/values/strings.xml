@@ -169,5 +169,17 @@
     <string name="cannot_miss_next_class">Cannot miss next claas</string>
     <string name="privacy_policy">Privacy Policy</string>
 
+    <!-- Notification strings -->
+    <string name="notification_channel_name">Class Reminders</string>
+    <string name="notification_channel_description">Notifications for upcoming classes 5 minutes before they start</string>
+    <string name="notification_body">%1$s – %2$s</string>
+    <string name="mark_present">Present</string>
+    <string name="mark_absent">Absent</string>
+    <string name="mark_cancelled">Cancelled</string>
+    <string name="notifications">Notifications</string>
+    <string name="class_reminders">Class Reminders</string>
+    <string name="class_reminders_summary">Get notified 5 minutes before each class</string>
+
+
 
 </resources>

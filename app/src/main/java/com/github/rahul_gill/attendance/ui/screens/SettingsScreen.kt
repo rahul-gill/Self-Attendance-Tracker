@@ -1,7 +1,12 @@
 package com.github.rahul_gill.attendance.ui.screens
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -44,7 +49,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.github.rahul_gill.attendance.R
+import com.github.rahul_gill.attendance.notification.ClassReminderScheduler
+import com.github.rahul_gill.attendance.notification.DailySchedulerWorker
 import com.github.rahul_gill.attendance.prefs.PreferenceManager
 import com.github.rahul_gill.attendance.prefs.UnsetClassesBehavior
 import com.github.rahul_gill.attendance.ui.comps.AlertDialog
@@ -79,6 +87,22 @@ fun SettingsScreen(
     val dateFormatOption = PreferenceManager.defaultDateFormatPref.asState()
     val timeFormatOption = PreferenceManager.defaultTimeFormatPref.asState()
     val defaultHomeTabOption = PreferenceManager.defaultHomeTabPref.asState()
+    val notificationsEnabled = PreferenceManager.notificationsEnabled.asState()
+
+    val context = LocalContext.current
+
+    // Permission launcher for Android 13+ POST_NOTIFICATIONS
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            PreferenceManager.notificationsEnabled.setValue(true)
+            ClassReminderScheduler.scheduleAlarmsForToday(context)
+            DailySchedulerWorker.enqueue(context)
+        } else {
+            PreferenceManager.notificationsEnabled.setValue(false)
+        }
+    }
 
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -250,6 +274,41 @@ fun SettingsScreen(
                 }
             }
 
+            PreferenceGroupHeader(title = stringResource(id = R.string.notifications))
+            SwitchPreference(
+                title = stringResource(R.string.class_reminders),
+                summary = stringResource(R.string.class_reminders_summary),
+                isChecked = notificationsEnabled.value,
+                leadingIcon = {
+                    Icon(painter = painterResource(id = R.drawable.baseline_notifications_24), contentDescription = null)
+                },
+                onCheckedChange = { checked ->
+                    if (checked) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            if (ContextCompat.checkSelfPermission(
+                                    context, Manifest.permission.POST_NOTIFICATIONS
+                                ) == PackageManager.PERMISSION_GRANTED
+                            ) {
+                                PreferenceManager.notificationsEnabled.setValue(true)
+                                ClassReminderScheduler.scheduleAlarmsForToday(context)
+                                DailySchedulerWorker.enqueue(context)
+                            } else {
+                                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            }
+                        } else {
+                            PreferenceManager.notificationsEnabled.setValue(true)
+                            ClassReminderScheduler.scheduleAlarmsForToday(context)
+                            DailySchedulerWorker.enqueue(context)
+                        }
+                    } else {
+                        PreferenceManager.notificationsEnabled.setValue(false)
+                        ClassReminderScheduler.cancelAllAlarms(context)
+                        DailySchedulerWorker.cancel(context)
+                    }
+                }
+            )
+
+
             PreferenceGroupHeader(title = stringResource(id = R.string.behaviour))
             val unsetClassesBehaviorValues = UnsetClassesBehavior.entries.toTypedArray().toList()
             ListPreference(
@@ -318,7 +377,6 @@ fun SettingsScreen(
             )
 
             PreferenceGroupHeader(title = stringResource(id = R.string.about))
-            val context = LocalContext.current
 
             GenericPreference(
                 title = stringResource(R.string.privacy_policy),

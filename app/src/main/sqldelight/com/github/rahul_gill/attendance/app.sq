@@ -223,6 +223,13 @@ SELECT e.extraClassId AS entityId, NULL AS scheduleId, e.date, e.startTime, e.en
     FROM ExtraClasses e, Course course
     WHERE e.courseId = :courseId AND e.courseId = course.courseId;
 
+getActiveScheduleClassesForWeekday:
+SELECT Schedule.scheduleId, Schedule.courseId, Course.courseName, Schedule.startTime, Schedule.endTime
+FROM Schedule
+JOIN Course ON Schedule.courseId = Course.courseId
+WHERE Schedule.weekday = ? AND Schedule.includedInSchedule = 1
+ORDER BY Schedule.startTime;
+
 getCourseDetailsSingle:
 SELECT
     ((SELECT COUNT(*) AS presents FROM Attendance WHERE scheduleId IN (SELECT scheduleId FROM Schedule WHERE courseId = Course.courseId) AND classStatus = 'Present')
