@@ -11,6 +11,7 @@ import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.github.rahul_gill.attendance.Database
 import com.github.rahul_gill.attendance.prefs.PreferenceManager
 import com.github.rahul_gill.attendance.prefs.UnsetClassesBehavior
+import com.github.rahul_gill.attendance.notification.ClassReminderScheduler
 import com.github.rahul_gill.attendance.util.applicationContextGlobal
 import com.github.rahulgill.attendance.Attendance
 import com.github.rahulgill.attendance.ExtraClasses
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import java.time.LocalDate
+import java.time.LocalTime
 
 fun getAndroidSqliteDriver(context: Context) =
     AndroidSqliteDriver(Database.Schema, context, "app.db")
@@ -60,7 +62,7 @@ class DBOps(
         requiredAttendancePercentage: Double,
         schedule: List<ClassDetail>,
     ): Long {
-        return db.transactionWithResult {
+        val courseId = db.transactionWithResult {
             queries.createCourse(name, requiredAttendancePercentage)
             val courseId = queries.getLastInsertRowID().executeAsOne()
             schedule.forEach { (dayOfWeek, startTime, endTime, _) ->
@@ -74,6 +76,8 @@ class DBOps(
             }
             courseId
         }
+        ClassReminderScheduler.scheduleAlarmsForToday(applicationContextGlobal)
+        return courseId
     }
 
     fun updateCourseDetails(
@@ -104,6 +108,7 @@ class DBOps(
                 }
             }
         }
+        ClassReminderScheduler.scheduleAlarmsForToday(applicationContextGlobal)
     }
 
     fun addScheduleClassForCourse(
@@ -115,8 +120,9 @@ class DBOps(
             weekday = classDetails.dayOfWeek,
             startTime = classDetails.startTime,
             endTime = classDetails.endTime,
-            includedInSchedule = 1
+            includedInSchedule = if (classDetails.includedInSchedule) 1 else 0
         )
+        ClassReminderScheduler.scheduleAlarmsForToday(applicationContextGlobal)
     }
 
     fun getScheduleAndExtraClassesForToday(): Flow<List<Pair<AttendanceRecordHybrid, AttendanceCounts>>> {
@@ -181,6 +187,7 @@ class DBOps(
 
     fun deleteScheduleWithId(id: Long) {
         queries.deleteScheduleItem(id)
+        ClassReminderScheduler.scheduleAlarmsForToday(applicationContextGlobal)
     }
 
     fun deleteScheduleAttendanceRecord(id: Long) {
@@ -262,15 +269,21 @@ class DBOps(
     fun createExtraClasses(
         courseId: Long,
         timings: ExtraClassTimings
-    ) = queries.createExtraClass(
-        courseId,
-        timings.date,
-        timings.startTime,
-        timings.endTime,
-        CourseClassStatus.Unset
-    )
+    ) {
+        queries.createExtraClass(
+            courseId,
+            timings.date,
+            timings.startTime,
+            timings.endTime,
+            CourseClassStatus.Unset
+        )
+        ClassReminderScheduler.scheduleAlarmsForToday(applicationContextGlobal)
+    }
 
-    fun deleteCourse(courseId: Long) = queries.deleteCourse(courseId)
+    fun deleteCourse(courseId: Long) {
+        queries.deleteCourse(courseId)
+        ClassReminderScheduler.scheduleAlarmsForToday(applicationContextGlobal)
+    }
 
     fun deleteExtraClass(extraClassId: Long) = queries.deleteExtraClass(extraClassId)
 
@@ -318,6 +331,23 @@ class DBOps(
             scheduleId = scheduleId,
             activate = if (activate) 1 else 0
         )
+        ClassReminderScheduler.scheduleAlarmsForToday(applicationContextGlobal)
+    }
+
+    data class ScheduleClassForNotification(
+        val scheduleId: Long,
+        val courseId: Long,
+        val courseName: String,
+        val startTime: LocalTime,
+        val endTime: LocalTime
+    )
+
+    fun getActiveScheduleClassesForWeekday(weekday: java.time.DayOfWeek): List<ScheduleClassForNotification> {
+        return queries.getActiveScheduleClassesForWeekday(weekday,
+            mapper = { scheduleId, courseId, courseName, startTime, endTime ->
+                ScheduleClassForNotification(scheduleId, courseId, courseName, startTime, endTime)
+            }
+        ).executeAsList()
     }
 
     companion object {

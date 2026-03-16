@@ -44,6 +44,8 @@ object PreferenceManager {
 
     val defaultHomeTabPref =
         IntPreference(key = "default_home_tab", defaultValue = 0)
+    val notificationsEnabled =
+        BooleanPreference(key = "notifications_enabled", defaultValue = true)
     val defaultTimeFormatPref =
         StringPreference(
             key = "time_format",
