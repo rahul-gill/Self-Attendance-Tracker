@@ -11,7 +11,7 @@ import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.github.rahul_gill.attendance.Database
 import com.github.rahul_gill.attendance.prefs.PreferenceManager
 import com.github.rahul_gill.attendance.prefs.UnsetClassesBehavior
-import com.github.rahul_gill.attendance.notification.ClassReminderScheduler
+
 import com.github.rahul_gill.attendance.util.applicationContextGlobal
 import com.github.rahulgill.attendance.Attendance
 import com.github.rahulgill.attendance.ExtraClasses
@@ -76,7 +76,6 @@ class DBOps(
             }
             courseId
         }
-        ClassReminderScheduler.scheduleAlarmsForToday(applicationContextGlobal)
         return courseId
     }
 
@@ -108,7 +107,6 @@ class DBOps(
                 }
             }
         }
-        ClassReminderScheduler.scheduleAlarmsForToday(applicationContextGlobal)
     }
 
     fun addScheduleClassForCourse(
@@ -122,7 +120,6 @@ class DBOps(
             endTime = classDetails.endTime,
             includedInSchedule = if (classDetails.includedInSchedule) 1 else 0
         )
-        ClassReminderScheduler.scheduleAlarmsForToday(applicationContextGlobal)
     }
 
     fun getScheduleAndExtraClassesForToday(): Flow<List<Pair<AttendanceRecordHybrid, AttendanceCounts>>> {
@@ -187,7 +184,6 @@ class DBOps(
 
     fun deleteScheduleWithId(id: Long) {
         queries.deleteScheduleItem(id)
-        ClassReminderScheduler.scheduleAlarmsForToday(applicationContextGlobal)
     }
 
     fun deleteScheduleAttendanceRecord(id: Long) {
@@ -277,12 +273,10 @@ class DBOps(
             timings.endTime,
             CourseClassStatus.Unset
         )
-        ClassReminderScheduler.scheduleAlarmsForToday(applicationContextGlobal)
     }
 
     fun deleteCourse(courseId: Long) {
         queries.deleteCourse(courseId)
-        ClassReminderScheduler.scheduleAlarmsForToday(applicationContextGlobal)
     }
 
     fun deleteExtraClass(extraClassId: Long) = queries.deleteExtraClass(extraClassId)
@@ -331,7 +325,6 @@ class DBOps(
             scheduleId = scheduleId,
             activate = if (activate) 1 else 0
         )
-        ClassReminderScheduler.scheduleAlarmsForToday(applicationContextGlobal)
     }
 
     data class ScheduleClassForNotification(
