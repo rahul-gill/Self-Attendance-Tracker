@@ -26,6 +26,7 @@ import com.github.rahul_gill.attendance.db.AttendanceRecordHybrid
 import com.github.rahul_gill.attendance.db.CourseClassStatus
 import com.github.rahul_gill.attendance.db.CourseDetailsOverallItem
 import com.github.rahul_gill.attendance.db.DBOps
+import com.github.rahul_gill.attendance.db.ScheduleRepository
 import com.github.rahul_gill.attendance.ui.screens.CourseAttendanceRecordScreen
 import com.github.rahul_gill.attendance.ui.screens.CourseDetailsScreen
 import com.github.rahul_gill.attendance.ui.screens.CourseEditScreen
@@ -65,7 +66,8 @@ sealed interface Screen : Parcelable {
 
 @Composable
 fun RootNavHost(
-    dbOps: DBOps = DBOps.instance
+    repo: ScheduleRepository = ScheduleRepository.instance,
+    dbOps: DBOps = repo.dbOps
 ) {
     val navController = rememberNavController<Screen>(Screen.Main)
     val context = LocalContext.current
@@ -106,7 +108,7 @@ fun RootNavHost(
                 CreateCourseScreen(
                     onGoBack = { navController.pop() },
                     onSave = { courseName, percentage, classes ->
-                        dbOps.createCourse(
+                        repo.createCourse(
                             name = courseName,
                             requiredAttendancePercentage = percentage.toDouble(),
                             schedule = classes
@@ -161,7 +163,7 @@ fun RootNavHost(
                         classes = classes.value,
                         goToClassRecords = { navController.navigate(Screen.CourseClassRecords(screen.courseId)) },
                         onCreateExtraClass = { timings ->
-                            dbOps.createExtraClasses(
+                            repo.createExtraClasses(
                                 courseId = courseDetails.value!!.courseId,
                                 timings = timings
                             )
@@ -170,17 +172,17 @@ fun RootNavHost(
                             navController.navigate(Screen.EditCourse(it))
                         },
                         onDeleteCourse = { courseId ->
-                            dbOps.deleteCourse(courseId)
+                            repo.deleteCourse(courseId)
                         },
                         onAddScheduleClass = { classDetail ->
-                            dbOps.addScheduleClassForCourse(
+                            repo.addScheduleClassForCourse(
                                 courseId = courseDetails.value!!.courseId,
                                 classDetails = classDetail
                             )
                         },
                         onDeleteScheduleItem = { classDetails ->
                             if (classDetails.scheduleId != null) {
-                                dbOps.deleteScheduleWithId(
+                                repo.deleteScheduleWithId(
                                     classDetails.scheduleId,
                                 )
                                 Toast.makeText(
@@ -192,7 +194,7 @@ fun RootNavHost(
                         },
                         changeActivateStatusOfScheduleItem = { classDetails, activate ->
                             if(classDetails.scheduleId != null){
-                                dbOps.changeActivateStatusOfScheduleItem(classDetails.scheduleId, activate)
+                                repo.changeActivateStatusOfScheduleItem(classDetails.scheduleId, activate)
                             }
                         },
                         createAttendanceRecordOnSchedule = { scheduleId, classStatus, date ->
@@ -245,7 +247,7 @@ fun RootNavHost(
                     courseDetails = screen.courseDetailsOverallItem,
                     onGoBack = { navController.pop() },
                     onSave = { newName, newRequiredPercentage ->
-                        dbOps.updateCourseDetails(
+                        repo.updateCourseDetails(
                             id = screen.courseDetailsOverallItem.courseId,
                             name = newName,
                             requiredAttendancePercentage = newRequiredPercentage.toDouble(),

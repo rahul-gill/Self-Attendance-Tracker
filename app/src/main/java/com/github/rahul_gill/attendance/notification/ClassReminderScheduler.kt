@@ -11,7 +11,6 @@ import timber.log.Timber
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 object ClassReminderScheduler {
 
@@ -54,8 +53,7 @@ object ClassReminderScheduler {
                 .toInstant()
                 .toEpochMilli()
 
-            val pendingIntent = createAlarmPendingIntent(
-                context = context,
+            val data = ClassReminderData(
                 scheduleId = classItem.scheduleId,
                 courseId = classItem.courseId,
                 courseName = classItem.courseName,
@@ -63,6 +61,8 @@ object ClassReminderScheduler {
                 endTime = classItem.endTime,
                 date = today
             )
+
+            val pendingIntent = createAlarmPendingIntent(context, data)
 
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -106,8 +106,7 @@ object ClassReminderScheduler {
 
         val alarmManager = context.getSystemService(AlarmManager::class.java)
         for (classItem in classes) {
-            val pendingIntent = createAlarmPendingIntent(
-                context = context,
+            val data = ClassReminderData(
                 scheduleId = classItem.scheduleId,
                 courseId = classItem.courseId,
                 courseName = classItem.courseName,
@@ -115,6 +114,7 @@ object ClassReminderScheduler {
                 endTime = classItem.endTime,
                 date = today
             )
+            val pendingIntent = createAlarmPendingIntent(context, data)
             alarmManager.cancel(pendingIntent)
         }
         Timber.d("ClassReminderScheduler: cancelled all alarms")
@@ -122,24 +122,14 @@ object ClassReminderScheduler {
 
     private fun createAlarmPendingIntent(
         context: Context,
-        scheduleId: Long,
-        courseId: Long,
-        courseName: String,
-        startTime: LocalTime,
-        endTime: LocalTime,
-        date: LocalDate
+        data: ClassReminderData
     ): PendingIntent {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
-            putExtra(AlarmReceiver.EXTRA_SCHEDULE_ID, scheduleId)
-            putExtra(AlarmReceiver.EXTRA_COURSE_ID, courseId)
-            putExtra(AlarmReceiver.EXTRA_COURSE_NAME, courseName)
-            putExtra(AlarmReceiver.EXTRA_START_TIME, startTime.format(DateTimeFormatter.ISO_TIME))
-            putExtra(AlarmReceiver.EXTRA_END_TIME, endTime.format(DateTimeFormatter.ISO_TIME))
-            putExtra(AlarmReceiver.EXTRA_DATE, date.toString())
+            putExtra(ClassReminderData.EXTRA_KEY, data)
         }
         return PendingIntent.getBroadcast(
             context,
-            scheduleId.toInt(),
+            data.scheduleId.toInt(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )

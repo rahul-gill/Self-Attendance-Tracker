@@ -9,8 +9,6 @@ import androidx.core.app.NotificationCompat
 import com.github.rahul_gill.attendance.MainActivity
 import com.github.rahul_gill.attendance.R
 import com.github.rahul_gill.attendance.db.CourseClassStatus
-import java.time.LocalDate
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 object NotificationHelper {
@@ -32,15 +30,10 @@ object NotificationHelper {
 
     fun showClassReminderNotification(
         context: Context,
-        scheduleId: Long,
-        courseId: Long,
-        courseName: String,
-        startTime: LocalTime,
-        endTime: LocalTime,
-        date: LocalDate
+        data: ClassReminderData
     ) {
-        val timeStr = startTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
-        val endTimeStr = endTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+        val timeStr = data.startTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+        val endTimeStr = data.endTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
 
         val contentIntent = PendingIntent.getActivity(
             context,
@@ -51,11 +44,11 @@ object NotificationHelper {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notificationId = scheduleId.toInt()
+        val notificationId = data.scheduleId.toInt()
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.baseline_calendar_today_24)
-            .setContentTitle(courseName)
+            .setContentTitle(data.courseName)
             .setContentText(
                 context.getString(R.string.notification_body, timeStr, endTimeStr)
             )
@@ -66,24 +59,21 @@ object NotificationHelper {
                 R.drawable.baseline_check_24,
                 context.getString(R.string.mark_present),
                 createActionPendingIntent(
-                    context, notificationId, scheduleId, courseId, date,
-                    CourseClassStatus.Present
+                    context, notificationId, data, CourseClassStatus.Present
                 )
             )
             .addAction(
                 R.drawable.baseline_close_24,
                 context.getString(R.string.mark_absent),
                 createActionPendingIntent(
-                    context, notificationId, scheduleId, courseId, date,
-                    CourseClassStatus.Absent
+                    context, notificationId, data, CourseClassStatus.Absent
                 )
             )
             .addAction(
                 R.drawable.baseline_block_24,
                 context.getString(R.string.mark_cancelled),
                 createActionPendingIntent(
-                    context, notificationId, scheduleId, courseId, date,
-                    CourseClassStatus.Cancelled
+                    context, notificationId, data, CourseClassStatus.Cancelled
                 )
             )
             .build()
@@ -100,20 +90,21 @@ object NotificationHelper {
     private fun createActionPendingIntent(
         context: Context,
         notificationId: Int,
-        scheduleId: Long,
-        courseId: Long,
-        date: LocalDate,
+        reminderData: ClassReminderData,
         status: CourseClassStatus
     ): PendingIntent {
+        val actionData = NotificationActionData(
+            notificationId = notificationId,
+            scheduleId = reminderData.scheduleId,
+            courseId = reminderData.courseId,
+            date = reminderData.date,
+            status = status
+        )
         val intent = Intent(context, NotificationActionReceiver::class.java).apply {
             action = "com.github.rahul_gill.attendance.ACTION_MARK_${status.name.uppercase()}"
-            putExtra(NotificationActionReceiver.EXTRA_NOTIFICATION_ID, notificationId)
-            putExtra(NotificationActionReceiver.EXTRA_SCHEDULE_ID, scheduleId)
-            putExtra(NotificationActionReceiver.EXTRA_COURSE_ID, courseId)
-            putExtra(NotificationActionReceiver.EXTRA_DATE, date.toString())
-            putExtra(NotificationActionReceiver.EXTRA_STATUS, status.name)
+            putExtra(NotificationActionData.EXTRA_KEY, actionData)
         }
-        val requestCode = (scheduleId * 10 + status.ordinal).toInt()
+        val requestCode = (reminderData.scheduleId * 10 + status.ordinal).toInt()
         return PendingIntent.getBroadcast(
             context,
             requestCode,
