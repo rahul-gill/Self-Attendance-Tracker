@@ -15,6 +15,8 @@ import java.time.ZoneId
 object ClassReminderScheduler {
 
     private const val REMINDER_MINUTES_BEFORE = 5L
+    private const val PREFS_NAME = "class_reminder_scheduler"
+    private const val KEY_SCHEDULED_IDS = "scheduled_alarm_request_codes"
 
     fun scheduleAlarmsForToday(context: Context) {
         val notificationsEnabled = PreferenceManager.notificationsEnabled.value
@@ -23,6 +25,10 @@ object ClassReminderScheduler {
             Timber.d("ClassReminderScheduler: notifications disabled, skipping")
             return
         }
+
+        // Cancel all previously scheduled alarms first to avoid stale alarms
+        // (e.g. when a class is moved to a different day/time or deleted)
+        cancelTrackedAlarms(context)
 
         val today = LocalDate.now()
         val todayWeekday = today.dayOfWeek
@@ -36,6 +42,7 @@ object ClassReminderScheduler {
 
         val alarmManager = context.getSystemService(AlarmManager::class.java)
         val now = LocalTime.now()
+        val scheduledRequestCodes = mutableSetOf<Int>()
 
         Timber.d("ClassReminderScheduler: found ${classes.size} classes for $todayWeekday")
 
@@ -87,37 +94,59 @@ object ClassReminderScheduler {
                         pendingIntent
                     )
                 }
+                scheduledRequestCodes.add(data.scheduleId.toInt())
                 Timber.d("ClassReminderScheduler: scheduled alarm for ${classItem.courseName} at $reminderTime")
             } catch (e: SecurityException) {
                 Timber.e(e, "ClassReminderScheduler: SecurityException scheduling reminder alarm")
             }
 
         }
+
+        // Persist the request codes so we can cancel them later even if
+        // the underlying schedule data has changed
+        saveTrackedAlarmIds(context, scheduledRequestCodes)
     }
 
     fun cancelAllAlarms(context: Context) {
-        val today = LocalDate.now()
-        val classes = try {
-            DBOps.instance.getActiveScheduleClassesForWeekday(today.dayOfWeek)
-        } catch (e: Exception) {
-            Timber.e(e, "ClassReminderScheduler: failed to query for cancellation")
-            return
-        }
+        cancelTrackedAlarms(context)
+        Timber.d("ClassReminderScheduler: cancelled all alarms")
+    }
+
+    /**
+     * Cancel all previously tracked alarms by their request codes.
+     * This works even if the schedule data has since been changed or deleted,
+     * because we use the saved request codes (not a fresh DB query).
+     */
+    private fun cancelTrackedAlarms(context: Context) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val savedCodes = prefs.getStringSet(KEY_SCHEDULED_IDS, emptySet()) ?: emptySet()
+
+        if (savedCodes.isEmpty()) return
 
         val alarmManager = context.getSystemService(AlarmManager::class.java)
-        for (classItem in classes) {
-            val data = ClassReminderData(
-                scheduleId = classItem.scheduleId,
-                courseId = classItem.courseId,
-                courseName = classItem.courseName,
-                startTime = classItem.startTime,
-                endTime = classItem.endTime,
-                date = today
+        for (codeStr in savedCodes) {
+            val requestCode = codeStr.toIntOrNull() ?: continue
+            val pendingIntent = PendingIntent.getBroadcast(
+                context,
+                requestCode,
+                Intent(context, AlarmReceiver::class.java),
+                PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
             )
-            val pendingIntent = createAlarmPendingIntent(context, data)
-            alarmManager.cancel(pendingIntent)
+            if (pendingIntent != null) {
+                alarmManager.cancel(pendingIntent)
+                Timber.d("ClassReminderScheduler: cancelled alarm with requestCode=$requestCode")
+            }
         }
-        Timber.d("ClassReminderScheduler: cancelled all alarms")
+
+        // Clear the saved codes
+        prefs.edit().remove(KEY_SCHEDULED_IDS).apply()
+    }
+
+    private fun saveTrackedAlarmIds(context: Context, requestCodes: Set<Int>) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit()
+            .putStringSet(KEY_SCHEDULED_IDS, requestCodes.map { it.toString() }.toSet())
+            .apply()
     }
 
     private fun createAlarmPendingIntent(
