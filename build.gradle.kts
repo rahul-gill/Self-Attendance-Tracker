@@ -1,11 +1,11 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
-    id("com.android.application") version "8.13.0" apply false
-    id("com.android.library") version "8.13.0" apply false
-    id("org.jetbrains.kotlin.android") version "2.2.21" apply false
-    id("app.cash.sqldelight") version "2.1.0" apply false
-    id("org.jetbrains.kotlin.plugin.compose") version "2.2.21" apply false
+    id("com.android.application") version "9.1.0" apply false
+    id("com.android.library") version "9.1.0" apply false
+    id("org.jetbrains.kotlin.android") version "2.3.20" apply false
+    id("app.cash.sqldelight") version "2.3.2" apply false
+    id("org.jetbrains.kotlin.plugin.compose") version "2.3.20" apply false
     id("com.github.ben-manes.versions") version "0.53.0"
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
 }

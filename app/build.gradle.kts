@@ -45,7 +45,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     sourceSets {
-        map { it.java.srcDir("src/${it.name}/kotlin") }
+        forEach { it.java.srcDir("src/${it.name}/kotlin") }
     }
     buildTypes {
         getByName("release") {
@@ -92,47 +92,47 @@ android {
 
 dependencies {
     //basics
-    implementation("androidx.core:core-ktx:1.17.0")
+    implementation("androidx.core:core-ktx:1.18.0")
     implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation("androidx.datastore:datastore-preferences:1.1.7")
+    implementation("androidx.datastore:datastore-preferences:1.2.1")
     implementation("androidx.startup:startup-runtime:1.2.0")
     
     // Testing
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.robolectric:robolectric:4.12.2")
-    testImplementation("io.mockk:mockk:1.13.10")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
-    testImplementation("androidx.test:core-ktx:1.6.1")
-    testImplementation("androidx.test.ext:junit-ktx:1.2.1")
-    testImplementation("androidx.work:work-testing:2.10.1")
+    testImplementation("org.robolectric:robolectric:4.16.1")
+    testImplementation("io.mockk:mockk:1.14.9")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+    testImplementation("androidx.test:core-ktx:1.7.0")
+    testImplementation("androidx.test.ext:junit-ktx:1.3.0")
+    testImplementation("androidx.work:work-testing:2.11.1")
 
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
 
     //sqlDelight
-    implementation("app.cash.sqldelight:android-driver:2.1.0")
-    implementation("app.cash.sqldelight:coroutines-extensions:2.1.0")
-    implementation("app.cash.sqldelight:primitive-adapters:2.1.0")
-    testImplementation("app.cash.sqldelight:sqlite-driver:2.1.0")
+    implementation("app.cash.sqldelight:android-driver:2.3.2")
+    implementation("app.cash.sqldelight:coroutines-extensions:2.3.2")
+    implementation("app.cash.sqldelight:primitive-adapters:2.3.2")
+    testImplementation("app.cash.sqldelight:sqlite-driver:2.3.2")
     //sugar and water
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.1.5")
     //ui thing
-    implementation (platform("androidx.compose:compose-bom:2025.10.01"))
-    androidTestImplementation(platform("androidx.compose:compose-bom:2025.10.01"))
+    implementation (platform("androidx.compose:compose-bom:2026.03.00"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2026.03.00"))
     implementation ("androidx.compose.material3:material3")
     // https://mvnrepository.com/artifact/androidx.compose.material/material-icons-extended
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
-    implementation("androidx.activity:activity-compose:1.11.0")
-    implementation("com.materialkolor:material-kolor:4.0.2")
-    implementation("com.github.skydoves:colorpicker-compose:1.1.2")
+    implementation("androidx.activity:activity-compose:1.13.0")
+    implementation("com.materialkolor:material-kolor:4.1.1")
+    implementation("com.github.skydoves:colorpicker-compose:1.1.3")
     implementation("dev.olshevski.navigation:reimagined:1.5.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.4")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.10.0")
     androidTestImplementation("tools.fastlane:screengrab:2.1.1")
     //WorkManager for daily alarm scheduling
-    implementation("androidx.work:work-runtime-ktx:2.10.1")
+    implementation("androidx.work:work-runtime-ktx:2.11.1")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
 
