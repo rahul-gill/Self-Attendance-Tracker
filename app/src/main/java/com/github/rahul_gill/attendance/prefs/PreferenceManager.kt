@@ -56,4 +56,7 @@ object PreferenceManager {
             key = "date_format",
             defaultValue = DefaultDateFormat
         )
+
+    val onboardingCompleted =
+        BooleanPreference(key = "onboarding_completed", defaultValue = false)
 }

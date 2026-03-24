@@ -27,23 +27,29 @@ import com.github.rahul_gill.attendance.db.CourseClassStatus
 import com.github.rahul_gill.attendance.db.CourseDetailsOverallItem
 import com.github.rahul_gill.attendance.db.DBOps
 import com.github.rahul_gill.attendance.db.ScheduleRepository
+import com.github.rahul_gill.attendance.prefs.PreferenceManager
 import com.github.rahul_gill.attendance.ui.screens.CourseAttendanceRecordScreen
 import com.github.rahul_gill.attendance.ui.screens.CourseDetailsScreen
 import com.github.rahul_gill.attendance.ui.screens.CourseEditScreen
 import com.github.rahul_gill.attendance.ui.screens.CreateCourseScreen
 import com.github.rahul_gill.attendance.ui.screens.MainScreen
+import com.github.rahul_gill.attendance.ui.screens.OnboardingScreen
 import com.github.rahul_gill.attendance.ui.screens.SettingsScreen
 import dev.olshevski.navigation.reimagined.AnimatedNavHost
 import dev.olshevski.navigation.reimagined.NavAction
 import dev.olshevski.navigation.reimagined.NavBackHandler
 import dev.olshevski.navigation.reimagined.navigate
 import dev.olshevski.navigation.reimagined.pop
+import dev.olshevski.navigation.reimagined.replaceAll
 import dev.olshevski.navigation.reimagined.rememberNavController
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
 sealed interface Screen : Parcelable {
+    @Parcelize
+    data object Onboarding : Screen
+
     @Parcelize
     data object Main : Screen
 
@@ -69,7 +75,10 @@ fun RootNavHost(
     repo: ScheduleRepository = ScheduleRepository.instance,
     dbOps: DBOps = repo.dbOps
 ) {
-    val navController = rememberNavController<Screen>(Screen.Main)
+    val onboardingCompleted = PreferenceManager.onboardingCompleted.asState()
+    val navController = rememberNavController<Screen>(
+        if (onboardingCompleted.value) Screen.Main else Screen.Onboarding
+    )
     val context = LocalContext.current
     val onSetClassStatus : (item: AttendanceRecordHybrid, newStatus: CourseClassStatus) -> Unit = remember {
         { item: AttendanceRecordHybrid, status: CourseClassStatus ->
@@ -104,6 +113,14 @@ fun RootNavHost(
         }
     ) { screen ->
         when (screen) {
+            Screen.Onboarding -> {
+                OnboardingScreen(
+                    onComplete = {
+                        navController.replaceAll(Screen.Main)
+                    }
+                )
+            }
+
             Screen.CreateCourse -> {
                 CreateCourseScreen(
                     onGoBack = { navController.pop() },

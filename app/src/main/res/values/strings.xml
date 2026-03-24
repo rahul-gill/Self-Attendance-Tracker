@@ -180,6 +180,11 @@
     <string name="class_reminders">Class Reminders</string>
     <string name="class_reminders_summary">Get notified 5 minutes before each class</string>
 
-
+    <!-- Onboarding strings -->
+    <string name="welcome_to_attendance_tracker">Welcome to Attendance Tracker</string>
+    <string name="onboarding_description">Track your class attendance easily and get reminders for upcoming classes.</string>
+    <string name="enable_notifications">Enable Notifications</string>
+    <string name="get_started">Get Started</string>
+    <string name="skip">Skip</string>
 
 </resources>
