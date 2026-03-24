@@ -14,9 +14,12 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v6
+      - name: Gradle cache
+        uses: gradle/actions/setup-gradle@v5
       - name: set up JDK 17
         uses: actions/setup-java@v5
         with:
+          distribution: 'temurin'
           java-version: 17
       - name: Set Gradle as executable
         run: chmod +x ./gradlew
