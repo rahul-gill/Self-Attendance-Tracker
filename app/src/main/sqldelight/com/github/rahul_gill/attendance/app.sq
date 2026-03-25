@@ -244,3 +244,19 @@ SELECT
     Course.requiredAttendance
 FROM Course
 WHERE courseId = ?;
+
+-- Backup queries
+getAllCourses:
+SELECT * FROM Course;
+
+getAllSchedulesForCourse:
+SELECT * FROM Schedule WHERE courseId = ?;
+
+getAllAttendanceForCourse:
+SELECT * FROM Attendance WHERE courseId = ?;
+
+getAllExtraClassesForCourse:
+SELECT * FROM ExtraClasses WHERE courseId = ?;
+
+deleteAllData:
+DELETE FROM Course;
