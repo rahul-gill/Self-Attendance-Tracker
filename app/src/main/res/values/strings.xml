@@ -187,4 +187,17 @@
     <string name="get_started">Get Started</string>
     <string name="skip">Skip</string>
 
+    <!-- Import/Export strings -->
+    <string name="data">Data</string>
+    <string name="import_export">Import / Export</string>
+    <string name="import_export_summary">Backup or restore your course data</string>
+    <string name="copy">Copy</string>
+    <string name="import_data">Import</string>
+    <string name="export_copied">Data copied to clipboard</string>
+    <string name="clipboard_pasted">Attendance Tracker pasted from clipboard</string>
+    <string name="import_success">Data imported successfully</string>
+    <string name="import_failed">Import failed: invalid data</string>
+    <string name="import_warning">Warning: importing will replace all existing data</string>
+
 </resources>
+

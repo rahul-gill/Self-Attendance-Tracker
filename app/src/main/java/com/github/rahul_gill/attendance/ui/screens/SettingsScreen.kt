@@ -1,10 +1,14 @@
 package com.github.rahul_gill.attendance.ui.screens
 
 import android.Manifest
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -29,6 +33,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -36,8 +41,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,9 +55,13 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.github.rahul_gill.attendance.R
+import com.github.rahul_gill.attendance.db.BackupManager
+import com.github.rahul_gill.attendance.db.DBOps
 import com.github.rahul_gill.attendance.notification.ClassReminderScheduler
 import com.github.rahul_gill.attendance.notification.DailySchedulerWorker
 import com.github.rahul_gill.attendance.prefs.PreferenceManager
@@ -331,6 +342,26 @@ fun SettingsScreen(
             )
 
 
+            PreferenceGroupHeader(title = stringResource(id = R.string.data))
+
+            var showImportExportDialog by remember { mutableStateOf(false) }
+
+            GenericPreference(
+                title = stringResource(R.string.import_export),
+                summary = stringResource(R.string.import_export_summary),
+                onClick = { showImportExportDialog = true },
+                leadingIcon = {
+                    Icon(painter = painterResource(id = R.drawable.baseline_calendar_today_24), contentDescription = null)
+                }
+            )
+
+            if (showImportExportDialog) {
+                ImportExportDialog(
+                    onDismiss = { showImportExportDialog = false }
+                )
+            }
+
+
             PreferenceGroupHeader(title = stringResource(id = R.string.date_time_formatting))
 
             val timeFormatOptions = stringArrayResource(id = R.array.time_format_choices).toList()
@@ -417,4 +448,86 @@ fun SettingsScreen(
         }
     }
 
+}
+
+@Composable
+private fun ImportExportDialog(
+    onDismiss: () -> Unit
+) {
+    val context = LocalContext.current
+    var jsonText by remember {
+        mutableStateOf(
+            try {
+                BackupManager.exportToJson(DBOps.instance)
+            } catch (e: Exception) {
+                ""
+            }
+        )
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = stringResource(R.string.import_export)) },
+        body = {
+            Column {
+                Text(
+                    text = stringResource(R.string.import_warning),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Surface(
+                    color = MaterialTheme.colorScheme.surface,
+                    shape = MaterialTheme.shapes.small,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 300.dp)
+                ) {
+                    Text(
+                        text = jsonText,
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 10.sp
+                        ),
+                        modifier = Modifier
+                            .verticalScroll(rememberScrollState())
+                            .padding(8.dp)
+                    )
+                }
+            }
+        },
+        buttonBar = {
+            TextButton(onClick = {
+                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = ClipData.newPlainText("attendance_backup", jsonText)
+                clipboard.setPrimaryClip(clip)
+                Toast.makeText(context, R.string.export_copied, Toast.LENGTH_SHORT).show()
+            }) {
+                Text(stringResource(R.string.copy))
+            }
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+            TextButton(onClick = {
+                try {
+                    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val clipData = clipboard.primaryClip
+                    val pastedText = clipData?.getItemAt(0)?.text?.toString()
+                    Toast.makeText(context, R.string.clipboard_pasted, Toast.LENGTH_SHORT).show()
+
+                    if (pastedText != null) {
+                        BackupManager.importFromJson(DBOps.instance, pastedText)
+                        Toast.makeText(context, R.string.import_success, Toast.LENGTH_SHORT).show()
+                        onDismiss()
+                    } else {
+                        Toast.makeText(context, R.string.import_failed, Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(context, R.string.import_failed, Toast.LENGTH_SHORT).show()
+                }
+            }) {
+                Text(stringResource(R.string.import_data))
+            }
+        }
+    )
 }
