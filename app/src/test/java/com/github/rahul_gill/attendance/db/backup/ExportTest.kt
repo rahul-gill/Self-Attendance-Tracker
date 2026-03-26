@@ -2,6 +2,7 @@ package com.github.rahul_gill.attendance.db.backup
 
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
+import com.github.rahul_gill.attendance.Database
 import com.github.rahul_gill.attendance.db.BackupManager
 import com.github.rahul_gill.attendance.db.ClassDetail
 import com.github.rahul_gill.attendance.db.CourseClassStatus
@@ -29,6 +30,7 @@ class ExportTest {
     @Before
     fun setUp() {
         driver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
+        Database.Schema.create(driver)
         dbOps = DBOps(driver, unsetClassesBehavior = UnsetClassesBehavior.None)
     }
 

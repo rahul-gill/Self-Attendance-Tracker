@@ -13,9 +13,9 @@ import com.github.rahul_gill.attendance.prefs.PreferenceManager
 import com.github.rahul_gill.attendance.prefs.UnsetClassesBehavior
 
 import com.github.rahul_gill.attendance.util.applicationContextGlobal
-import com.github.rahulgill.attendance.Attendance
-import com.github.rahulgill.attendance.ExtraClasses
-import com.github.rahulgill.attendance.Schedule
+import com.github.rahul_gill.attendance.Attendance
+import com.github.rahul_gill.attendance.ExtraClasses
+import com.github.rahul_gill.attendance.Schedule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
