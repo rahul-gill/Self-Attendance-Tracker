@@ -8,9 +8,11 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.UiObjectNotFoundException
+import androidx.test.uiautomator.Until
 import com.github.rahul_gill.attendance.prefs.PreferenceManager
 import com.github.rahul_gill.attendance.ui.RootNavHost
 import com.github.rahul_gill.attendance.ui.comps.AttendanceAppTheme
@@ -21,6 +23,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import timber.log.Timber
+import java.util.regex.Pattern
 
 @RunWith(AndroidJUnit4::class)
 class OnboardingIntegrationTest {
@@ -102,18 +105,21 @@ class OnboardingIntegrationTest {
         composeTestRule.onNodeWithText(enableText).performClick()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val allowPermissions = device.findObject(UiSelector().text("Allow"))
-            if (allowPermissions.exists()) {
-                try {
-                    allowPermissions.click()
-                } catch (e: UiObjectNotFoundException) {
-                    Timber.e(e, "There is no permissions dialog to interact with")
-                }
-            }
+            val allowPermissions = device.wait(
+                Until.findObject(By.text(Pattern.compile("(?i)allow.*"))),
+                5000
+            )
+            //possible approach one
+            allowPermissions?.click()
+            //possible approach two
+            device.wait(
+                Until.findObject(By.res("com.android.permissioncontroller:id/permission_allow_button")),
+                2000
+            )?.click()
         }
 
         // Verify onboarding is marked as completed
-        composeTestRule.waitUntil(20000) {
+        composeTestRule.waitUntil(2000) {
             PreferenceManager.onboardingCompleted.value
         }
         

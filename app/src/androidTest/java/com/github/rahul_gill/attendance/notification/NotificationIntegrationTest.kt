@@ -1,12 +1,12 @@
 package com.github.rahul_gill.attendance.notification
 
-import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
 import com.github.rahul_gill.attendance.R
 import com.github.rahul_gill.attendance.db.ClassDetail
@@ -19,9 +19,11 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import timber.log.Timber
 import java.time.LocalDate
 import java.time.LocalTime
+import java.util.Locale
+import java.util.regex.Pattern
+import kotlin.math.exp
 
 class NotificationIntegrationTest {
 
@@ -49,7 +51,10 @@ class NotificationIntegrationTest {
         device.wait(Until.hasObject(By.pkg("com.android.systemui")), 2000)
         
         // Try to find "Clear all" or similar. If not found, just swipe up to close shade.
-        val clearAll = device.findObject(By.descContains("Clear all").textContains("Clear all"))
+        val clearAll =device.wait(
+            Until.findObject(By.text(Pattern.compile("(?i).*clear all.*"))),
+            3000
+        )
         clearAll?.click()
         device.pressBack()
         device.pressHome() // Start from home for a clean state
@@ -123,8 +128,43 @@ class NotificationIntegrationTest {
 
         // 5. Click "Present" action
         val presentText = context.getString(R.string.mark_present)
-        val presentAction = device.findObject(By.text(presentText))
-        assertNotNull("Button with text '$presentText' not found in notification", presentAction)
+        device.wait(
+            Until.findObject(By.text(presentText)),
+            1000
+        )
+
+        val hierarchy = run {
+            var root = device.findObject(By.text(courseName))
+            while (root.parent != null) {
+                root = root.parent
+            }
+            fun printHierarchy(node: UiObject2, depth: Int): String {
+                var s = "--|".repeat(depth) + "${node.className}::${node.text}::${node.resourceName}\n"
+                for(child in node.children) {
+                    s += printHierarchy(child, depth + 1)
+                }
+                return s
+            }
+
+            printHierarchy(root, 0)
+        }
+
+        val courseNotification = device.findObject(By.text(courseName))
+        val notificationObject = run {
+            var node = courseNotification
+            while (node.parent != null && node.resourceName != "android:id/notification_headerless_view_row") {
+                node = node.parent
+            }
+            node
+        }
+        val expandButton
+            = notificationObject.findObject(By.res("android:id/expand_button"))
+        assertNotNull("hierarchy : $hierarchy", expandButton)
+        expandButton.click()
+
+        val presentAction = device.findObject(By.text(Pattern.compile("(?i)${presentText}")))
+        assertNotNull("Button with text '$presentText' not found in notification hierarchy: $hierarchy",
+            presentAction)
         presentAction.click()
 
         // 6. Verify notification is dismissed
