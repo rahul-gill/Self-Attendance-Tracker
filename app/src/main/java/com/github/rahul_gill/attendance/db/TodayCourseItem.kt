@@ -1,7 +1,7 @@
 package com.github.rahul_gill.attendance.db
 
 import android.os.Parcelable
-import com.github.rahulgill.attendance.MarkedAttendancesForCourse
+import com.github.rahul_gill.attendance.MarkedAttendancesForCourse
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 import java.time.LocalTime
