@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
@@ -74,6 +75,7 @@ fun AddClassBottomSheet(
         mutableStateOf(initialState?.dayOfWeek ?: LocalDate.now().dayOfWeek)
     }
     val context = LocalContext.current
+    val resources  = LocalResources.current
     val startTimeState = rememberTimePickerState(
         initialHour = initialState?.startTime?.hour ?: 0,
         initialMinute = initialState?.startTime?.minute ?: 0,
@@ -120,7 +122,7 @@ fun AddClassBottomSheet(
         if (newEnd <= start) {
             Toast.makeText(
                 context,
-                context.getString(R.string.err_end_time_should_be_after_start_time),
+                resources.getString(R.string.err_end_time_should_be_after_start_time),
                 Toast.LENGTH_SHORT
             ).show()
             endTimeState = TimePickerState(

@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.rahul_gill.attendance.R
 import com.github.rahul_gill.attendance.db.AttendanceRecordHybrid
@@ -80,6 +81,7 @@ fun RootNavHost(
         if (onboardingCompleted.value) Screen.Main else Screen.Onboarding
     )
     val context = LocalContext.current
+    val resources  = LocalResources.current
     val onSetClassStatus : (item: AttendanceRecordHybrid, newStatus: CourseClassStatus) -> Unit = remember {
         { item: AttendanceRecordHybrid, status: CourseClassStatus ->
             when (item) {
@@ -132,7 +134,7 @@ fun RootNavHost(
                         )
                         Toast.makeText(
                             context,
-                            context.getString(R.string.course_created, courseName),
+                            resources.getString(R.string.course_created, courseName),
                             Toast.LENGTH_SHORT
                         ).show()
                     }

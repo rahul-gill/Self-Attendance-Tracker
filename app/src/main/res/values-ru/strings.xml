@@ -17,17 +17,10 @@
     <string name="done">Готово</string>
     <string name="cancel">Отмена</string>
 
-    <string name="course_detail_card_transition" translatable="false">course_details_card_%1$d</string>
-    <string name="course_detail_page_transition" translatable="false">course_details_page</string>
-
-    <string name="app_theme_key"  translatable="false">app_theme</string>
     <string name="app_theme_title">Тема</string>
-    <string name="pure_dark_key"  translatable="false">pure_dark</string>
     <string name="pure_dark_title">Pure Dark</string>
-    <string name="material_you_dynamic_color_key" translatable="false">material_you_dynamic_color</string>
     <string name="material_you_dynamic_color_title">Динамические цвета</string>
     <string name="theming_category_title">Оформление</string>
-    <string name="default_main_pager_tab_key"  translatable="false">default_main_pager_tab</string>
     <string name="default_main_page_tab_title">Главный экран</string>
     <string name="settings">Настройки</string>
     <string name="time_format">Формат времени</string>
@@ -168,6 +161,20 @@
     <string name="need_to_attend_n_more_classes">Нужно посетить: %1$d занятий</string>
     <string name="cannot_miss_next_class">Нельзя пропустить следующее</string>
     <string name="privacy_policy">Политика конфиденциальности</string>
+    <string name="notification_channel_name">Напоминания о занятиях</string>
+    <string name="notification_channel_description">Уведомления за 5 минут до начала занятий</string>
+    <string name="notification_body">%1$s – %2$s</string>
+    <string name="mark_present">Присутствовал</string>
+    <string name="mark_absent">Отсутствовал</string>
+    <string name="mark_cancelled">Отменено</string>
+    <string name="notifications">Уведомления</string>
+    <string name="class_reminders">Напоминания о занятиях</string>
+    <string name="class_reminders_summary">Получайте уведомления за 5 минут до начала каждого занятия</string>
+    <string name="welcome_to_attendance_tracker">Добро пожаловать в Трекер посещаемости</string>
+    <string name="onboarding_description">Легко отслеживайте посещаемость занятий и получайте напоминания о предстоящих уроках.</string>
+    <string name="enable_notifications">Включить уведомления</string>
+    <string name="get_started">Начать</string>
+    <string name="skip">Пропустить</string>
 
 
 </resources>

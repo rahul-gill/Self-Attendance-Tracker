@@ -62,6 +62,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
@@ -652,6 +653,7 @@ fun AddExtraBottomSheet(
                             initialMinute = if (page == 1) state.startTime.minute else state.endTime.minute
                         )
                         val context = LocalContext.current
+                        val resources  = LocalResources.current
                         LaunchedEffect(timePickerState.hour, timePickerState.minute) {
                             state = if (page == 1) {
                                 val newStart = state.startTime.withHour(timePickerState.hour)
@@ -670,7 +672,7 @@ fun AddExtraBottomSheet(
                                 } else {
                                     Toast.makeText(
                                         context,
-                                        context.getString(R.string.err_end_time_should_be_after_start_time),
+                                        resources.getString(R.string.err_end_time_should_be_after_start_time),
                                         Toast.LENGTH_SHORT
                                     ).show()
                                     state

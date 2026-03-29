@@ -48,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -91,6 +92,7 @@ fun CreateCourseScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
+    val resources  = LocalResources.current
 
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -120,7 +122,7 @@ fun CreateCourseScreen(
                     if (courseName.isBlank()) {
                         scope.launch {
                             snackbarHostState.showSnackbar(
-                                message = context.getString(R.string.error_course_name_blank),
+                                message = resources.getString(R.string.error_course_name_blank),
                                 withDismissAction = true
                             )
                         }
@@ -129,7 +131,7 @@ fun CreateCourseScreen(
                     if (classesForTheCourse.isEmpty()) {
                         scope.launch {
                             snackbarHostState.showSnackbar(
-                                message = context.getString(R.string.error_no_classes_for_course),
+                                message = resources.getString(R.string.error_no_classes_for_course),
                                 withDismissAction = true
                             )
                         }

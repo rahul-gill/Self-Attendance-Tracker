@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -50,6 +51,7 @@ fun CourseEditScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
+    val resources  = LocalResources.current
 
 
     var newCourseName by rememberSaveable {
@@ -87,7 +89,7 @@ fun CourseEditScreen(
                     if (newCourseName.isBlank()) {
                         scope.launch {
                             snackbarHostState.showSnackbar(
-                                message = context.getString(R.string.error_course_name_blank),
+                                message = resources.getString(R.string.error_course_name_blank),
                                 withDismissAction = true
                             )
                         }
