@@ -175,6 +175,14 @@
     <string name="enable_notifications">Включить уведомления</string>
     <string name="get_started">Начать</string>
     <string name="skip">Пропустить</string>
-
-
+    <!-- Import/Export strings -->
+    <string name="data">Данные</string>
+    <string name="import_export">Импорт / Экспорт</string>
+    <string name="import_export_summary">Резервное копирование или восстановление данных</string>
+    <string name="copy">Копировать</string>
+    <string name="import_data">Импорт</string>
+    <string name="export_copied">Данные скопированы в буфер обмена</string>
+    <string name="import_success">Данные успешно импортированы</string>
+    <string name="import_failed">Ошибка импорта: неверные данные</string>
+    <string name="import_warning">Внимание: импорт заменит все существующие данные</string>
 </resources>

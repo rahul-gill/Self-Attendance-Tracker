@@ -13,6 +13,8 @@ jobs:
   gradle:
     runs-on: ubuntu-latest
     strategy:
+      # Let each API level finish, so a flaky emulator on one doesn't cancel the other
+      fail-fast: false
       matrix:
         api-level: [ 26, 36 ]
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -59,7 +61,9 @@ jobs:
           api-level: ${{ matrix.api-level }}
           arch: x86_64
           force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          # Cold boot: on API 26 the first adb command after restoring the cached
+          # snapshot gets killed (exit code 137) before any test runs
+          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           script: ./gradlew connectedAndroidTest
       - name: Stop Gradle

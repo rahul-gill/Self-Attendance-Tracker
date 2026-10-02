@@ -105,21 +105,18 @@ class OnboardingIntegrationTest {
         composeTestRule.onNodeWithText(enableText).performClick()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val allowPermissions = device.wait(
-                Until.findObject(By.text(Pattern.compile("(?i)allow.*"))),
-                5000
+            // Match only the clickable "Allow" button: the dialog's message ("Allow ... to send
+            // you notifications?") also starts with "Allow". The dialog can take several seconds
+            // to show up right after the emulator boots, so wait generously.
+            val allowButton = device.wait(
+                Until.findObject(By.clickable(true).text(Pattern.compile("(?i)allow"))),
+                20000
             )
-            //possible approach one
-            allowPermissions?.click()
-            //possible approach two
-            device.wait(
-                Until.findObject(By.res("com.android.permissioncontroller:id/permission_allow_button")),
-                2000
-            )?.click()
+            allowButton?.click()
         }
 
         // Verify onboarding is marked as completed
-        composeTestRule.waitUntil(2000) {
+        composeTestRule.waitUntil(20000) {
             PreferenceManager.onboardingCompleted.value
         }
         

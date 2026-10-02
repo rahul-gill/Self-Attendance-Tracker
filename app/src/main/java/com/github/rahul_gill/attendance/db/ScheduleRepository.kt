@@ -65,6 +65,11 @@ class ScheduleRepository(
         ClassReminderScheduler.scheduleAlarmsForToday(applicationContextGlobal)
     }
 
+    fun importFromJson(jsonString: String) {
+        BackupManager.importFromJson(dbOps, jsonString)
+        ClassReminderScheduler.scheduleAlarmsForToday(applicationContextGlobal)
+    }
+
     companion object {
         val instance: ScheduleRepository by lazy {
             ScheduleRepository()

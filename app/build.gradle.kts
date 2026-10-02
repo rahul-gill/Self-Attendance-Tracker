@@ -115,6 +115,7 @@ dependencies {
     implementation("app.cash.sqldelight:coroutines-extensions:2.3.2")
     implementation("app.cash.sqldelight:primitive-adapters:2.3.2")
     testImplementation("app.cash.sqldelight:sqlite-driver:2.3.2")
+    testImplementation("org.json:json:20231013")
     //sugar and water
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.1.5")
     //ui thing
