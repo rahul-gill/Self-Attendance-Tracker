@@ -9,11 +9,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.github.rahul_gill.attendance.prefs.PreferenceManager
 import com.github.rahul_gill.attendance.ui.RootNavHost
 import com.github.rahul_gill.attendance.ui.comps.AttendanceAppTheme
 import com.github.rahul_gill.attendance.ui.comps.ColorSchemeType
+import com.github.rahul_gill.attendance.ui.comps.applyThemeConfigToSystem
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,6 +33,9 @@ class MainActivity : ComponentActivity() {
             val seedColor = PreferenceManager.colorSchemeSeed.asState()
             val theme = PreferenceManager.themeConfig.asState()
             val darkThemeType = PreferenceManager.darkThemeType.asState()
+            LaunchedEffect(theme.value) {
+                applyThemeConfigToSystem(this@MainActivity, theme.value)
+            }
             AttendanceAppTheme(
                 colorSchemeType = if (followSystemColor.value) ColorSchemeType.Dynamic else ColorSchemeType.WithSeed(
                     seedColor.value

@@ -58,11 +58,10 @@ SELECT Attendance.attendanceId, Schedule.scheduleId, Course.courseId, Course.cou
        END AS classStatus,
        Attendance.date
 FROM Schedule
-JOIN Course ON Schedule.courseId = Course.courseId AND Schedule.weekday = strftime('%w', 'now')
+JOIN Course ON Schedule.courseId = Course.courseId AND Schedule.weekday = strftime('%w', 'now', 'localtime')
 LEFT JOIN Attendance ON Schedule.scheduleId = Attendance.scheduleId AND Attendance.date = DATE('now', 'localtime')
 WHERE Schedule.includedInSchedule <> 0
-AND DATE('now', 'localtime') = Attendance.date
-OR (Attendance.scheduleId IS NULL AND DATE('now', 'localtime') = DATE('now', 'localtime'));
+AND (Attendance.date = DATE('now', 'localtime') OR Attendance.scheduleId IS NULL);
 
 getExtraClassesListForToday:
 SELECT Course.courseId, Course.courseName, ExtraClasses.startTime, ExtraClasses.endTime, ExtraClasses.classStatus, ExtraClasses.extraClassId, ExtraClasses.date
@@ -115,8 +114,8 @@ SELECT
     Course.requiredAttendance,
     GROUP_CONCAT(Schedule.weekday || ' ' || Schedule.startTime || ' ' || Schedule.endTime) AS scheduleDetails,
     COALESCE((SELECT COUNT(*) FROM Attendance WHERE Attendance.scheduleId IN (SELECT scheduleId FROM Schedule WHERE Schedule.courseId = Course.courseId) AND Attendance.classStatus = 'Present') / NULLIF((SELECT COUNT(*) FROM Attendance WHERE Attendance.scheduleId IN (SELECT scheduleId FROM Schedule WHERE Schedule.courseId = Course.courseId)), 0) * 100, 0) AS currentAttendancePercentage,
-    (SELECT COUNT(*) FROM Schedule WHERE Schedule.courseId = Course.courseId AND Schedule.weekday = strftime('%w', 'now')) AS hasClassesToday,
-    (SELECT GROUP_CONCAT(startTime || '-' || endTime) FROM Schedule WHERE Schedule.courseId = Course.courseId AND Schedule.weekday = strftime('%w', 'now')) AS classesToday
+    (SELECT COUNT(*) FROM Schedule WHERE Schedule.courseId = Course.courseId AND Schedule.weekday = strftime('%w', 'now', 'localtime')) AS hasClassesToday,
+    (SELECT GROUP_CONCAT(startTime || '-' || endTime) FROM Schedule WHERE Schedule.courseId = Course.courseId AND Schedule.weekday = strftime('%w', 'now', 'localtime')) AS classesToday
 FROM
     Course
 JOIN
@@ -132,7 +131,7 @@ SELECT
     Course.courseId,
     Course.courseName,
     Course.requiredAttendance,
-    (SELECT COUNT(*) FROM Schedule WHERE Schedule.courseId = Course.courseId AND Schedule.weekday = strftime('%w', 'now')) AS numClassesToday,
+    (SELECT COUNT(*) FROM Schedule WHERE Schedule.courseId = Course.courseId AND Schedule.weekday = strftime('%w', 'now', 'localtime')) AS numClassesToday,
     ((SELECT COUNT(*) AS presents FROM Attendance WHERE scheduleId IN (SELECT scheduleId FROM Schedule WHERE courseId = Course.courseId) AND classStatus = 'Present')
         + (SELECT COUNT(*) AS presents FROM ExtraClasses WHERE courseId = Course.courseId AND classStatus = 'Present')) AS nPresents,
     ((SELECT COUNT(*) AS presents FROM Attendance WHERE scheduleId IN (SELECT scheduleId FROM Schedule WHERE courseId = Course.courseId) AND classStatus = 'Absent')
@@ -149,7 +148,7 @@ SELECT
     Course.courseId,
     Course.courseName,
     Course.requiredAttendance,
-    (SELECT COUNT(*) FROM Schedule WHERE Schedule.courseId = Course.courseId AND Schedule.weekday = strftime('%w', 'now')) AS numClassesToday,
+    (SELECT COUNT(*) FROM Schedule WHERE Schedule.courseId = Course.courseId AND Schedule.weekday = strftime('%w', 'now', 'localtime')) AS numClassesToday,
     ((SELECT COUNT(*) AS presents FROM Attendance WHERE scheduleId IN (SELECT scheduleId FROM Schedule WHERE courseId = Course.courseId) AND classStatus = 'Present')
         + (SELECT COUNT(*) AS presents FROM ExtraClasses WHERE courseId = Course.courseId AND classStatus = 'Present')) AS nPresents,
     ((SELECT COUNT(*) AS presents FROM Attendance WHERE scheduleId IN (SELECT scheduleId FROM Schedule WHERE courseId = Course.courseId) AND classStatus = 'Absent')

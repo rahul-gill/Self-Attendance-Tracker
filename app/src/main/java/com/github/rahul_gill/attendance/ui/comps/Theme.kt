@@ -1,6 +1,8 @@
 package com.github.rahul_gill.attendance.ui.comps
 
 import android.app.Activity
+import android.app.UiModeManager
+import android.content.Context
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +25,20 @@ enum class DarkThemeType {
 
 enum class ThemeConfig {
     FollowSystem, Light, Dark
+}
+
+/**
+ * Persists [themeConfig] as the app's night mode on Android 12+, so the system splash
+ * screen (drawn before any app code runs) matches the in-app theme on the next launch.
+ */
+fun applyThemeConfigToSystem(context: Context, themeConfig: ThemeConfig) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return
+    val nightMode = when (themeConfig) {
+        ThemeConfig.FollowSystem -> UiModeManager.MODE_NIGHT_AUTO
+        ThemeConfig.Light -> UiModeManager.MODE_NIGHT_NO
+        ThemeConfig.Dark -> UiModeManager.MODE_NIGHT_YES
+    }
+    context.getSystemService(UiModeManager::class.java).setApplicationNightMode(nightMode)
 }
 
 sealed interface ColorSchemeType {

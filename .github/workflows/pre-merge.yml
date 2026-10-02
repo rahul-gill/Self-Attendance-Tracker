@@ -13,6 +13,8 @@ jobs:
   gradle:
     runs-on: ubuntu-latest
     strategy:
+      # Let each API level finish, so a flaky emulator on one doesn't cancel the other
+      fail-fast: false
       matrix:
         api-level: [ 26, 36 ]
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -54,13 +56,29 @@ jobs:
       - name: Unit tests
         run: bash ./gradlew test --stacktrace
       - name: Integration tests
+        # A healthy run takes a few minutes; fail instead of hanging until the 6h job limit
+        timeout-minutes: 30
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
           arch: x86_64
           force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          # Cold boot: on API 26 the first adb command after restoring the cached
+          # snapshot gets killed (exit code 137) before any test runs
+          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: ./gradlew connectedAndroidTest
+          script: |
+            adb logcat -c
+            adb logcat -v time > logcat.txt 2>&1 < /dev/null &
+            ./gradlew connectedAndroidTest
+      - name: Print device log
+        if: failure()
+        run: |
+          echo "::group::Test runner / crash / ANR lines"
+          grep -E "TestRunner|AndroidRuntime|ANR in|UiAutomator|GestureController" logcat.txt | tail -n 150 || true
+          echo "::endgroup::"
+          echo "::group::Last 300 lines"
+          tail -n 300 logcat.txt || true
+          echo "::endgroup::"
       - name: Stop Gradle
         run: ./gradlew --stop

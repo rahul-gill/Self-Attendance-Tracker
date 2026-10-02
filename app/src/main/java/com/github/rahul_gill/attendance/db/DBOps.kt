@@ -150,7 +150,7 @@ class DBOps(
                 )
             }).asFlow().mapToList(Dispatchers.IO)
         return scheduleClassesFlow.combine(extraClassesFlow) { list1, list2 ->
-            (list1 + list2).sortedByDescending { it.startTime }
+            (list1 + list2).sortedBy { it.startTime }
         }.map { attendanceRecords ->
             attendanceRecords.map {
                 Pair(it, getCourseAttendancePercentage(it.courseId))

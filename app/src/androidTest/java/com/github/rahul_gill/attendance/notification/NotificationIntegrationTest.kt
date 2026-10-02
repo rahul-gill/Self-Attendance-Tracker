@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Direction
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
@@ -128,13 +129,11 @@ class NotificationIntegrationTest {
 
         // 5. Click "Present" action
         val presentText = context.getString(R.string.mark_present)
-        device.wait(
-            Until.findObject(By.text(presentText)),
-            1000
-        )
+        // Action buttons are upper-cased on older Android versions
+        val presentButton = By.text(Pattern.compile("(?i)${Pattern.quote(presentText)}"))
 
-        val hierarchy = run {
-            var root = device.findObject(By.text(courseName))
+        fun shadeHierarchy(): String {
+            var root = device.findObject(By.text(courseName)) ?: return "<notification not found>"
             while (root.parent != null) {
                 root = root.parent
             }
@@ -146,24 +145,36 @@ class NotificationIntegrationTest {
                 return s
             }
 
-            printHierarchy(root, 0)
+            return printHierarchy(root, 0)
         }
 
-        val courseNotification = device.findObject(By.text(courseName))
-        val notificationObject = run {
-            var node = courseNotification
-            while (node.parent != null && node.resourceName != "android:id/notification_headerless_view_row") {
-                node = node.parent
+        // The newest notification may already be expanded, in which case clicking the
+        // expand button would collapse it, so only expand when the action isn't visible
+        var presentAction = device.wait(Until.findObject(presentButton), 2000)
+        if (presentAction == null) {
+            // Our notification is the closest ancestor of its title that has an expand button
+            var notificationObject = device.findObject(By.text(courseName))
+            while (notificationObject.parent != null &&
+                !notificationObject.hasObject(By.res("android:id/expand_button"))
+            ) {
+                notificationObject = notificationObject.parent
             }
-            node
-        }
-        val expandButton
-            = notificationObject.findObject(By.res("android:id/expand_button"))
-        assertNotNull("hierarchy : $hierarchy", expandButton)
-        expandButton.click()
+            val expandButton = notificationObject.findObject(By.res("android:id/expand_button"))
+            assertNotNull("Expand button not found in notification hierarchy: ${shadeHierarchy()}", expandButton)
+            expandButton.click()
 
-        val presentAction = device.findObject(By.text(Pattern.compile("(?i)${presentText}")))
-        assertNotNull("Button with text '$presentText' not found in notification hierarchy: $hierarchy",
+            // Actions only show up once the expand animation has run
+            presentAction = device.wait(Until.findObject(presentButton), 5000)
+        }
+        if (presentAction == null) {
+            // On small screens our notification can sit at the bottom of the shade with its
+            // actions cut off, so scroll the notification list until they're visible. Only
+            // scroll when the list is scrollable: swiping up otherwise closes the shade.
+            presentAction = device
+                .findObject(By.res("com.android.systemui", "notification_stack_scroller").scrollable(true))
+                ?.scrollUntil(Direction.DOWN, Until.findObject(presentButton))
+        }
+        assertNotNull("Button with text '$presentText' not found in notification hierarchy: ${shadeHierarchy()}",
             presentAction)
         presentAction.click()
 
